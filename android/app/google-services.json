@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "181222539029",
+    "firebase_url": "https://ace-project-757b8-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "ace-project-757b8",
+    "storage_bucket": "ace-project-757b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181222539029:android:0ac02a7977d5e14b9f731c",
+        "android_client_info": {
+          "package_name": "com.example.ace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKGiHjVUa121LeBF2GAWi-KTGKAtVI4Eo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
