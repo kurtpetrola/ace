@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant/colors.dart';
+import 'package:ace/constant/colors.dart';
 
 class Stream2 extends StatefulWidget {
   const Stream2({Key? key}) : super(key: key);

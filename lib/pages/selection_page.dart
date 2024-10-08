@@ -3,8 +3,7 @@ import 'package:ace/components/register_button.dart';
 import 'package:ace/components/selection_header.dart';
 import 'package:ace/components/student_button.dart';
 import 'package:flutter/material.dart';
-
-import '../constant/colors.dart';
+import 'package:ace/constant/colors.dart';
 
 class SelectionPage extends StatelessWidget {
   const SelectionPage({Key? key}) : super(key: key);

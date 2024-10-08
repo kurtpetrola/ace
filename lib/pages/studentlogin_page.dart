@@ -3,10 +3,10 @@ import 'package:ace/pages/registration_page.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../constant/colors.dart';
-import '../dialogs/alertdialog.dart';
-import '../models/user.dart';
-import 'homescreen_page.dart';
+import 'package:ace/constant/colors.dart';
+import 'package:ace/dialogs/alertdialog.dart';
+import 'package:ace/models/user.dart';
+import 'package:ace/pages/homescreen_page.dart';
 
 class StudentLoginPage extends StatefulWidget {
   const StudentLoginPage({super.key});

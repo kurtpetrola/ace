@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/pages/selection_page.dart';
-import '../constant/colors.dart';
-import '../constant/strings.dart';
+import 'package:ace/constant/colors.dart';
+import 'package:ace/constant/strings.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);

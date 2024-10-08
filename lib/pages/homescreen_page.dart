@@ -2,7 +2,7 @@ import 'package:ace/constant/colors.dart';
 import 'package:ace/screenpages/account.dart';
 import 'package:ace/screenpages/grades.dart';
 import 'package:flutter/material.dart';
-import '../screenpages/classroom.dart';
+import 'package:ace/screenpages/classroom.dart';
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({Key? key}) : super(key: key);

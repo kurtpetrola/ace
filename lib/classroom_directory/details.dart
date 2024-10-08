@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/classroom.dart';
-// import '../constant/colors.dart';
-// import '../classroom_directory/classroom_page1.dart';
-import '../classroom_directory/classroom_page2.dart';
+import 'package:ace/models/classroom.dart';
+// import 'package:ace/constant/colors.dart';
+// import 'package:ace/classroom_directory/classroom_page1.dart';
+import 'package:ace/classroom_directory/classroom_page2.dart';
 
 class HomePage extends StatefulWidget {
   @override

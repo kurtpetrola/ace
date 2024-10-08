@@ -1,9 +1,9 @@
 import 'package:ace/classroom_directory/classroom_page1.dart';
-// import 'package:ACE/classroom_directory/classroom_page2.dart';
-// import 'package:ACE/classroom_directory/classroom_page3.dart';
+// import 'package:ace/classroom_directory/classroom_page2.dart';
+// import 'package:ace/classroom_directory/classroom_page3.dart';
 import 'package:flutter/material.dart';
 import 'package:ace/models/classroom.dart';
-import '../constant/colors.dart';
+import 'package:ace/constant/colors.dart';
 
 class Classroom extends StatefulWidget {
   @override

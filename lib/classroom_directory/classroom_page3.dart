@@ -1,9 +1,9 @@
-import '../classroom_directory/classwork.dart';
-import '../constant/colors.dart';
-import '../pages/homescreen_page.dart';
+import 'package:ace/classroom_directory/classwork.dart';
+import 'package:ace/constant/colors.dart';
+import 'package:ace/pages/homescreen_page.dart';
 import 'package:flutter/material.dart';
-import '../people_directory/people3.dart';
-import '../stream_directory/stream3.dart';
+import 'package:ace/people_directory/people3.dart';
+import 'package:ace/stream_directory/stream3.dart';
 
 class ClassRoomPage3 extends StatefulWidget {
   AssetImage bannerImg;

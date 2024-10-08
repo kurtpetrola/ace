@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../constant/colors.dart';
+import 'package:ace/constant/colors.dart';
 
 class Classwork extends StatefulWidget {
   const Classwork({Key? key}) : super(key: key);

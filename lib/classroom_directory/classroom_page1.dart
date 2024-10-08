@@ -1,7 +1,7 @@
-import '../classroom_directory/classwork.dart';
-import '../people_directory/people.dart';
-import '../stream_directory/stream.dart';
-import '../constant/colors.dart';
+import 'package:ace/classroom_directory/classwork.dart';
+import 'package:ace/people_directory/people.dart';
+import 'package:ace/stream_directory/stream.dart';
+import 'package:ace/constant/colors.dart';
 import 'package:flutter/material.dart';
 
 class ClassRoomPage1 extends StatefulWidget {
