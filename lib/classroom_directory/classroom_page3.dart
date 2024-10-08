@@ -6,8 +6,8 @@ import 'package:ace/people_directory/people3.dart';
 import 'package:ace/stream_directory/stream3.dart';
 
 class ClassRoomPage3 extends StatefulWidget {
-  AssetImage bannerImg;
-  String className;
+  final AssetImage bannerImg;
+  final String className;
   static const routeName = "ClassRoomPage3";
   ClassRoomPage3({required this.className, required this.bannerImg});
 
@@ -25,8 +25,8 @@ class _ClassRoomPage3State extends State<ClassRoomPage3> {
 
   @override
   Widget build(BuildContext context) {
-    String className = widget.className;
-    AssetImage bannerImg = widget.bannerImg;
+    widget.className;
+    widget.bannerImg;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

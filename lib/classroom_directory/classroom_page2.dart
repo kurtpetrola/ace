@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:ace/people_directory/people2.dart';
 
 class ClassRoomPage2 extends StatefulWidget {
-  AssetImage bannerImg;
-  String className;
+  final AssetImage bannerImg;
+  final String className;
   static const routeName = "ClassRoomPage2";
 
   ClassRoomPage2({required this.className, required this.bannerImg});
@@ -26,8 +26,8 @@ class _ClassRoomPage2State extends State<ClassRoomPage2> {
 
   @override
   Widget build(BuildContext context) {
-    String className = widget.className;
-    AssetImage bannerImg = widget.bannerImg;
+    widget.className;
+    widget.bannerImg;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

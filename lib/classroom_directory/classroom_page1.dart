@@ -5,7 +5,7 @@ import 'package:ace/constant/colors.dart';
 import 'package:flutter/material.dart';
 
 class ClassRoomPage1 extends StatefulWidget {
-  String className;
+  final String className;
   static const routeName = "ClassRoomPage1";
 
   ClassRoomPage1({required this.className});
@@ -24,7 +24,7 @@ class _ClassRoomPage1State extends State<ClassRoomPage1> {
 
   @override
   Widget build(BuildContext context) {
-    String className = widget.className;
+    widget.className;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
