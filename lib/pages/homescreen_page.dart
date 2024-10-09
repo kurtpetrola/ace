@@ -1,8 +1,9 @@
-import 'package:ace/constant/colors.dart';
-import 'package:ace/screenpages/account.dart';
-import 'package:ace/screenpages/grades.dart';
 import 'package:flutter/material.dart';
+import 'package:ace/constant/colors.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:ace/screenpages/account.dart';
 import 'package:ace/screenpages/classroom.dart';
+import 'package:ace/screenpages/grades.dart';
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({Key? key}) : super(key: key);
@@ -22,75 +23,40 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: ColorPalette.accentBlack,
-        body: pages[pageIndex],
-        bottomNavigationBar: Container(
-          height: 60,
-          decoration: const BoxDecoration(
-            color: ColorPalette.secondary,
+      backgroundColor: ColorPalette.accentBlack,
+      body: pages[pageIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: pageIndex,
+        onTap: (int index) {
+          setState(() {
+            pageIndex = index;
+          });
+        },
+        backgroundColor: ColorPalette.secondary,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black.withOpacity(0.6),
+        selectedIconTheme: const IconThemeData(size: 30),
+        unselectedIconTheme: const IconThemeData(size: 26),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.book_outline),
+            activeIcon: Icon(Ionicons.book),
+            label: 'Classes',
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    pageIndex = 0;
-                  });
-                },
-                icon: pageIndex == 0
-                    ? const Icon(
-                        Icons.auto_stories,
-                        color: Colors.black,
-                        size: 35,
-                      )
-                    : const Icon(
-                        Icons.auto_stories_outlined,
-                        color: Colors.black,
-                        size: 35,
-                      ),
-              ),
-              IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    pageIndex = 1;
-                  });
-                },
-                icon: pageIndex == 1
-                    ? const Icon(
-                        Icons.auto_awesome,
-                        color: Colors.black,
-                        size: 35,
-                      )
-                    : const Icon(
-                        Icons.auto_awesome_outlined,
-                        color: Colors.black,
-                        size: 35,
-                      ),
-              ),
-              IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    pageIndex = 2;
-                  });
-                },
-                icon: pageIndex == 2
-                    ? const Icon(
-                        Icons.person,
-                        color: Colors.black,
-                        size: 35,
-                      )
-                    : const Icon(
-                        Icons.person_outline,
-                        color: Colors.black,
-                        size: 35,
-                      ),
-              ),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.sparkles_outline),
+            activeIcon: Icon(Ionicons.sparkles),
+            label: 'Grades',
           ),
-        ));
+          BottomNavigationBarItem(
+            icon: Icon(Ionicons.person_outline),
+            activeIcon: Icon(Ionicons.person),
+            label: 'Account',
+          ),
+        ],
+        elevation: 8, // Adds material elevation for depth
+        type: BottomNavigationBarType.fixed, // Ensures labels are always shown
+      ),
+    );
   }
 }

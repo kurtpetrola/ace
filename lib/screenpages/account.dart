@@ -28,7 +28,7 @@ class _AccountState extends State<Account> {
         extendBodyBehindAppBar: true,
         backgroundColor: ColorPalette.accentBlack,
         appBar: AppBar(
-          toolbarHeight: (100),
+          toolbarHeight: (80),
           elevation: 0,
           backgroundColor: Colors.transparent,
           automaticallyImplyLeading: false,
@@ -55,7 +55,7 @@ class _AccountState extends State<Account> {
                     setState(() => tappedYes = false);
                   }
                 },
-                icon: const Icon(Icons.exit_to_app_rounded),
+                icon: const Icon(Icons.exit_to_app),
                 color: ColorPalette.secondary,
               ),
             ),
@@ -134,7 +134,7 @@ class _AccountState extends State<Account> {
                               borderRadius: BorderRadius.circular(55)),
                           child: const Icon(
                             Icons.person_outline_rounded,
-                            size: 150,
+                            size: 125,
                             color: Colors.black,
                           ),
                         ),
@@ -145,7 +145,7 @@ class _AccountState extends State<Account> {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 10),
+                          horizontal: 86, vertical: 6),
                       decoration: const BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.only(
@@ -154,7 +154,7 @@ class _AccountState extends State<Account> {
                         ),
                       ),
                       child: const Text(
-                        'PERSONAL INFORMATION',
+                        'Personal Information',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: ColorPalette.secondary,
@@ -176,13 +176,13 @@ class _AccountState extends State<Account> {
                             padding: const EdgeInsets.only(left: 5.0),
                             child: Column(
                               children: [
-                                const SizedBox(height: 15),
+                                const SizedBox(height: 5),
                                 const Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     '',
                                     style: TextStyle(
-                                      fontSize: 15.0,
+                                      fontSize: 8.0,
                                       color: Colors.black54,
                                     ),
                                   ),
@@ -202,7 +202,7 @@ class _AccountState extends State<Account> {
                                 const Text(
                                   'Student',
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black,
                                       fontFamily: 'Lato'),
@@ -211,7 +211,7 @@ class _AccountState extends State<Account> {
                                 Text(
                                   "Student ID",
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black,
                                       fontFamily: 'Lato'),
@@ -236,7 +236,7 @@ class _AccountState extends State<Account> {
                                     child: Text(
                                       snapshot.data!.first.studentid.toString(),
                                       style: const TextStyle(
-                                          fontSize: 12, fontFamily: 'Lato'),
+                                          fontSize: 15, fontFamily: 'Lato'),
                                     ),
                                   ),
                                 ),
@@ -246,7 +246,7 @@ class _AccountState extends State<Account> {
                                 Text(
                                   "Gender",
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black,
                                       fontFamily: 'Lato'),
@@ -271,7 +271,7 @@ class _AccountState extends State<Account> {
                                     child: Text(
                                       snapshot.data!.first.gender.toString(),
                                       style: const TextStyle(
-                                          fontSize: 12, fontFamily: 'Lato'),
+                                          fontSize: 15, fontFamily: 'Lato'),
                                     ),
                                   ),
                                 ),
@@ -281,7 +281,7 @@ class _AccountState extends State<Account> {
                                 Text(
                                   "Age",
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black,
                                       fontFamily: 'Lato'),
@@ -306,7 +306,7 @@ class _AccountState extends State<Account> {
                                     child: Text(
                                       snapshot.data!.first.age.toString(),
                                       style: const TextStyle(
-                                          fontSize: 12, fontFamily: 'Lato'),
+                                          fontSize: 15, fontFamily: 'Lato'),
                                     ),
                                   ),
                                 ),
@@ -316,7 +316,7 @@ class _AccountState extends State<Account> {
                                 Text(
                                   "E-mail Address",
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black,
                                       fontFamily: 'Lato'),
@@ -325,8 +325,8 @@ class _AccountState extends State<Account> {
                                   height: 5,
                                 ),
                                 Container(
-                                  height: 35,
-                                  width: 190,
+                                  height: 40,
+                                  width: 220,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     color: Colors.white,
@@ -341,7 +341,7 @@ class _AccountState extends State<Account> {
                                     child: Text(
                                       snapshot.data!.first.email.toString(),
                                       style: const TextStyle(
-                                          fontSize: 12, fontFamily: 'Lato'),
+                                          fontSize: 15, fontFamily: 'Lato'),
                                     ),
                                   ),
                                 ),
@@ -351,17 +351,17 @@ class _AccountState extends State<Account> {
                                 Text(
                                   "Department",
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black,
                                       fontFamily: 'Lato'),
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  height: 2,
                                 ),
                                 Container(
-                                  height: 35,
-                                  width: 230,
+                                  height: 45,
+                                  width: 250,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     color: Colors.white,
@@ -377,12 +377,12 @@ class _AccountState extends State<Account> {
                                       snapshot.data!.first.dept.toString(),
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
-                                          fontSize: 12, fontFamily: 'Lato'),
+                                          fontSize: 15, fontFamily: 'Lato'),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  height: 12,
                                 ),
                               ],
                             )))
