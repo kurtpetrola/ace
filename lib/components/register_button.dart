@@ -12,27 +12,26 @@ class RegisterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
+    return ElevatedButton(
+      onPressed: () async {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => RegisterPage()));
+          builder: (BuildContext context) => RegisterPage(),
+        ));
       },
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(horizontal: 55),
-        decoration: BoxDecoration(
-          color: ColorPalette.secondary,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: ColorPalette.secondary,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Center(
-          child: Text(
-            "REGISTER",
-            style: TextStyle(
-                color: ColorPalette.accentBlack,
-                fontFamily: 'Lato',
-                fontWeight: FontWeight.w700,
-                fontSize: 20),
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+      ),
+      child: const Text(
+        "REGISTER",
+        style: TextStyle(
+          color: ColorPalette.accentBlack,
+          fontFamily: 'Lato',
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
         ),
       ),
     );

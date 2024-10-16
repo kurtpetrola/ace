@@ -1,115 +1,178 @@
-import 'package:ace/constant/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ace/constant/colors.dart';
 
-class Grades extends StatefulWidget {
+class Subject {
+  final String code;
+  String grade;
+
+  Subject({required this.code, required this.grade});
+}
+
+class GradesModel extends ChangeNotifier {
+  List<Subject> subjects = [
+    Subject(code: 'ITE 115', grade: '95'),
+    Subject(code: 'ITE 300', grade: '95'),
+    Subject(code: 'ITE 302', grade: '95'),
+    Subject(code: 'ITE 298', grade: '95'),
+    Subject(code: 'ITE 304', grade: '95'),
+    Subject(code: 'ITE 303', grade: '95'),
+    Subject(code: 'ITE 031', grade: '95'),
+  ];
+
+  List<String> gradeTypes = ['P1', 'P2', 'P3'];
+  String selectedGradeType = 'P1';
+
+  void updateGrade(int index, String newGrade) {
+    subjects[index].grade = newGrade;
+    notifyListeners();
+  }
+
+  void updateSelectedGradeType(String newType) {
+    selectedGradeType = newType;
+    notifyListeners();
+  }
+}
+
+class Grades extends StatelessWidget {
   const Grades({Key? key}) : super(key: key);
 
   @override
-  State<Grades> createState() => _GradesState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => GradesModel(),
+      child: GradesView(),
+    );
+  }
 }
 
-class _GradesState extends State<Grades> {
-  List<Map<String, dynamic>> _subjectList = [
-    {'code': 'ITE 115', 'grade': '95'},
-    {'code': 'ITE 300', 'grade': '95'},
-    {'code': 'ITE 302', 'grade': '95'},
-    {'code': 'ITE 298', 'grade': '95'},
-    {'code': 'ITE 304', 'grade': '95'},
-    {'code': 'ITE 303', 'grade': '95'},
-    {'code': 'ITE 031', 'grade': '95'},
-  ];
-
-  List<String> _gradeList = ['P1', 'P2', 'P3'];
-
-  String _selectedGrade = 'P1';
-
+class GradesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorPalette.accentBlack,
       body: Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-            alignment: Alignment.center,
-            height: 410,
-            width: 360,
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(30),
-              ),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(1),
-                  blurRadius: 5,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: DataTable(
-              border: TableBorder.all(
-                color: Colors.grey,
-                width: 1.0,
-              ),
-
-              //dataRowHeight: 60.0, // set the height of the rows
-              columns: [
-                DataColumn(
-                  label: Text(
-                    'SUBJECT CODE',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'Lato',
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Container(
+                width: constraints.maxWidth > 600
+                    ? 600
+                    : constraints.maxWidth * 0.9,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 5,
+                      spreadRadius: 1,
                     ),
-                  ),
+                  ],
                 ),
-                DataColumn(
-                  label: DropdownButton<String>(
-                    value: _selectedGrade,
-                    items: _gradeList.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGrade = value!;
-                      });
-                    },
-                  ),
+                child: Column(
+                  children: [
+                    HeaderRow(),
+                    SizedBox(height: 20),
+                    SubjectList(),
+                  ],
                 ),
-              ],
-              rows: _subjectList.map(
-                (subject) {
-                  return DataRow(cells: [
-                    DataCell(Text(subject['code'])),
-                    DataCell(
-                      TextField(
-                        controller:
-                            TextEditingController(text: subject['grade']),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onSubmitted: (value) {
-                          setState(() {
-                            subject['grade'] = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ]);
-                },
-              ).toList(),
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
+    );
+  }
+}
+
+class HeaderRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Subject Code',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: GradeTypeSelector(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GradeTypeSelector extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final model = Provider.of<GradesModel>(context);
+    return DropdownButton<String>(
+      value: model.selectedGradeType,
+      items: model.gradeTypes.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (value) => model.updateSelectedGradeType(value!),
+    );
+  }
+}
+
+class SubjectList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final model = Provider.of<GradesModel>(context);
+    return Table(
+      columnWidths: {
+        0: FlexColumnWidth(2),
+        1: FlexColumnWidth(1),
+      },
+      children: model.subjects.asMap().entries.map((entry) {
+        final index = entry.key;
+        final subject = entry.value;
+        return TableRow(
+          children: [
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(subject.code),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: TextFormField(
+                  initialValue: subject.grade,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty && int.tryParse(value) != null) {
+                      model.updateGrade(index, value);
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+      }).toList(),
     );
   }
 }

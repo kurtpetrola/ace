@@ -23,6 +23,17 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _deptValue;
   String? _ageValue;
 
+  /// Improved validation for user input
+  bool _isValidForm() {
+    return _fnameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passController.text.isNotEmpty &&
+        _idnumController.text.isNotEmpty &&
+        _sexValue != null &&
+        _deptValue != null &&
+        _ageValue != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 15),
                 const Text(
-                  'REGISTRATION',
+                  'Registration',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -90,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 _buildPasswordTextField(),
                 const SizedBox(height: 10),
                 _buildDropdownField(
-                  hint: 'GENDER',
+                  hint: 'Gender',
                   value: _sexValue,
                   items: AceStrings.sex,
                   onChanged: (value) => setState(() {
@@ -99,7 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
-                  hint: 'AGE',
+                  hint: 'Age',
                   value: _ageValue,
                   items: AceStrings.ages,
                   onChanged: (value) => setState(() {
@@ -108,7 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
-                  hint: 'DEPARTMENT',
+                  hint: 'Department',
                   value: _deptValue,
                   items: AceStrings.dept,
                   onChanged: (value) => setState(() {
@@ -117,15 +128,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 15),
                 SizedBox(
-                  width: 300,
+                  width: 270,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: _register,
+                    onPressed: _isValidForm() ? _register : null,
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
+                      backgroundColor: WidgetStateProperty.all<Color>(
                         Colors.black,
                       ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),

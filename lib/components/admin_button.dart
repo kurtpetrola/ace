@@ -12,27 +12,26 @@ class AdminButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
+    return ElevatedButton(
+      onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => AdminLoginPage()));
+          builder: (BuildContext context) => AdminLoginPage(),
+        ));
       },
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(horizontal: 55),
-        decoration: BoxDecoration(
-          color: ColorPalette.secondary,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: ColorPalette.secondary,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Center(
-          child: Text(
-            "ADMINISTRATOR",
-            style: TextStyle(
-                color: ColorPalette.accentBlack,
-                fontFamily: 'Lato',
-                fontWeight: FontWeight.w700,
-                fontSize: 20),
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 68, vertical: 15),
+      ),
+      child: const Text(
+        "ADMINISTRATOR",
+        style: TextStyle(
+          color: ColorPalette.accentBlack,
+          fontFamily: 'Lato',
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
         ),
       ),
     );

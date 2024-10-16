@@ -16,7 +16,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
   int pageIndex = 0;
   final pages = [
     Classroom(),
-    const Grades(),
+    Grades(),
     Account(),
   ];
 
