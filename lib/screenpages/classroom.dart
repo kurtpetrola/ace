@@ -27,7 +27,7 @@ class _ClassroomState extends State<Classroom> {
                   children: [
                     Container(
                       height: 140,
-                      margin: EdgeInsets.all(15),
+                      margin: EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
                         color: Colors.orange,

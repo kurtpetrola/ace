@@ -18,8 +18,7 @@ class _Stream2State extends State<Stream2> {
           child: Column(
             children: [
               Container(
-                margin: const EdgeInsets.only(
-                    left: 18, top: 18, right: 18, bottom: 8),
+                margin: const EdgeInsets.only(bottom: 8.0),
                 decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(25))),
                 child: const Image(
@@ -28,7 +27,7 @@ class _Stream2State extends State<Stream2> {
               ),
 
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: TextField(
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(

@@ -50,7 +50,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   children: [
                     const SizedBox(height: 40),
                     const Text(
-                      'ADMINISTRATOR LOGIN',
+                      'Admin Login',
                       style: TextStyle(
                         color: ColorPalette.accentBlack,
                         fontWeight: FontWeight.w900,
