@@ -1,6 +1,8 @@
+// register_button.dart
+
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
-import 'package:ace/features/auth/presentation/registration_page.dart';
+import 'package:ace/features/auth/presentation/registration/registration_page.dart';
 
 class RegisterButton extends StatelessWidget {
   final Function()? onTap;

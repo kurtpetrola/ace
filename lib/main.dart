@@ -1,33 +1,50 @@
+// main.dart
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
 
-bool? userLoggedIn;
+// Moved userLoggedIn initialization logic into main()
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  await Hive.initFlutter();
-  var _loginbox = await Hive.openBox("_loginbox");
-  userLoggedIn = await _loginbox.get("isLoggedIn");
-  userLoggedIn ??= false;
-  runApp(const MyApp());
+  // 1. Initialize Firebase and Hive concurrently
+  await Future.wait([
+    Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ),
+    Hive.initFlutter(),
+  ]);
+
+  // 2. Open Hive box and check login status
+  final loginBox = await Hive.openBox("_loginbox");
+  final bool userLoggedIn = loginBox.get("isLoggedIn") ?? false;
+
+  // 3. Wrap the app with ProviderScope
+  runApp(
+    ProviderScope(
+      // This enables Riverpod for the whole app
+      child: MyApp(userLoggedIn: userLoggedIn),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool userLoggedIn;
+
+  const MyApp({super.key, required this.userLoggedIn}); // Pass login state
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: userLoggedIn! ? const HomeScreenPage() : SelectionPage(),
+      // Use the injected login state to determine the home screen
+      home: userLoggedIn ? const HomeScreenPage() : const SelectionPage(),
     );
   }
 }
