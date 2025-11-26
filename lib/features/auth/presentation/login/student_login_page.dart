@@ -5,7 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:ace/models/user.dart';
 import 'dart:convert';
 import 'package:ace/common/widgets/dialogs/alertdialog.dart';
-import 'package:ace/features/auth/presentation/registration_page.dart';
+import 'package:ace/features/auth/presentation/registration/registration_page.dart';
 import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
 
 class StudentLoginPage extends StatefulWidget {

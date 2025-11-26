@@ -1,41 +1,40 @@
+// registration_page.dart
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/core/constants/app_strings.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
+import 'package:ace/features/auth/presentation/registration/registration_state.dart';
 
-class RegisterPage extends StatefulWidget {
+// Convert to ConsumerWidget for Riverpod integration
+class RegisterPage extends ConsumerWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1. Watch the state for UI updates
+    final state = ref.watch(registrationNotifierProvider);
+    // 2. Read the notifier for calling methods/actions
+    final notifier = ref.read(registrationNotifierProvider.notifier);
 
-class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _fnameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
-  final TextEditingController _idnumController = TextEditingController();
+    // Define the async registration handler
+    Future<void> handleRegister() async {
+      final success = await notifier.register();
+      if (success && context.mounted) {
+        // Navigate on success
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (BuildContext context) => const SelectionPage(),
+        ));
+      } else if (!success && context.mounted) {
+        // Show error message if registration failed (e.g., Firebase error)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Registration failed. Please try again.')),
+        );
+      }
+    }
 
-  bool _obscureText = true;
-
-  String? _sexValue;
-  String? _deptValue;
-  String? _ageValue;
-
-  /// Improved validation for user input
-  bool _isValidForm() {
-    return _fnameController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _passController.text.isNotEmpty &&
-        _idnumController.text.isNotEmpty &&
-        _sexValue != null &&
-        _deptValue != null &&
-        _ageValue != null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: ColorPalette.accentBlack,
@@ -77,61 +76,67 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // --- Text Fields connect directly to the notifier ---
                 _buildTextField(
-                  controller: _fnameController,
+                  initialValue: state.fullName,
                   labelText: 'Full Name',
                   hintText: 'Enter your Full Name',
                   icon: Icons.person,
+                  onChanged: notifier.setFullName,
                 ),
                 const SizedBox(height: 10),
                 _buildTextField(
-                  controller: _idnumController,
+                  initialValue: state.studentId,
                   labelText: 'Student Number',
                   hintText: 'Enter your Student Number',
                   icon: Icons.assignment_ind_rounded,
+                  onChanged: notifier.setStudentId,
                 ),
                 const SizedBox(height: 10),
                 _buildTextField(
-                  controller: _emailController,
+                  initialValue: state.email,
                   labelText: 'Email Address',
                   hintText: 'Enter your Email Address',
                   icon: Icons.email,
+                  onChanged: notifier.setEmail,
                 ),
                 const SizedBox(height: 10),
-                _buildPasswordTextField(),
+                _buildPasswordTextField(
+                  state: state,
+                  onChanged: notifier.setPassword,
+                  onToggleVisibility: notifier.togglePasswordVisibility,
+                ),
                 const SizedBox(height: 10),
+                // --- Dropdowns connect directly to the notifier ---
                 _buildDropdownField(
                   hint: 'Gender',
-                  value: _sexValue,
+                  value: state.gender,
                   items: AceStrings.sex,
-                  onChanged: (value) => setState(() {
-                    _sexValue = value;
-                  }),
+                  onChanged: notifier.setGender,
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
                   hint: 'Age',
-                  value: _ageValue,
+                  value: state.age,
                   items: AceStrings.ages,
-                  onChanged: (value) => setState(() {
-                    _ageValue = value;
-                  }),
+                  onChanged: notifier.setAge,
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
                   hint: 'Department',
-                  value: _deptValue,
+                  value: state.department,
                   items: AceStrings.dept,
-                  onChanged: (value) => setState(() {
-                    _deptValue = value;
-                  }),
+                  onChanged: notifier.setDepartment,
                 ),
                 const SizedBox(height: 15),
                 SizedBox(
                   width: 270,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: _isValidForm() ? _register : null,
+                    // Enable button only if form is valid AND not loading
+                    onPressed: state.isValidForm && !state.isLoading
+                        ? handleRegister
+                        : null,
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all<Color>(
                         Colors.black,
@@ -142,16 +147,19 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ),
-                    child: const Center(
-                      child: Text(
-                        "REGISTER",
-                        style: TextStyle(
-                          color: ColorPalette.secondary,
-                          fontFamily: 'Lato',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                        ),
-                      ),
+                    child: Center(
+                      child: state.isLoading
+                          ? const CircularProgressIndicator(
+                              color: ColorPalette.secondary)
+                          : const Text(
+                              "REGISTER",
+                              style: TextStyle(
+                                color: ColorPalette.secondary,
+                                fontFamily: 'Lato',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -164,16 +172,21 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  // --- Widget Builders (Updated to take necessary parameters) ---
+
   Widget _buildTextField({
-    required TextEditingController controller,
+    required String initialValue,
     required String labelText,
     required String hintText,
     required IconData icon,
+    required void Function(String) onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: TextField(
-        controller: controller,
+      child: TextFormField(
+        // Switched to TextFormField for better form handling
+        initialValue: initialValue,
+        onChanged: onChanged,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
@@ -194,12 +207,17 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildPasswordTextField() {
+  Widget _buildPasswordTextField({
+    required RegistrationState state,
+    required void Function(String) onChanged,
+    required VoidCallback onToggleVisibility,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: TextField(
-        controller: _passController,
-        obscureText: _obscureText,
+      child: TextFormField(
+        initialValue: state.password,
+        onChanged: onChanged,
+        obscureText: !state.isPasswordVisible, // Use state from Riverpod
         decoration: InputDecoration(
           labelText: 'Password',
           labelStyle:
@@ -217,14 +235,10 @@ class _RegisterPageState extends State<RegisterPage> {
           prefixIcon: const Icon(Icons.key, color: ColorPalette.accentBlack),
           suffixIcon: IconButton(
             color: ColorPalette.accentBlack,
-            icon: _obscureText
-                ? const Icon(Icons.visibility_off)
-                : const Icon(Icons.visibility),
-            onPressed: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
+            icon: state.isPasswordVisible
+                ? const Icon(Icons.visibility)
+                : const Icon(Icons.visibility_off),
+            onPressed: onToggleVisibility, // Call the callback function
           ),
         ),
       ),
@@ -287,19 +301,4 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       );
-
-  Future<void> _register() async {
-    DatabaseReference dbReference = FirebaseDatabase.instance
-        .ref()
-        .child("Students/${_idnumController.text}/");
-    await dbReference.child("fullname").set(_fnameController.text);
-    await dbReference.child("studentid").set(_idnumController.text);
-    await dbReference.child("email").set(_emailController.text);
-    await dbReference.child("password").set(_passController.text);
-    await dbReference.child("gender").set(_sexValue);
-    await dbReference.child("age").set(_ageValue);
-    await dbReference.child("department").set(_deptValue);
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => const SelectionPage()));
-  }
 }
