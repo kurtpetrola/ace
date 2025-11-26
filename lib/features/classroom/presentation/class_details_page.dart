@@ -1,3 +1,5 @@
+// class_details_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/features/dashboard/presentation/classroom_page.dart';
