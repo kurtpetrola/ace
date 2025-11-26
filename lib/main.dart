@@ -1,9 +1,9 @@
-import 'package:ace/pages/homescreen_page.dart';
-import 'package:ace/pages/selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:ace/features/auth/widgets/selection_page.dart';
+import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
 
 bool? userLoggedIn;
 
