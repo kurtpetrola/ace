@@ -7,12 +7,29 @@ import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/auth/presentation/registration/registration_state.dart';
 
-// Convert to ConsumerWidget for Riverpod integration
-class RegisterPage extends ConsumerWidget {
+// Converted to ConsumerStatefulWidget for lifecycle management (initState)
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends ConsumerState<RegisterPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // FIX: Defer state reset to after the current build frame is complete.
+    // This prevents the 'setState or markNeedsBuild' error by ensuring the
+    // state change (and subsequent rebuild) happens outside of the build phase.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(registrationNotifierProvider.notifier).resetState();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // 1. Watch the state for UI updates
     final state = ref.watch(registrationNotifierProvider);
     // 2. Read the notifier for calling methods/actions
@@ -20,6 +37,8 @@ class RegisterPage extends ConsumerWidget {
 
     // Define the async registration handler
     Future<void> handleRegister() async {
+      // Calling register will internally run validation, update the error states,
+      // and only proceed with registration if valid.
       final success = await notifier.register();
       if (success && context.mounted) {
         // Navigate on success
@@ -27,15 +46,19 @@ class RegisterPage extends ConsumerWidget {
           builder: (BuildContext context) => const SelectionPage(),
         ));
       } else if (!success && context.mounted) {
-        // Show the specific error message from the state
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              state.errorMessage ?? 'Registration failed. Please try again.',
+        // If registration fails (either due to invalid form or a global error like 'email in use'),
+        // the state errors will be updated by the notifier, triggering a UI rebuild
+        // to show the inline field errors.
+        if (state.globalErrorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.globalErrorMessage!, // Use globalErrorMessage
+              ),
+              backgroundColor: Colors.red,
             ),
-            backgroundColor: Colors.red,
-          ),
-        );
+          );
+        }
       }
     }
 
@@ -80,13 +103,14 @@ class RegisterPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // --- Text Fields connect directly to the notifier ---
+                // --- Text Fields connect directly to the notifier and show errors ---
                 _buildTextField(
                   initialValue: state.fullName,
                   labelText: 'Full Name',
                   hintText: 'Enter your Full Name',
                   icon: Icons.person,
                   onChanged: notifier.setFullName,
+                  errorText: state.fullNameError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildTextField(
@@ -95,6 +119,7 @@ class RegisterPage extends ConsumerWidget {
                   hintText: 'Enter your Student Number',
                   icon: Icons.assignment_ind_rounded,
                   onChanged: notifier.setStudentId,
+                  errorText: state.studentIdError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildTextField(
@@ -103,20 +128,23 @@ class RegisterPage extends ConsumerWidget {
                   hintText: 'Enter your Email Address',
                   icon: Icons.email,
                   onChanged: notifier.setEmail,
+                  errorText: state.emailError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildPasswordTextField(
                   state: state,
                   onChanged: notifier.setPassword,
                   onToggleVisibility: notifier.togglePasswordVisibility,
+                  errorText: state.passwordError, // Pass error state
                 ),
                 const SizedBox(height: 10),
-                // --- Dropdowns connect directly to the notifier ---
+                // --- Dropdowns connect directly to the notifier and show errors ---
                 _buildDropdownField(
                   hint: 'Gender',
                   value: state.gender,
                   items: AceStrings.sex,
                   onChanged: notifier.setGender,
+                  errorText: state.genderError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
@@ -124,6 +152,7 @@ class RegisterPage extends ConsumerWidget {
                   value: state.age,
                   items: AceStrings.ages,
                   onChanged: notifier.setAge,
+                  errorText: state.ageError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
@@ -131,16 +160,17 @@ class RegisterPage extends ConsumerWidget {
                   value: state.department,
                   items: AceStrings.dept,
                   onChanged: notifier.setDepartment,
+                  errorText: state.departmentError, // Pass error state
                 ),
                 const SizedBox(height: 15),
                 SizedBox(
                   width: 270,
                   height: 50,
                   child: ElevatedButton(
-                    // Enable button only if form is valid AND not loading
-                    onPressed: state.isValidForm && !state.isLoading
-                        ? handleRegister
-                        : null,
+                    // Enable button unless loading.
+                    // This allows the user to click the button and trigger the full validation
+                    // process inside handleRegister, which updates the error states.
+                    onPressed: !state.isLoading ? handleRegister : null,
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all<Color>(
                         Colors.black,
@@ -176,7 +206,7 @@ class RegisterPage extends ConsumerWidget {
     );
   }
 
-  // --- Widget Builders (Updated to take necessary parameters) ---
+  // --- Widget Builders (Updated for consistent padding and error display) ---
 
   Widget _buildTextField({
     required String initialValue,
@@ -184,14 +214,15 @@ class RegisterPage extends ConsumerWidget {
     required String hintText,
     required IconData icon,
     required void Function(String) onChanged,
+    String? errorText, // optional error text
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: TextFormField(
-        // Switched to TextFormField for better form handling
         initialValue: initialValue,
         onChanged: onChanged,
         decoration: InputDecoration(
+          errorText: errorText, // Display error text inline
           labelText: labelText,
           hintText: hintText,
           labelStyle: const TextStyle(color: ColorPalette.accentBlack),
@@ -205,6 +236,14 @@ class RegisterPage extends ConsumerWidget {
             borderSide: BorderSide(color: ColorPalette.accentBlack),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
+          errorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
           prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
         ),
       ),
@@ -215,6 +254,7 @@ class RegisterPage extends ConsumerWidget {
     required RegistrationState state,
     required void Function(String) onChanged,
     required VoidCallback onToggleVisibility,
+    String? errorText, // optional error text
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -223,6 +263,7 @@ class RegisterPage extends ConsumerWidget {
         onChanged: onChanged,
         obscureText: !state.isPasswordVisible, // Use state from Riverpod
         decoration: InputDecoration(
+          errorText: errorText, // Display error text inline
           labelText: 'Password',
           labelStyle:
               const TextStyle(fontSize: 16, color: ColorPalette.accentBlack),
@@ -233,6 +274,14 @@ class RegisterPage extends ConsumerWidget {
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: ColorPalette.accentBlack),
             borderRadius: BorderRadius.all(Radius.circular(12.0)),
+          ),
+          errorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           hintText: 'Enter a strong password',
           hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -254,14 +303,11 @@ class RegisterPage extends ConsumerWidget {
     required String? value,
     required List<String> items,
     required void Function(String?) onChanged,
+    String? errorText, // optional error text
   }) {
-    return Container(
-      width: 300,
-      height: 60,
-      decoration: const BoxDecoration(
-        color: ColorPalette.hintColor,
-        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-      ),
+    // We use Padding outside for consistent horizontal spacing
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
       child: DropdownButtonFormField<String>(
         dropdownColor: ColorPalette.hintColor,
         hint: Text(
@@ -279,14 +325,33 @@ class RegisterPage extends ConsumerWidget {
         icon: const Icon(Icons.arrow_drop_down, color: ColorPalette.secondary),
         items: items.map(_buildMenuItem).toList(),
         onChanged: onChanged,
+        // Use InputDecoration to define the look and handle the errorText
         decoration: InputDecoration(
+          errorText: errorText, // Display error text
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          filled: true,
+          fillColor: ColorPalette.hintColor,
+          errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
+          // Normal/Enabled Border
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(20.0),
           ),
+          // Focused Border
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          // Error Border
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          // Focused Error Border
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(20.0),
           ),
         ),
       ),
