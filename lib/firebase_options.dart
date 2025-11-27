@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:181222539029:android:0ac02a7977d5e14b9f731c',
     messagingSenderId: '181222539029',
     projectId: 'ace-project-757b8',
-    storageBucket: 'ace-project-757b8.appspot.com',
+    storageBucket: 'ace-project-757b8.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
     appId: '1:181222539029:ios:f311cbda5d44fdcf9f731c',
     messagingSenderId: '181222539029',
     projectId: 'ace-project-757b8',
-    storageBucket: 'ace-project-757b8.appspot.com',
+    storageBucket: 'ace-project-757b8.firebasestorage.app',
     iosBundleId: 'com.example.ace',
   );
 }
