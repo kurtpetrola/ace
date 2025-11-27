@@ -1,11 +1,12 @@
 // lib/features/auth/wrapper_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:ace/core/constants/app_colors.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hive/hive.dart';
 import 'dart:convert';
 import 'package:ace/models/user.dart';
-import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_homescreen_page.dart';
 
@@ -22,34 +23,57 @@ class _WrapperScreenState extends State<WrapperScreen> {
   @override
   void initState() {
     super.initState();
-    // Start the routing process immediately when the screen loads
     _navigateToDashboard();
   }
 
   // --- Core Routing Logic ---
   Future<void> _navigateToDashboard() async {
-    final fullname = _loginbox.get("User"); // Get the user key from Hive
+    final userId =
+        _loginbox.get("User"); // Get the user key (studentId or adminId)
+    final userType = _loginbox
+        .get("UserType"); // Get the type (e.g., "Admin", "Student", or null)
+
+    // Log the user context for debugging
+    print(
+        'WrapperScreen: Attempting to navigate for User ID: $userId, Type: $userType');
+
+    // 1. Determine the correct Firebase path (Admins/ or Students/)
+    String firebaseNode;
+    if (userType == "Admin") {
+      firebaseNode = "Admins"; // Use the Admins node for admins
+    } else {
+      // Default to Students node if type is null or anything else (e.g., 'Student')
+      firebaseNode = "Students";
+    }
+
+    // Guard clause: ensure we have a user ID to fetch data
+    if (userId == null || userId.isEmpty) {
+      return _handleError('User ID not found in Hive. Forced logout.');
+    }
+
+    // Construct the full database path
+    DatabaseReference databaseReference =
+        FirebaseDatabase.instance.ref().child("$firebaseNode/$userId");
 
     try {
-      // 1. Fetch user data from Firebase
-      DatabaseReference databaseReference =
-          FirebaseDatabase.instance.ref().child("Students/$fullname");
-
       final snapshot = await databaseReference.get();
 
       if (snapshot.exists && snapshot.value != null) {
-        // Decode and map the data to your updated User model
+        // Decode and map the data
         Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
-        User user = User.fromJson(myObj);
+        User user =
+            User.fromJson(myObj); // Assumes User model has a 'role' field
 
         // 2. Check the user's role for routing
         Widget destinationPage;
+        // Ensure the role is checked safely, converting to lowercase for robustness
+        final role = user.role.toLowerCase();
 
-        if (user.role == 'admin') {
+        if (role == 'admin') {
           // Navigate to Admin Dashboard
           destinationPage = const AdminHomeScreenPage();
         } else {
-          // Default: Navigate to Student Dashboard
+          // Default: Navigate to Student Dashboard for any other role or null role
           destinationPage = const HomeScreenPage();
         }
 
@@ -61,22 +85,24 @@ class _WrapperScreenState extends State<WrapperScreen> {
         }
       } else {
         // Handle case where user data doesn't exist (e.g., force logout)
-        _handleError('User data not found.');
+        _handleError('User data not found at $firebaseNode/$userId.');
       }
     } catch (error) {
       // Handle Firebase/Network errors
-      _handleError('Error fetching user data: $error');
+      _handleError('Error fetching user data for routing: $error');
     }
   }
 
   void _handleError(String message) {
-    // In a real app, you would show an error message, toast, or navigate back to login
     print(message);
     if (mounted) {
-      // For simplicity, navigate to the student home page on error,
-      // but a proper implementation might route to a login or error page.
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreenPage()),
+      // Force logout, clear session data, and return to the main selection page
+      _loginbox.put("isLoggedIn", false);
+      _loginbox.delete("User");
+      _loginbox.delete("UserType");
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const SelectionPage()),
+        (Route<dynamic> route) => false,
       );
     }
   }

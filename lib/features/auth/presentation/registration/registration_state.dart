@@ -1,7 +1,15 @@
-// registration_state.dart
+// lib/features/auth/registration/registration_state.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:ace/features/auth/services/student_registration_service.dart';
+import 'package:ace/models/user.dart';
+
+// --- NEW PROVIDER FOR THE SERVICE ---
+// We need a provider for the service so the Notifier can access it.
+final studentRegistrationServiceProvider = Provider((ref) {
+  return StudentRegistrationService();
+});
+// ------------------------------------
 
 // 1. State Data Model
 class RegistrationState {
@@ -14,6 +22,7 @@ class RegistrationState {
   final String? department;
   final bool isPasswordVisible;
   final bool isLoading;
+  final String? errorMessage;
 
   RegistrationState({
     this.fullName = '',
@@ -25,6 +34,7 @@ class RegistrationState {
     this.department,
     this.isPasswordVisible = false,
     this.isLoading = false,
+    this.errorMessage,
   });
 
   // Helper to create a copy of the state, updating specific fields
@@ -38,6 +48,7 @@ class RegistrationState {
     String? department,
     bool? isPasswordVisible,
     bool? isLoading,
+    String? errorMessage,
   }) {
     return RegistrationState(
       fullName: fullName ?? this.fullName,
@@ -49,6 +60,7 @@ class RegistrationState {
       department: department ?? this.department,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
       isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
     );
   }
 
@@ -66,57 +78,70 @@ class RegistrationState {
 
 // 2. State Notifier (The business logic/controller)
 class RegistrationNotifier extends StateNotifier<RegistrationState> {
-  RegistrationNotifier() : super(RegistrationState());
+  final StudentRegistrationService _registrationService;
 
-  void setFullName(String name) => state = state.copyWith(fullName: name);
-  void setStudentId(String id) => state = state.copyWith(studentId: id);
-  void setEmail(String email) => state = state.copyWith(email: email);
+  // Constructor now accepts the service
+  RegistrationNotifier(this._registrationService) : super(RegistrationState());
+
+  void setFullName(String name) =>
+      state = state.copyWith(fullName: name, errorMessage: null);
+  void setStudentId(String id) =>
+      state = state.copyWith(studentId: id, errorMessage: null);
+  void setEmail(String email) =>
+      state = state.copyWith(email: email, errorMessage: null);
   void setPassword(String password) =>
-      state = state.copyWith(password: password);
-  void setGender(String? gender) => state = state.copyWith(gender: gender);
-  void setAge(String? age) => state = state.copyWith(age: age);
+      state = state.copyWith(password: password, errorMessage: null);
+  void setGender(String? gender) =>
+      state = state.copyWith(gender: gender, errorMessage: null);
+  void setAge(String? age) =>
+      state = state.copyWith(age: age, errorMessage: null);
   void setDepartment(String? department) =>
-      state = state.copyWith(department: department);
+      state = state.copyWith(department: department, errorMessage: null);
 
   void togglePasswordVisibility() {
     state = state.copyWith(isPasswordVisible: !state.isPasswordVisible);
   }
 
-  // 3. Registration Logic (Moved from _RegisterPageState)
+  // 3. Registration Logic (NOW SECURE)
   Future<bool> register() async {
     if (!state.isValidForm) return false;
 
-    state = state.copyWith(isLoading: true);
+    // Clear previous errors and start loading
+    state = state.copyWith(isLoading: true, errorMessage: null);
 
-    // Simulating Firebase logic (Replace with your actual Firebase/Repository calls)
+    final userProfile = User(
+      userId: state.studentId,
+      fullname: state.fullName,
+      email: state.email,
+      gender: state.gender!,
+      age: state.age!,
+      department: state.department!,
+    );
+
     try {
-      // NOTE: You'll need to inject or use a Riverpod provider for FirebaseDatabase
-      // to completely decouple this. For this example, we keep the original logic.
-      final dbReference =
-          FirebaseDatabase.instance.ref().child("Students/${state.studentId}/");
-
-      await dbReference.set({
-        "fullname": state.fullName,
-        "studentid": state.studentId,
-        "email": state.email,
-        "password": state.password,
-        "gender": state.gender,
-        "age": state.age,
-        "department": state.department,
-      });
+      await _registrationService.register(
+        user: userProfile,
+        password: state.password,
+      );
 
       state = state.copyWith(isLoading: false);
       return true; // Registration successful
     } catch (e) {
-      // Handle error (e.g., logging, showing an error message)
-      state = state.copyWith(isLoading: false);
+      // Handle service exceptions (e.g., 'Email already in use' from the service)
+      final errorMsg = e.toString().contains('Exception:')
+          ? e.toString().split('Exception: ')[1]
+          : 'An unknown registration error occurred.';
+
+      state = state.copyWith(isLoading: false, errorMessage: errorMsg);
       return false; // Registration failed
     }
   }
 }
 
-// 3. StateNotifier Provider
+// 3. StateNotifier Provider (MODIFIED to inject the service)
 final registrationNotifierProvider =
     StateNotifierProvider<RegistrationNotifier, RegistrationState>((ref) {
-  return RegistrationNotifier();
+  // Read the service provider
+  final service = ref.watch(studentRegistrationServiceProvider);
+  return RegistrationNotifier(service);
 });

@@ -1,26 +1,26 @@
-// lib/features/dashboard/presentation/account_screen.dart
+// lib/features/admin_dashboard/presentation/admin_account_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:ace/core/constants/app_colors.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hive/hive.dart';
-import 'package:flutter/services.dart';
-import 'package:ace/core/constants/app_colors.dart';
-import 'dart:convert';
 import 'package:ace/models/user.dart';
+import 'dart:convert';
 import 'package:ace/common/widgets/dialogs/alertdialog.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 
-class Account extends StatefulWidget {
-  const Account({super.key});
+class AdminAccount extends StatefulWidget {
+  const AdminAccount({super.key});
 
   @override
-  State<Account> createState() => _AccountState();
+  State<AdminAccount> createState() => _AdminAccountState();
 }
 
-class _AccountState extends State<Account> {
+class _AdminAccountState extends State<AdminAccount> {
   DateTime backPressedTime = DateTime.now();
   final _loginbox = Hive.box("_loginbox");
-  late var fullname = _loginbox.get("User");
+  late var fullname =
+      _loginbox.get("User"); // Full name used as key for Firebase
   String title = 'AlertDialog';
   bool tappedYes = false;
 
@@ -72,7 +72,7 @@ class _AccountState extends State<Account> {
             ),
             // Updated FutureBuilder to expect a single User object
             child: FutureBuilder<User>(
-                future: getUser(),
+                future: getAdminUser(), // Fetch data from the Admin path
                 builder: (context, AsyncSnapshot<User> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -99,6 +99,8 @@ class _AccountState extends State<Account> {
                     );
                   }
                   if (snapshot.hasError) {
+                    // Log the error for debugging
+                    print('Firebase Fetch Error: ${snapshot.error}');
                     return Center(
                         child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -141,7 +143,7 @@ class _AccountState extends State<Account> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(55)),
                           child: const Icon(
-                            Icons.person_outline_rounded,
+                            Icons.admin_panel_settings_outlined,
                             size: 125,
                             color: Colors.black,
                           ),
@@ -208,7 +210,7 @@ class _AccountState extends State<Account> {
                                   height: 2,
                                 ),
                                 const Text(
-                                  'Student',
+                                  'Administrator', // Already correctly set to Administrator
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400,
@@ -217,7 +219,7 @@ class _AccountState extends State<Account> {
                                 ),
                                 const SizedBox(height: 10),
                                 const Text(
-                                  "Student ID",
+                                  "Admin ID",
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w400,
@@ -401,18 +403,19 @@ class _AccountState extends State<Account> {
         ));
   }
 
-  // Refactored getUser function: Returns a single Future<User>
-  Future<User> getUser() async {
+  // Refactored getAdminUser function: Returns a single Future<User>
+  Future<User> getAdminUser() async {
     DatabaseReference databaseReference =
-        FirebaseDatabase.instance.ref().child("Students/$fullname");
+        FirebaseDatabase.instance.ref().child("Admins/$fullname");
     try {
       DataSnapshot snapshot = await databaseReference.get();
       if (snapshot.exists && snapshot.value != null) {
+        // This relies on the Admin data structure matching the 'User' model
         Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
         User myUserObj = User.fromJson(myObj);
         return myUserObj;
       } else {
-        throw Exception("Student data not found for $fullname.");
+        throw Exception("Admin data not found for $fullname.");
       }
     } catch (error) {
       rethrow;
