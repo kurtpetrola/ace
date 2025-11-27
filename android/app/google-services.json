@@ -3,7 +3,7 @@
     "project_number": "181222539029",
     "firebase_url": "https://ace-project-757b8-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "ace-project-757b8",
-    "storage_bucket": "ace-project-757b8.appspot.com"
+    "storage_bucket": "ace-project-757b8.firebasestorage.app"
   },
   "client": [
     {
