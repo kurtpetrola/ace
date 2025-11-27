@@ -376,7 +376,8 @@ class _AccountState extends State<Account> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      snapshot.data!.first.dept.toString(),
+                                      snapshot.data!.first.department
+                                          .toString(),
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                           fontSize: 15, fontFamily: 'Lato'),
