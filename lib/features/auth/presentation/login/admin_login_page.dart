@@ -1,4 +1,4 @@
-// admin_login_page.dart
+// lib/features/auth/presentation/login/admin_login_page.dart
 
 import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:ace/features/auth/presentation/login/login_state.dart';
 class AdminLoginPage extends ConsumerWidget {
   const AdminLoginPage({super.key});
 
-  // Re-use the _buildTextField helper function (you should move this to a shared file like widgets/custom_textfield.dart)
+  // Re-use the _buildTextField helper function (kept for completeness)
   Widget _buildTextField(
     BuildContext context, {
     required String label,
@@ -64,7 +64,7 @@ class AdminLoginPage extends ConsumerWidget {
     void handleLogin() async {
       bool success = await notifier.login();
       if (success && context.mounted) {
-        // Navigate to the Admin Dashboard on success
+        // Navigate to the WrapperScreen on success
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (BuildContext context) => const WrapperScreen(),
@@ -125,16 +125,16 @@ class AdminLoginPage extends ConsumerWidget {
                     // Admin ID Field
                     _buildTextField(
                       context,
-                      label: 'Admin ID', // Changed label
+                      label: 'Admin ID', // Label remains user-friendly
                       hint: 'Enter your Admin ID',
-                      icon: Icons.security, // Changed icon
+                      icon: Icons.security,
                       initialValue: state.studentId,
                       onChanged: notifier.setStudentId,
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Password Field (Same logic as student page)
+                    // Password Field
                     _buildTextField(
                       context,
                       label: 'Password',
@@ -190,8 +190,6 @@ class AdminLoginPage extends ConsumerWidget {
                               ),
                       ),
                     ),
-
-                    // Admins usually don't have a sign-up link, so we omit that row here.
                   ],
                 ),
               ),

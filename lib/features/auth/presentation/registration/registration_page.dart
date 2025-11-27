@@ -1,4 +1,4 @@
-// registration_page.dart
+// lib/features/auth/registration/registration_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,10 +27,14 @@ class RegisterPage extends ConsumerWidget {
           builder: (BuildContext context) => const SelectionPage(),
         ));
       } else if (!success && context.mounted) {
-        // Show error message if registration failed (e.g., Firebase error)
+        // Show the specific error message from the state
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Registration failed. Please try again.')),
+          SnackBar(
+            content: Text(
+              state.errorMessage ?? 'Registration failed. Please try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }

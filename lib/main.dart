@@ -6,26 +6,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
-
-// Moved userLoggedIn initialization logic into main()
+import 'package:ace/features/auth/wrapper_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1. Initialize Firebase and Hive concurrently
-  await Future.wait([
-    Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ),
-    Hive.initFlutter(),
-  ]);
+  // 1. Initialize Firebase FIRST and synchronously
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  // 2. Open Hive box and check login status
+  // 2. Initialize Hive second
+  await Hive.initFlutter();
+
+  // 3. Open Hive box and check login status
   final loginBox = await Hive.openBox("_loginbox");
   final bool userLoggedIn = loginBox.get("isLoggedIn") ?? false;
 
-  // 3. Wrap the app with ProviderScope
+  // 4. Wrap the app with ProviderScope
   runApp(
     ProviderScope(
       // This enables Riverpod for the whole app
@@ -44,7 +42,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // Use the injected login state to determine the home screen
-      home: userLoggedIn ? const HomeScreenPage() : const SelectionPage(),
+      home: userLoggedIn ? const WrapperScreen() : const SelectionPage(),
     );
   }
 }

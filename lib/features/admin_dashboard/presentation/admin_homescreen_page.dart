@@ -6,7 +6,7 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_class_management_screen.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_user_management_screen.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_grades_management_screen.dart';
-import 'package:ace/features/dashboard/presentation/account_screen.dart';
+import 'package:ace/features/admin_dashboard/presentation/admin_account_screen.dart';
 
 class AdminHomeScreenPage extends StatefulWidget {
   const AdminHomeScreenPage({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class _AdminHomeScreenPageState extends State<AdminHomeScreenPage> {
     const AdminClassManagementScreen(), // Manage Classes (Create/Edit)
     const AdminGradesManagementScreen(), // Manage Grades (View/Update)
     const AdminUserManagementScreen(), // Manage Users (Approve/Block)
-    const Account(), // Reusing the account screen for profile/logout
+    const AdminAccount(), // Admin Account Screen
   ];
 
   @override

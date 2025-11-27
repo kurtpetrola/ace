@@ -1,4 +1,4 @@
-// login_notifier.dart
+// lib/features/auth/presentation/login/login_notifier.dart
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:ace/features/auth/services/student_auth_service.dart';
@@ -17,6 +17,7 @@ class LoginNotifier extends _$LoginNotifier {
   @override
   LoginState build({UserType userType = UserType.student}) {
     // Initialize the correct service based on the UserType
+    // Note: AdminAuthService and StudentAuthService are instantiated here.
     if (userType == UserType.admin) {
       _authService = AdminAuthService();
     } else {
@@ -27,6 +28,7 @@ class LoginNotifier extends _$LoginNotifier {
   }
 
   // 2. State Mutators (Update functions using copyWith)
+  // This function acts as the generic ID/Username setter for both user types.
   void setStudentId(String id) {
     state = state.copyWith(studentId: id.trim(), errorMessage: '');
   }
@@ -51,27 +53,36 @@ class LoginNotifier extends _$LoginNotifier {
     state = state.copyWith(isLoading: true, errorMessage: '');
 
     try {
-      // Call the login method on the dynamically set service
-      await _authService.login(
-        // Note: Both services use the parameter names 'studentId' and 'password'
-        // or 'adminId' and 'password' depending on implementation.
-        // For simplicity, we pass state.studentId (which holds the ID/Username)
-        studentId:
-            state.studentId, // We use state.studentId as the generic ID holder
-        password: state.password,
-      );
+      // Check the user type and pass the parameter name the service expects.
+      if (state.userType == UserType.admin) {
+        await _authService.login(
+          // AdminAuthService expects 'adminId'
+          adminId: state.studentId, // state.studentId holds the Admin ID
+          password: state.password,
+        );
+      } else {
+        await _authService.login(
+          // StudentAuthService expects 'studentId'
+          studentId: state.studentId,
+          password: state.password,
+        );
+      }
 
       // Success
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
       String message = 'An unexpected error occurred during login.';
+
+      // Enhanced error checking for specific services
       if (e.toString().contains(AdminAuthService.wrongCredentialsError)) {
         message = 'Wrong Admin ID or password.';
       } else if (e
           .toString()
           .contains(StudentAuthService.wrongCredentialsError)) {
         message = 'Wrong Student ID or password.';
+      } else if (e.toString().contains('network-request-failed')) {
+        message = 'Network error. Check your connection.';
       }
 
       // Failure
