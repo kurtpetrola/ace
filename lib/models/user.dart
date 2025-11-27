@@ -1,39 +1,41 @@
 // user.dart
 
-import 'dart:convert';
-
-User userFromJson(String str) => User.fromJson(json.decode(str));
-
-String userToJson(User data) => json.encode(data.toJson());
-
 class User {
+  // Use non-nullable fields if you expect them to always be present
+  // If a field might truly be missing from Firebase/JSON, use String?
+  final String fullname;
+  final String password;
+  final String studentid;
+  final String email;
+  final String age;
+  final String department;
+  final String gender;
+  final String role;
+
   User({
     required this.fullname,
     required this.password,
     required this.studentid,
     required this.email,
     required this.age,
-    required this.dept,
+    required this.department,
     required this.gender,
+    this.role = 'student',
   });
 
-  String? fullname;
-  String? password;
-  String? studentid;
-  String? email;
-  String? age;
-  String? dept;
-  String? gender;
-
-  factory User.fromJson(Map<String, dynamic> json) => User(
-        fullname: json["fullname"] as String?,
-        password: json["password"] as String?,
-        studentid: json["studentid"] as String?,
-        email: json["email"] as String?,
-        age: json["age"] as String?,
-        dept: json["department"] as String?,
-        gender: json["gender"] as String?,
-      );
+  factory User.fromJson(Map<String, dynamic> json) {
+    // Cast values safely. Use ?? '' to provide a non-nullable default if missing
+    return User(
+      fullname: json["fullname"] as String? ?? '',
+      password: json["password"] as String? ?? '',
+      studentid: json["studentid"] as String? ?? '',
+      email: json["email"] as String? ?? '',
+      age: json["age"] as String? ?? '',
+      department: json["department"] as String? ?? '',
+      gender: json["gender"] as String? ?? '',
+      role: json["role"] as String? ?? 'student',
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "fullname": fullname,
@@ -41,7 +43,8 @@ class User {
         "studentid": studentid,
         "email": email,
         "age": age,
-        "department": dept,
+        "department": department,
         "gender": gender,
+        "role": role,
       };
 }
