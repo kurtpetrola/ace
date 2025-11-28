@@ -7,11 +7,9 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/features/auth/presentation/login/login_notifier.dart';
 import 'package:ace/features/auth/presentation/login/login_state.dart';
 
-// Change to ConsumerWidget
 class AdminLoginPage extends ConsumerWidget {
   const AdminLoginPage({super.key});
 
-  // Re-use the _buildTextField helper function (kept for completeness)
   Widget _buildTextField(
     BuildContext context, {
     required String label,
@@ -19,6 +17,7 @@ class AdminLoginPage extends ConsumerWidget {
     required IconData icon,
     required ValueChanged<String> onChanged,
     String initialValue = '',
+    String? errorText, // Parameter for specific field error
     Widget? suffixIcon,
     bool isPassword = false,
     bool obscureText = false,
@@ -37,12 +36,21 @@ class AdminLoginPage extends ConsumerWidget {
           hintText: hint,
           hintStyle:
               const TextStyle(fontSize: 12, color: ColorPalette.accentBlack),
+          errorText: errorText, // Display the field-specific error
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: ColorPalette.accentBlack),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: ColorPalette.accentBlack),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
+          errorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
@@ -99,7 +107,7 @@ class AdminLoginPage extends ConsumerWidget {
                   children: [
                     const SizedBox(height: 40),
                     const Text(
-                      'Admin Login', // Changed text
+                      'Admin Login',
                       style: TextStyle(
                         color: ColorPalette.accentBlack,
                         fontWeight: FontWeight.w900,
@@ -110,7 +118,7 @@ class AdminLoginPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 35),
 
-                    // Display Error Message
+                    // Display Generic Service Error Message
                     if (state.errorMessage.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -125,11 +133,12 @@ class AdminLoginPage extends ConsumerWidget {
                     // Admin ID Field
                     _buildTextField(
                       context,
-                      label: 'Admin ID', // Label remains user-friendly
+                      label: 'Admin ID',
                       hint: 'Enter your Admin ID',
                       icon: Icons.security,
                       initialValue: state.studentId,
                       onChanged: notifier.setStudentId,
+                      errorText: state.studentIdError,
                     ),
 
                     const SizedBox(height: 20),
@@ -142,6 +151,7 @@ class AdminLoginPage extends ConsumerWidget {
                       icon: Icons.key,
                       initialValue: state.password,
                       onChanged: notifier.setPassword,
+                      errorText: state.passwordError,
                       isPassword: true,
                       obscureText: !state.isPasswordVisible,
                       suffixIcon: IconButton(
@@ -180,7 +190,7 @@ class AdminLoginPage extends ConsumerWidget {
                                 strokeWidth: 3,
                               )
                             : const Text(
-                                "ADMIN LOGIN", // Changed button text
+                                "ADMIN LOGIN",
                                 style: TextStyle(
                                   color: ColorPalette.secondary,
                                   fontFamily: 'Inter',
