@@ -1,7 +1,7 @@
 // studentlogin_button.dart
 
 import 'package:flutter/material.dart';
-import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
+import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
 
 class StudentLoginButton extends StatelessWidget {
   final Function()? onTap;

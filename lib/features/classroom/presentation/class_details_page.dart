@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ace/models/classroom.dart';
-import 'package:ace/features/dashboard/presentation/classroom_page.dart';
+import 'package:ace/features/student_dashboard/presentation/classroom_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
