@@ -19,8 +19,13 @@ class LoginState with _$LoginState {
     @Default(false) bool isPasswordVisible,
     @Default('') String errorMessage,
     required UserType userType,
+    // --- ADDED Validation Error Fields ---
+    String? studentIdError,
+    String? passwordError,
+    // ------------------------------------
   }) = _LoginState;
 
-  // Custom getter for form validation
-  bool get isValidForm => studentId.isNotEmpty && password.isNotEmpty;
+  // Custom getter for form validation is now focused on basic presence
+  // Detailed validation is now handled in the Notifier's `validateForm` method.
+  bool get isReadyToValidate => studentId.isNotEmpty && password.isNotEmpty;
 }
