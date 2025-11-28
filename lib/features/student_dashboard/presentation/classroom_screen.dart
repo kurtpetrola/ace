@@ -5,12 +5,12 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/features/student_dashboard/presentation/classroom_page.dart';
 
-class Classroom extends StatefulWidget {
+class ClassroomScreen extends StatefulWidget {
   @override
   _ClassroomState createState() => _ClassroomState();
 }
 
-class _ClassroomState extends State<Classroom> {
+class _ClassroomState extends State<ClassroomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

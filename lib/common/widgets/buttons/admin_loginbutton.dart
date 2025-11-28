@@ -1,8 +1,7 @@
-// admin_loginbutton.dart
+// lib/common/widgets/buttons/admin_loginbutton.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
-import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
 
 class AdminLoginButton extends StatelessWidget {
   final Function()? onTap;
@@ -15,10 +14,8 @@ class AdminLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => HomeScreenPage()));
-      },
+      // Use the external onTap function for authentication logic
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.symmetric(horizontal: 55),
