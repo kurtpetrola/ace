@@ -8,7 +8,6 @@ import 'package:ace/features/auth/presentation/login/login_notifier.dart';
 import 'package:ace/features/auth/presentation/login/login_state.dart';
 import 'package:ace/features/auth/presentation/registration/registration_page.dart';
 
-// 1. Changed from StatefulWidget to ConsumerWidget
 class StudentLoginPage extends ConsumerWidget {
   const StudentLoginPage({super.key});
 
@@ -20,6 +19,7 @@ class StudentLoginPage extends ConsumerWidget {
     required IconData icon,
     required ValueChanged<String> onChanged,
     String initialValue = '',
+    String? errorText, // <-- ADDED: Parameter for specific field error
     Widget? suffixIcon,
     bool isPassword = false,
     bool obscureText = false,
@@ -30,7 +30,6 @@ class StudentLoginPage extends ConsumerWidget {
         initialValue: initialValue,
         onChanged: onChanged,
         obscureText: obscureText,
-        // Use keyboardType appropriate for text/password
         keyboardType:
             isPassword ? TextInputType.visiblePassword : TextInputType.text,
         decoration: InputDecoration(
@@ -39,12 +38,21 @@ class StudentLoginPage extends ConsumerWidget {
           hintText: hint,
           hintStyle:
               const TextStyle(fontSize: 12, color: ColorPalette.accentBlack),
+          errorText: errorText, // <-- USED: Display the field-specific error
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: ColorPalette.accentBlack),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: ColorPalette.accentBlack),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
+          errorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
@@ -56,15 +64,16 @@ class StudentLoginPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 2. WATCH the state, passing the UserType to get the correct Notifier instance
+    // WATCH the state, passing the UserType to get the correct Notifier instance
     final state = ref.watch(loginNotifierProvider(userType: UserType.student));
 
-    // 3. READ the notifier for calling methods
+    // READ the notifier for calling methods
     final notifier =
         ref.read(loginNotifierProvider(userType: UserType.student).notifier);
 
     // Function to handle the login and navigation
     void handleLogin() async {
+      // The notifier now handles local validation before calling the service
       bool success = await notifier.login();
       if (success && context.mounted) {
         // Since login logic handles Hive, just navigate on success
@@ -74,7 +83,6 @@ class StudentLoginPage extends ConsumerWidget {
           ),
         );
       }
-      // Error is handled by state.errorMessage, which rebuilds the UI automatically
     }
 
     return Scaffold(
@@ -117,7 +125,7 @@ class StudentLoginPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 35),
 
-                    // Display Error Message
+                    // Display Generic Service Error Message
                     if (state.errorMessage.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -136,8 +144,8 @@ class StudentLoginPage extends ConsumerWidget {
                       hint: 'Enter your student number',
                       icon: Icons.person,
                       initialValue: state.studentId,
-                      onChanged:
-                          notifier.setStudentId, // Calls the notifier method
+                      onChanged: notifier.setStudentId,
+                      errorText: state.studentIdError, // <-- PASSING NEW ERROR
                     ),
 
                     const SizedBox(height: 20),
@@ -149,17 +157,16 @@ class StudentLoginPage extends ConsumerWidget {
                       hint: 'Enter your Password',
                       icon: Icons.key,
                       initialValue: state.password,
-                      onChanged:
-                          notifier.setPassword, // Calls the notifier method
+                      onChanged: notifier.setPassword,
+                      errorText: state.passwordError, // <-- PASSING NEW ERROR
                       isPassword: true,
-                      obscureText: !state.isPasswordVisible, // Reads state
+                      obscureText: !state.isPasswordVisible,
                       suffixIcon: IconButton(
                         color: ColorPalette.accentBlack,
                         icon: state.isPasswordVisible
-                            ? const Icon(Icons.visibility_off) // Reads state
+                            ? const Icon(Icons.visibility_off)
                             : const Icon(Icons.visibility),
-                        onPressed: notifier
-                            .togglePasswordVisibility, // Calls the notifier method
+                        onPressed: notifier.togglePasswordVisibility,
                       ),
                     ),
 
