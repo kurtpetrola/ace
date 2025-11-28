@@ -1,9 +1,9 @@
-// classroom_screen.dart
+// lib/features/student_dashboard/presentation/classroom_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
-import 'package:ace/features/dashboard/presentation/classroom_page.dart';
+import 'package:ace/features/student_dashboard/presentation/classroom_page.dart';
 
 class Classroom extends StatefulWidget {
   @override

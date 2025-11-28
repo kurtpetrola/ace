@@ -7,7 +7,7 @@ import 'package:hive/hive.dart';
 import 'dart:convert';
 import 'package:ace/models/user.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
+import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_homescreen_page.dart';
 
 class WrapperScreen extends StatefulWidget {

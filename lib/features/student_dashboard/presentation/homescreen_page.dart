@@ -1,11 +1,11 @@
-// homescreen_page.dart
+// lib/features/student_dashboard/presentation/homescreen_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:ace/features/dashboard/presentation/account_screen.dart';
-import 'package:ace/features/dashboard/presentation/classroom_screen.dart';
-import 'package:ace/features/dashboard/presentation/grades_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/account_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/classroom_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/grades_screen.dart';
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({Key? key}) : super(key: key);

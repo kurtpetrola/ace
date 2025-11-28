@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/main.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/dashboard/presentation/homescreen_page.dart';
+import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
 
 void main() {
   testWidgets('Renders SelectionPage when user is logged out',
