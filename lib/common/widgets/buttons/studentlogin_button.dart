@@ -1,7 +1,6 @@
-// studentlogin_button.dart
+// lib/common/widgets/buttons/studentlogin_button.dart
 
 import 'package:flutter/material.dart';
-import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
 
 class StudentLoginButton extends StatelessWidget {
   final Function()? onTap;
@@ -14,10 +13,8 @@ class StudentLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => HomeScreenPage()));
-      },
+      // Use the external onTap function for authentication logic
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(25),
         margin: const EdgeInsets.symmetric(horizontal: 75),

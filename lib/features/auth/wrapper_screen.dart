@@ -9,6 +9,7 @@ import 'package:ace/models/user.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_homescreen_page.dart';
+// Note: HomeScreenPage must now accept a 'studentId' argument.
 
 class WrapperScreen extends StatefulWidget {
   const WrapperScreen({super.key});
@@ -73,8 +74,9 @@ class _WrapperScreenState extends State<WrapperScreen> {
           // Navigate to Admin Dashboard
           destinationPage = const AdminHomeScreenPage();
         } else {
-          // Default: Navigate to Student Dashboard for any other role or null role
-          destinationPage = const HomeScreenPage();
+          // Default: Navigate to Student Dashboard
+          // We now pass the userId to the HomeScreenPage for Riverpod consumption.
+          destinationPage = HomeScreenPage(studentId: userId);
         }
 
         // 3. Perform the navigation

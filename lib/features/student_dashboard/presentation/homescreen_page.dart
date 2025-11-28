@@ -8,7 +8,9 @@ import 'package:ace/features/student_dashboard/presentation/classroom_screen.dar
 import 'package:ace/features/student_dashboard/presentation/grades_screen.dart';
 
 class HomeScreenPage extends StatefulWidget {
-  const HomeScreenPage({Key? key}) : super(key: key);
+  // 1. Add required studentId to the StatefulWidget
+  final String studentId;
+  const HomeScreenPage({Key? key, required this.studentId}) : super(key: key);
 
   @override
   State<HomeScreenPage> createState() => _HomeScreenPageState();
@@ -16,11 +18,21 @@ class HomeScreenPage extends StatefulWidget {
 
 class _HomeScreenPageState extends State<HomeScreenPage> {
   int pageIndex = 0;
-  final pages = [
-    Classroom(),
-    GradesView(),
-    Account(),
-  ];
+
+  // The pages list will now be initialized in initState or lazy-loaded,
+  // since it depends on widget.studentId
+  late final List<Widget> pages;
+
+  @override
+  void initState() {
+    super.initState();
+    // 2. Initialize the pages list, passing the studentId to GradesView
+    pages = [
+      ClassroomScreen(),
+      GradesView(studentId: widget.studentId), // Pass the ID here
+      AccountScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

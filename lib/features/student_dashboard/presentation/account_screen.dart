@@ -10,14 +10,14 @@ import 'package:ace/models/user.dart';
 import 'package:ace/common/widgets/dialogs/alertdialog.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 
-class Account extends StatefulWidget {
-  const Account({super.key});
+class AccountScreen extends StatefulWidget {
+  const AccountScreen({super.key});
 
   @override
-  State<Account> createState() => _AccountState();
+  State<AccountScreen> createState() => _AccountState();
 }
 
-class _AccountState extends State<Account> {
+class _AccountState extends State<AccountScreen> {
   DateTime backPressedTime = DateTime.now();
   final _loginbox = Hive.box("_loginbox");
   late var fullname = _loginbox.get("User");
