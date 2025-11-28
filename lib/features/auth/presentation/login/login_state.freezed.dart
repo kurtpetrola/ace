@@ -21,7 +21,10 @@ mixin _$LoginState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isPasswordVisible => throw _privateConstructorUsedError;
   String get errorMessage => throw _privateConstructorUsedError;
-  UserType get userType => throw _privateConstructorUsedError;
+  UserType get userType =>
+      throw _privateConstructorUsedError; // --- ADDED Validation Error Fields ---
+  String? get studentIdError => throw _privateConstructorUsedError;
+  String? get passwordError => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LoginStateCopyWith<LoginState> get copyWith =>
@@ -40,7 +43,9 @@ abstract class $LoginStateCopyWith<$Res> {
       bool isLoading,
       bool isPasswordVisible,
       String errorMessage,
-      UserType userType});
+      UserType userType,
+      String? studentIdError,
+      String? passwordError});
 }
 
 /// @nodoc
@@ -62,6 +67,8 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
     Object? isPasswordVisible = null,
     Object? errorMessage = null,
     Object? userType = null,
+    Object? studentIdError = freezed,
+    Object? passwordError = freezed,
   }) {
     return _then(_value.copyWith(
       studentId: null == studentId
@@ -88,6 +95,14 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
           ? _value.userType
           : userType // ignore: cast_nullable_to_non_nullable
               as UserType,
+      studentIdError: freezed == studentIdError
+          ? _value.studentIdError
+          : studentIdError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      passwordError: freezed == passwordError
+          ? _value.passwordError
+          : passwordError // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -106,7 +121,9 @@ abstract class _$$LoginStateImplCopyWith<$Res>
       bool isLoading,
       bool isPasswordVisible,
       String errorMessage,
-      UserType userType});
+      UserType userType,
+      String? studentIdError,
+      String? passwordError});
 }
 
 /// @nodoc
@@ -126,6 +143,8 @@ class __$$LoginStateImplCopyWithImpl<$Res>
     Object? isPasswordVisible = null,
     Object? errorMessage = null,
     Object? userType = null,
+    Object? studentIdError = freezed,
+    Object? passwordError = freezed,
   }) {
     return _then(_$LoginStateImpl(
       studentId: null == studentId
@@ -152,6 +171,14 @@ class __$$LoginStateImplCopyWithImpl<$Res>
           ? _value.userType
           : userType // ignore: cast_nullable_to_non_nullable
               as UserType,
+      studentIdError: freezed == studentIdError
+          ? _value.studentIdError
+          : studentIdError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      passwordError: freezed == passwordError
+          ? _value.passwordError
+          : passwordError // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -165,7 +192,9 @@ class _$LoginStateImpl extends _LoginState {
       this.isLoading = false,
       this.isPasswordVisible = false,
       this.errorMessage = '',
-      required this.userType})
+      required this.userType,
+      this.studentIdError,
+      this.passwordError})
       : super._();
 
   @override
@@ -185,10 +214,15 @@ class _$LoginStateImpl extends _LoginState {
   final String errorMessage;
   @override
   final UserType userType;
+// --- ADDED Validation Error Fields ---
+  @override
+  final String? studentIdError;
+  @override
+  final String? passwordError;
 
   @override
   String toString() {
-    return 'LoginState(studentId: $studentId, password: $password, isLoading: $isLoading, isPasswordVisible: $isPasswordVisible, errorMessage: $errorMessage, userType: $userType)';
+    return 'LoginState(studentId: $studentId, password: $password, isLoading: $isLoading, isPasswordVisible: $isPasswordVisible, errorMessage: $errorMessage, userType: $userType, studentIdError: $studentIdError, passwordError: $passwordError)';
   }
 
   @override
@@ -207,12 +241,16 @@ class _$LoginStateImpl extends _LoginState {
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
             (identical(other.userType, userType) ||
-                other.userType == userType));
+                other.userType == userType) &&
+            (identical(other.studentIdError, studentIdError) ||
+                other.studentIdError == studentIdError) &&
+            (identical(other.passwordError, passwordError) ||
+                other.passwordError == passwordError));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, studentId, password, isLoading,
-      isPasswordVisible, errorMessage, userType);
+      isPasswordVisible, errorMessage, userType, studentIdError, passwordError);
 
   @JsonKey(ignore: true)
   @override
@@ -228,7 +266,9 @@ abstract class _LoginState extends LoginState {
       final bool isLoading,
       final bool isPasswordVisible,
       final String errorMessage,
-      required final UserType userType}) = _$LoginStateImpl;
+      required final UserType userType,
+      final String? studentIdError,
+      final String? passwordError}) = _$LoginStateImpl;
   const _LoginState._() : super._();
 
   @override
@@ -243,6 +283,10 @@ abstract class _LoginState extends LoginState {
   String get errorMessage;
   @override
   UserType get userType;
+  @override // --- ADDED Validation Error Fields ---
+  String? get studentIdError;
+  @override
+  String? get passwordError;
   @override
   @JsonKey(ignore: true)
   _$$LoginStateImplCopyWith<_$LoginStateImpl> get copyWith =>
