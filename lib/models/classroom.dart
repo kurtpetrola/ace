@@ -29,7 +29,18 @@ class Classroom {
     );
   }
 
+  // Method for standard serialization (e.g., for local storage/display)
   Map<String, dynamic> toJson() => {
+        'classId': classId,
+        'className': className,
+        'description': description,
+        'creator': creator,
+        'bannerImgPath': bannerImgPath,
+      };
+
+  // Method specifically for saving to Firebase Realtime DB, excluding the classId
+  // as it is used as the node key.
+  Map<String, dynamic> toFirebaseJson() => {
         'className': className,
         'description': description,
         'creator': creator,
@@ -38,7 +49,6 @@ class Classroom {
 }
 
 // Example static list used as a temporary mock for demonstration purposes
-// You should remove this when you fully integrate Firebase setup.
 final List<Classroom> mockClassroomList = [
   Classroom(
     classId: 'MATH101',

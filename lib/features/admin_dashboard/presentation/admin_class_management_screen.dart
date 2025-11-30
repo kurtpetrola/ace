@@ -5,6 +5,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
+import 'package:ace/features/admin_dashboard/presentation/class_creation_dialog.dart';
 
 class AdminClassManagementScreen extends StatefulWidget {
   const AdminClassManagementScreen({super.key});
@@ -44,6 +45,7 @@ class _AdminClassManagementScreenState
     });
     try {
       _availableClasses = await _classService.fetchAllAvailableClasses();
+      _statusMessage = null; // Clear old status if successful
     } catch (e) {
       print('Error fetching available classes: $e');
       _statusMessage = 'Failed to load available classes.';
@@ -138,17 +140,51 @@ class _AdminClassManagementScreenState
     }
   }
 
+  // Handles the class creation flow
+  void _showCreateClassDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ClassCreationDialog(
+          onClassCreated: (newClass) async {
+            setState(() {
+              _isLoading = true;
+              _statusMessage = 'Creating new class "${newClass.className}"...';
+            });
+            try {
+              // Call the new service method to save the class to Firebase
+              await _classService.createNewClass(newClass);
+              // Refresh the list of available classes displayed on this screen
+              await _fetchAvailableClasses();
+              setState(() {
+                _statusMessage =
+                    'Class "${newClass.className}" created successfully!';
+              });
+            } catch (e) {
+              print('Class creation error: $e');
+              setState(() {
+                _statusMessage = 'Error creating class: $e';
+              });
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // 1. Create New Class Button (Existing Feature)
+        // 1. Create New Class Button (Updated to call the dialog)
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Navigate to a form to create a new class
-            },
+            onPressed: _showCreateClassDialog, // *** HOOKED UP ***
             icon: const Icon(Ionicons.add_circle, color: Colors.white),
             label: const Text('Create New Class'),
             style: ElevatedButton.styleFrom(
