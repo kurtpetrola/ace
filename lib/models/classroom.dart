@@ -1,76 +1,65 @@
-// classroom.dart
+// lib/models/classroom.dart
 
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+// NOTE: Since AssetImage is used in your current code, the bannerImg here
+// represents a path or an identifier, not the image itself.
+class Classroom {
+  final String classId;
+  final String className;
+  final String description;
+  final String creator;
+  // This will store a URL or asset path string.
+  final String bannerImgPath;
 
-class ClassRooms {
-  String className;
-  String description;
-  String creator;
-  AssetImage bannerImg;
-  List<double> clrs = [];
+  Classroom({
+    required this.classId,
+    required this.className,
+    required this.description,
+    required this.creator,
+    required this.bannerImgPath,
+  });
 
-  ClassRooms(
-      {required this.className,
-      required this.description,
-      required this.creator,
-      required this.bannerImg,
-      required this.clrs});
+  factory Classroom.fromJson(String id, Map<String, dynamic> json) {
+    return Classroom(
+      classId: id,
+      className: json['className'] as String? ?? 'N/A',
+      description: json['description'] as String? ?? 'No description provided.',
+      creator: json['creator'] as String? ?? 'Unknown Teacher',
+      bannerImgPath: json['bannerImgPath'] as String? ??
+          'assets/images/banner/default.jpg',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'className': className,
+        'description': description,
+        'creator': creator,
+        'bannerImgPath': bannerImgPath,
+      };
 }
 
-List<ClassRooms> classRoomList = [
-  ClassRooms(
-    className: "Introduction to Computing",
-    description: "Second Year",
-    creator: "Rolly Maniquez",
-    bannerImg: const AssetImage("assets/images/banner/banner1.jpg"),
-    clrs: [255, 233, 116, 57],
+// Example static list used as a temporary mock for demonstration purposes
+// You should remove this when you fully integrate Firebase setup.
+final List<Classroom> mockClassroomList = [
+  Classroom(
+    classId: 'MATH101',
+    className: 'Calculus I',
+    description: 'Introduction to Derivatives and Integrals.',
+    creator: 'Dr. Evelyn Reed',
+    bannerImgPath: 'assets/images/banner/banner1.jpg',
   ),
-  ClassRooms(
-    className: "Game Development",
-    description: "Second Year",
-    creator: "Francis Gonzales",
-    bannerImg: const AssetImage("assets/images/banner/banner2.jpg"),
-    clrs: [255, 101, 237, 153],
+  Classroom(
+    classId: 'CS201',
+    className: 'Data Structures',
+    description: 'Arrays, Linked Lists, and Trees.',
+    creator: 'Prof. Alan Turing',
+    bannerImgPath: 'assets/images/banner/banner2.jpg',
   ),
-  ClassRooms(
-    className: "Programming I",
-    description: "First Year",
-    creator: "Paul Rigor",
-    bannerImg: const AssetImage("assets/images/banner/banner5.jpg"),
-    clrs: [255, 111, 27, 198],
-  ),
-  ClassRooms(
-      className: "Web Development",
-      description: "Third Year",
-      creator: "Zane Philip",
-      bannerImg: const AssetImage("assets/images/banner/banner6.jpg"),
-      clrs: [255, 0, 0, 0]),
-  ClassRooms(
-      className: "Capstone & Research Project I",
-      description: "Third Year",
-      creator: "Veronica Canlas",
-      bannerImg: AssetImage("assets/images/banner/banner7.jpg"),
-      clrs: [255, 102, 153, 204]),
-  ClassRooms(
-    className: "Data Structures & Algorithms",
-    description: "Third Year",
-    creator: "Angelica Vidal",
-    bannerImg: AssetImage("assets/images/banner/banner8.jpg"),
-    clrs: [255, 111, 27, 198],
-  ),
-  ClassRooms(
-    className: "Human Computer Interaction",
-    description: "First Year",
-    creator: "Rolly Maniquez",
-    bannerImg: AssetImage("assets/images/banner/banner9.jpg"),
-    clrs: [255, 95, 139, 233],
-  ),
-  ClassRooms(
-    className: "Integrative Programming",
-    description: "Third Year",
-    creator: "Paulo Cabrera",
-    bannerImg: AssetImage("assets/images/banner/banner10.jpg"),
-    clrs: [255, 95, 139, 233],
+  // Add more mock classes for testing admin enrollment
+  Classroom(
+    classId: 'HIST305',
+    className: 'World History Since 1945',
+    description: 'A look at the post-WWII era.',
+    creator: 'Ms. Clara Barton',
+    bannerImgPath: 'assets/images/banner/banner3.jpg',
   ),
 ];
