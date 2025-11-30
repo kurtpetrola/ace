@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/main.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
+import 'package:ace/features/student_dashboard/presentation/student_homescreen_page.dart';
 
 void main() {
   testWidgets('Renders SelectionPage when user is logged out',
@@ -24,7 +24,7 @@ void main() {
     // Based on your SelectionPage code, it contains the text 'Academia Classroom Explorer'.
     expect(find.byType(SelectionPage), findsOneWidget);
     expect(find.text('Academia Classroom Explorer'), findsOneWidget);
-    expect(find.byType(HomeScreenPage), findsNothing);
+    expect(find.byType(StudentHomescreenPage), findsNothing);
   });
 
   testWidgets('Renders HomeScreenPage when user is logged in',
@@ -38,7 +38,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // --- Verification for logged-in state ---
-    expect(find.byType(HomeScreenPage), findsOneWidget);
+    expect(find.byType(StudentHomescreenPage), findsOneWidget);
     expect(find.byType(SelectionPage), findsNothing);
   });
 }

@@ -1,4 +1,4 @@
-// lib/features/student_dashboard/presentation/classroom_page.dart
+// lib/features/student_dashboard/presentation/student_classroom_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
@@ -6,17 +6,18 @@ import 'package:ace/features/classroom/presentation/class_work_tab.dart';
 import 'package:ace/features/classroom/presentation/people_tab.dart';
 import 'package:ace/features/classroom/presentation/stream_tab.dart';
 
-class ClassRoomPage extends StatefulWidget {
+class StudentClassroomPage extends StatefulWidget {
   final String className;
-  static const routeName = "ClassRoomPage1";
+  static const routeName = "ClassRoomPage";
 
-  ClassRoomPage({required this.className, required AssetImage bannerImg});
+  StudentClassroomPage(
+      {required this.className, required AssetImage bannerImg});
 
   @override
-  _ClassRoomPageState createState() => _ClassRoomPageState();
+  _StudentClassRoomPageState createState() => _StudentClassRoomPageState();
 }
 
-class _ClassRoomPageState extends State<ClassRoomPage> {
+class _StudentClassRoomPageState extends State<StudentClassroomPage> {
   int pageIndex = 0;
   final pages = [
     Stream(),

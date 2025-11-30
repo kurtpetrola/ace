@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ace/models/classroom.dart';
-import 'package:ace/features/student_dashboard/presentation/classroom_page.dart';
+import 'package:ace/features/student_dashboard/presentation/student_classroom_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, int index) {
             return GestureDetector(
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => ClassRoomPage(
+                  builder: (_) => StudentClassroomPage(
                         className: classRoomList[index].className,
                         bannerImg: classRoomList[index].bannerImg,
                       ))),

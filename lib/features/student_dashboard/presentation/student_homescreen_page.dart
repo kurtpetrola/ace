@@ -1,22 +1,23 @@
-// lib/features/student_dashboard/presentation/homescreen_page.dart
+// lib/features/student_dashboard/presentation/student_homescreen_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:ace/features/student_dashboard/presentation/account_screen.dart';
-import 'package:ace/features/student_dashboard/presentation/classroom_screen.dart';
-import 'package:ace/features/student_dashboard/presentation/grades_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/student_account_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/student_classroom_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/student_grades_screen.dart';
 
-class HomeScreenPage extends StatefulWidget {
+class StudentHomescreenPage extends StatefulWidget {
   // 1. Add required studentId to the StatefulWidget
   final String studentId;
-  const HomeScreenPage({Key? key, required this.studentId}) : super(key: key);
+  const StudentHomescreenPage({Key? key, required this.studentId})
+      : super(key: key);
 
   @override
-  State<HomeScreenPage> createState() => _HomeScreenPageState();
+  State<StudentHomescreenPage> createState() => _StudentHomeScreenPageState();
 }
 
-class _HomeScreenPageState extends State<HomeScreenPage> {
+class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
   int pageIndex = 0;
 
   // The pages list will now be initialized in initState or lazy-loaded,
@@ -28,9 +29,9 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
     super.initState();
     // 2. Initialize the pages list, passing the studentId to GradesView
     pages = [
-      ClassroomScreen(),
+      StudentClassroomScreen(),
       GradesView(studentId: widget.studentId), // Pass the ID here
-      AccountScreen(),
+      StudentAccountScreen(),
     ];
   }
 
@@ -38,6 +39,16 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorPalette.accentBlack,
+      appBar: AppBar(
+        title: Text(
+          _getPageTitle(pageIndex),
+          style: const TextStyle(
+              color: ColorPalette.secondary, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: ColorPalette.accentBlack,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+      ),
       body: pages[pageIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: pageIndex,
@@ -72,5 +83,18 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
         type: BottomNavigationBarType.fixed, // Ensures labels are always shown
       ),
     );
+  }
+
+  String _getPageTitle(int index) {
+    switch (index) {
+      case 0:
+        return 'Student Classes';
+      case 1:
+        return 'Grades Overview';
+      case 2:
+        return 'Account Settings';
+      default:
+        return 'Student Dashboard';
+    }
   }
 }

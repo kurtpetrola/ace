@@ -7,7 +7,7 @@ import 'package:hive/hive.dart';
 import 'dart:convert';
 import 'package:ace/models/user.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/student_dashboard/presentation/homescreen_page.dart';
+import 'package:ace/features/student_dashboard/presentation/student_homescreen_page.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_homescreen_page.dart';
 // Note: HomeScreenPage must now accept a 'studentId' argument.
 
@@ -76,7 +76,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
         } else {
           // Default: Navigate to Student Dashboard
           // We now pass the userId to the HomeScreenPage for Riverpod consumption.
-          destinationPage = HomeScreenPage(studentId: userId);
+          destinationPage = StudentHomescreenPage(studentId: userId);
         }
 
         // 3. Perform the navigation

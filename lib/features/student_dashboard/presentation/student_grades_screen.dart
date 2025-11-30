@@ -1,4 +1,4 @@
-// lib/features/student_dashboard/presentation/grade_screen.dart
+// lib/features/student_dashboard/presentation/student_grade_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';

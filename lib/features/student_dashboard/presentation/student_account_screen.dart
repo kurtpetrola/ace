@@ -1,4 +1,4 @@
-// lib/features/student_dashboard/presentation/account_screen.dart
+// lib/features/student_dashboard/presentation/student_account_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,14 +10,14 @@ import 'package:ace/models/user.dart';
 import 'package:ace/common/widgets/dialogs/alertdialog.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 
-class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+class StudentAccountScreen extends StatefulWidget {
+  const StudentAccountScreen({super.key});
 
   @override
-  State<AccountScreen> createState() => _AccountState();
+  State<StudentAccountScreen> createState() => _StudentAccountState();
 }
 
-class _AccountState extends State<AccountScreen> {
+class _StudentAccountState extends State<StudentAccountScreen> {
   DateTime backPressedTime = DateTime.now();
   final _loginbox = Hive.box("_loginbox");
   late var fullname = _loginbox.get("User");
