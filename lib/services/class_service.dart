@@ -100,4 +100,10 @@ class ClassService {
 
     return studentClasses;
   }
+
+  // 6. Create a new class and save it to Firebase
+  Future<void> createNewClass(Classroom newClass) async {
+    // We push to the 'Classes' node, which generates a unique key (classId)
+    await _db.child('Classes').push().set(newClass.toFirebaseJson());
+  }
 }
