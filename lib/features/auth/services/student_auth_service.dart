@@ -14,7 +14,7 @@ class StudentAuthService {
     required String studentId,
     required String password,
   }) async {
-    // 1. Efficiently fetch student data to get the required email
+    // 1. Efficiently fetch student data to get the required email and name
     DatabaseReference dbReference = FirebaseDatabase.instance
         .ref()
         .child("Students/$studentId"); // Targeted fetch
@@ -27,10 +27,9 @@ class StudentAuthService {
     // Decode and map the data
     Map<String, dynamic> userDataMap = jsonDecode(jsonEncode(snapshot.value));
 
-    // ⚠️ Crucial Debugging Point: This line will fail if 'email' is missing in the database node!
     User user = User.fromJson(userDataMap);
-    final String studentEmail =
-        user.email; // We need the email for Firebase Auth
+    final String studentEmail = user.email;
+    final String studentName = user.fullname; // <-- Get the name
 
     // --- CRITICAL CHECK ADDED HERE ---
     if (studentEmail.isEmpty) {
@@ -43,7 +42,7 @@ class StudentAuthService {
     print('DEBUG: Attempting login for email: $studentEmail');
 
     try {
-      // 2. 🛡️ Validate password SECURELY using Firebase Authentication
+      // 2. Validate password SECURELY using Firebase Authentication
       await fb_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
         email: studentEmail,
         password: password,
@@ -54,6 +53,7 @@ class StudentAuthService {
       await _loginbox.put(
           "UserType", "Student"); // <-- Ensures WrapperScreen works
       await _loginbox.put("User", studentId);
+      await _loginbox.put("UserName", studentName); // <-- Save the user's name
       return;
     } on fb_auth.FirebaseAuthException catch (e) {
       // Handle Auth errors

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/features/auth/services/student_registration_service.dart';
 import 'package:ace/models/user.dart';
 
-// --- NEW PROVIDER FOR THE SERVICE ---
 // We need a provider for the service so the Notifier can access it.
 final studentRegistrationServiceProvider = Provider((ref) {
   return StudentRegistrationService();
@@ -284,7 +283,7 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
       fullname: state.fullName,
       email: state.email,
       gender: state.gender!,
-      age: state.age!,
+      age: state.age != null ? int.parse(state.age!) : 0,
       department: state.department!,
     );
 

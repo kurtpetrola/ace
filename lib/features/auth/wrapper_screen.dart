@@ -67,16 +67,22 @@ class _WrapperScreenState extends State<WrapperScreen> {
 
         // 2. Check the user's role for routing
         Widget destinationPage;
-        // Ensure the role is checked safely, converting to lowercase for robustness
-        final role = user.role.toLowerCase();
+        // Ensure the role is checked safely
+        final role = user.role;
+
+        // --- REVERTED: Now strictly checking for 'admin' (case-sensitive) ---
+        print('WrapperScreen: Fetched role from DB: $role');
 
         if (role == 'admin') {
           // Navigate to Admin Dashboard
           destinationPage = const AdminHomeScreenPage();
+          print('WrapperScreen: Redirecting to Admin Dashboard.');
         } else {
           // Default: Navigate to Student Dashboard
           // We now pass the userId to the HomeScreenPage for Riverpod consumption.
           destinationPage = StudentHomescreenPage(studentId: userId);
+          print(
+              'WrapperScreen: Redirecting to Student Dashboard (Role was: $role).');
         }
 
         // 3. Perform the navigation
