@@ -6,6 +6,7 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/class_creation_dialog.dart';
+import 'package:ace/features/admin_dashboard/presentation/admin_class_roster_dialog.dart';
 
 class AdminClassManagementScreen extends StatefulWidget {
   const AdminClassManagementScreen({super.key});
@@ -117,6 +118,7 @@ class _AdminClassManagementScreenState
     });
 
     try {
+      // NOTE: This now updates both the Student and Class nodes in Firebase
       await _classService.enrollStudentInClass(_currentStudentId!, classId);
 
       // Refresh the enrolled list immediately
@@ -132,6 +134,34 @@ class _AdminClassManagementScreenState
       print('Enrollment error: $e');
       setState(() {
         _statusMessage = 'Failed to enroll student: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Handles unenrollment and status updates
+  Future<void> _unenrollStudent(String classId, String className) async {
+    if (_currentStudentId == null) return;
+
+    setState(() {
+      _isLoading = true;
+      _statusMessage = 'Unenrolling $_currentStudentId from $className...';
+    });
+
+    try {
+      await _classService.unenrollStudentFromClass(_currentStudentId!, classId);
+      await _searchAndFetchClasses(); // Refresh list and status
+      setState(() {
+        _statusMessage =
+            'Successfully unenrolled $_currentStudentId from $className.';
+      });
+    } catch (e) {
+      print('Unenrollment error: $e');
+      setState(() {
+        _statusMessage = 'Failed to unenroll student: $e';
       });
     } finally {
       setState(() {
@@ -171,6 +201,20 @@ class _AdminClassManagementScreenState
               });
             }
           },
+        );
+      },
+    );
+  }
+
+  // NEW: Shows the class-specific roster management dialog
+  void _showRosterDialog(Classroom classToManage) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AdminClassRosterDialog(
+          classroom: classToManage,
+          // Optional: Refresh the 'Available Classes' list if the roster update affects local display logic
+          onRosterUpdated: _fetchAvailableClasses,
         );
       },
     );
@@ -237,7 +281,7 @@ class _AdminClassManagementScreenState
           Expanded(
             child: Row(
               children: [
-                // Left: Currently Enrolled Classes
+                // Left: Currently Enrolled Classes (Student-centric view)
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -266,15 +310,8 @@ class _AdminClassManagementScreenState
                                           icon: const Icon(
                                               Icons.remove_circle_outline,
                                               color: Colors.red),
-                                          onPressed: () {
-                                            // Optional: Implement unenrollment
-                                            _classService
-                                                .unenrollStudentFromClass(
-                                                    _currentStudentId!,
-                                                    cls.classId)
-                                                .then((_) =>
-                                                    _searchAndFetchClasses()); // Refresh list
-                                          },
+                                          onPressed: () => _unenrollStudent(
+                                              cls.classId, cls.className),
                                         ),
                                       ),
                                     );
@@ -286,14 +323,14 @@ class _AdminClassManagementScreenState
                   ),
                 ),
 
-                // Right: Available Classes to Add
+                // Right: Available Classes (Global list, now with Roster link)
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Available to Add',
+                        Text('Available Classes', // Renamed label
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -304,7 +341,7 @@ class _AdminClassManagementScreenState
                             itemCount: _availableClasses.length,
                             itemBuilder: (context, index) {
                               final cls = _availableClasses[index];
-                              // Check if the student is already enrolled
+                              // Check if the searched student is already enrolled (for the original function)
                               final isEnrolled = _enrolledClasses
                                   .any((e) => e.classId == cls.classId);
 
@@ -315,19 +352,38 @@ class _AdminClassManagementScreenState
                                 child: ListTile(
                                   title: Text(cls.className),
                                   subtitle: Text(cls.classId),
-                                  trailing: IconButton(
-                                    icon: Icon(
-                                      isEnrolled
-                                          ? Icons.check
-                                          : Ionicons.add_circle,
-                                      color: isEnrolled
-                                          ? Colors.green
-                                          : ColorPalette.secondary,
-                                    ),
-                                    onPressed: isEnrolled
-                                        ? null // Cannot enroll twice
-                                        : () => _enrollStudent(
-                                            cls.classId, cls.className),
+                                  trailing: Row(
+                                    // Use Row for multiple actions
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // 1. Enrollment action (only visible if a student is searched)
+                                      if (_currentStudentId != null)
+                                        IconButton(
+                                          icon: Icon(
+                                            isEnrolled
+                                                ? Icons.check
+                                                : Ionicons.add_circle,
+                                            color: isEnrolled
+                                                ? Colors.green
+                                                : ColorPalette.secondary,
+                                          ),
+                                          onPressed: isEnrolled
+                                              ? null // Cannot enroll twice
+                                              : () => _enrollStudent(
+                                                  cls.classId, cls.className),
+                                          tooltip: isEnrolled
+                                              ? 'Enrolled'
+                                              : 'Enroll Student',
+                                        ),
+
+                                      // 2. Class Roster Management (new feature)
+                                      IconButton(
+                                        icon: const Icon(Ionicons.people,
+                                            color: ColorPalette.accentBlack),
+                                        tooltip: 'Manage Class Roster',
+                                        onPressed: () => _showRosterDialog(cls),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );
@@ -346,7 +402,7 @@ class _AdminClassManagementScreenState
           Expanded(
             child: Center(
               child: Text(
-                'Enter a student ID above to manage their class enrollment.',
+                'Enter a student ID above to manage their class enrollment, or click "Manage Roster" next to any class.',
                 style: TextStyle(color: Colors.grey[600], fontSize: 16),
                 textAlign: TextAlign.center,
               ),
