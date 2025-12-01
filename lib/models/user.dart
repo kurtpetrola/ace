@@ -7,7 +7,10 @@ class User {
   final String fullname;
   // This field is used for Firebase Auth and MUST be present in the database.
   final String email;
-  final String age;
+
+  // Storing age as an integer is more appropriate for calculations/sorting.
+  final int age;
+
   final String department;
   final String gender;
   // This field determines routing (Admin or Student).
@@ -25,15 +28,15 @@ class User {
 
   // Factory constructor to build the User object from Firebase Realtime Database JSON.
   factory User.fromJson(Map<String, dynamic> json) {
-    // Determine the ID key dynamically, as student data might use 'studentid'
-    // and admin data might use 'adminid'. The actual key used in the DB node
-    // is usually the safest bet, but we will look for common identifiers.
-
-    // NOTE: In the authentication services, the userId is the KEY (e.g., STU-001)
-    // so we must ensure one of the IDs is captured.
-    final String retrievedId = json["studentid"] as String? ??
+    // Determine the ID key dynamically, falling back to a generic 'uid' if 'studentid'/'adminid' aren't present.
+    // NOTE: It is best practice for the DB to consistently use one key, like 'uid'.
+    final String retrievedId = json["uid"] as String? ??
+        json["studentid"] as String? ??
         json["adminid"] as String? ??
-        ''; // Fallback
+        '';
+
+    // Safely parse the age, defaulting to 0 if null or not parsable as int.
+    final int parsedAge = int.tryParse(json["age"]?.toString() ?? '0') ?? 0;
 
     return User(
       // We use the dynamically retrieved ID
@@ -42,7 +45,7 @@ class User {
       // All fields are safely cast using '?? '' to prevent runtime null exceptions
       fullname: json["fullname"] as String? ?? '',
       email: json["email"] as String? ?? '',
-      age: json["age"] as String? ?? '',
+      age: parsedAge,
       department: json["department"] as String? ?? '',
       gender: json["gender"] as String? ?? '',
       role: json["role"] as String? ?? 'student',
@@ -57,7 +60,8 @@ class User {
 
         "fullname": fullname,
         "email": email,
-        "age": age,
+        "age": age
+            .toString(), // Store age as a string in the DB if the original model required it, but int is preferred.
         "department": department,
         "gender": gender,
         "role": role,
