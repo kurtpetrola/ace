@@ -5,8 +5,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
-import 'package:ace/features/admin_dashboard/presentation/class_creation_dialog.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_class_roster_dialog.dart';
+import 'package:ace/features/admin_dashboard/presentation/admin_classwork_management_screen.dart';
+import 'package:ace/features/admin_dashboard/presentation/class_creation_dialog.dart';
 
 class AdminClassManagementScreen extends StatefulWidget {
   const AdminClassManagementScreen({super.key});
@@ -18,396 +19,440 @@ class AdminClassManagementScreen extends StatefulWidget {
 
 class _AdminClassManagementScreenState
     extends State<AdminClassManagementScreen> {
-  final TextEditingController _studentIdController = TextEditingController();
   final ClassService _classService = ClassService();
+  final TextEditingController _studentIdCtrl = TextEditingController();
 
   String? _currentStudentId;
-  List<Classroom> _enrolledClasses = [];
-  List<Classroom> _availableClasses = [];
-  bool _isLoading = false;
-  String? _statusMessage;
+  List<Classroom> _studentClasses = [];
+  String? _status;
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchAvailableClasses();
-  }
+  // ---------------- STUDENT SEARCH ----------------
+  Future<void> _searchStudent() async {
+    final id = _studentIdCtrl.text.trim();
+    if (id.isEmpty) return;
 
-  @override
-  void dispose() {
-    _studentIdController.dispose();
-    super.dispose();
-  }
-
-  // Fetches all classes that the admin can enroll students into
-  Future<void> _fetchAvailableClasses() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      _availableClasses = await _classService.fetchAllAvailableClasses();
-      _statusMessage = null; // Clear old status if successful
-    } catch (e) {
-      print('Error fetching available classes: $e');
-      _statusMessage = 'Failed to load available classes.';
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  // Searches for a student and fetches their enrolled classes
-  Future<void> _searchAndFetchClasses() async {
-    final studentId = _studentIdController.text.trim();
-    if (studentId.isEmpty) {
+    final exists = await _classService.checkStudentExists(id);
+    if (!exists) {
       setState(() {
         _currentStudentId = null;
-        _enrolledClasses = [];
-        _statusMessage = 'Please enter a Student ID.';
+        _studentClasses = [];
+        _status = 'Student not found';
       });
       return;
     }
 
+    final classes = await _classService.fetchStudentClasses(id);
     setState(() {
-      _isLoading = true;
-      _statusMessage = 'Searching for student...';
+      _currentStudentId = id;
+      _studentClasses = classes;
+      _status = 'Managing classes for $id';
     });
-
-    try {
-      final exists = await _classService.checkStudentExists(studentId);
-
-      if (!exists) {
-        setState(() {
-          _statusMessage = 'Error: Student ID "$studentId" not found.';
-          _currentStudentId = null;
-          _enrolledClasses = [];
-        });
-        return;
-      }
-
-      // Student found, fetch their current classes
-      _enrolledClasses = await _classService.fetchStudentClasses(studentId);
-
-      setState(() {
-        _currentStudentId = studentId;
-        _statusMessage =
-            'Student ID: $studentId found. Enrolled in ${_enrolledClasses.length} classes.';
-      });
-    } catch (e) {
-      print('Error during student search/fetch: $e');
-      setState(() {
-        _statusMessage = 'An error occurred during search.';
-        _currentStudentId = null;
-        _enrolledClasses = [];
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
-  // Enrolls the current student in a chosen class
-  Future<void> _enrollStudent(String classId, String className) async {
+  // ---------------- ENROLLMENT ----------------
+  Future<void> _enroll(Classroom cls) async {
     if (_currentStudentId == null) return;
-
-    setState(() {
-      _isLoading = true;
-      _statusMessage = 'Enrolling $_currentStudentId in $className...';
-    });
-
-    try {
-      // NOTE: This now updates both the Student and Class nodes in Firebase
-      await _classService.enrollStudentInClass(_currentStudentId!, classId);
-
-      // Refresh the enrolled list immediately
-      _enrolledClasses =
-          await _classService.fetchStudentClasses(_currentStudentId!);
-
-      setState(() {
-        _statusMessage =
-            'Successfully enrolled $_currentStudentId in $className!';
-        // Use setState to trigger rebuild with the new list
-      });
-    } catch (e) {
-      print('Enrollment error: $e');
-      setState(() {
-        _statusMessage = 'Failed to enroll student: $e';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    await _classService.enrollStudentInClass(
+      _currentStudentId!,
+      cls.classId,
+    );
+    _studentClasses =
+        await _classService.fetchStudentClasses(_currentStudentId!);
+    setState(() {});
   }
 
-  // Handles unenrollment and status updates
-  Future<void> _unenrollStudent(String classId, String className) async {
+  Future<void> _unenroll(Classroom cls) async {
     if (_currentStudentId == null) return;
-
-    setState(() {
-      _isLoading = true;
-      _statusMessage = 'Unenrolling $_currentStudentId from $className...';
-    });
-
-    try {
-      await _classService.unenrollStudentFromClass(_currentStudentId!, classId);
-      await _searchAndFetchClasses(); // Refresh list and status
-      setState(() {
-        _statusMessage =
-            'Successfully unenrolled $_currentStudentId from $className.';
-      });
-    } catch (e) {
-      print('Unenrollment error: $e');
-      setState(() {
-        _statusMessage = 'Failed to unenroll student: $e';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    await _classService.unenrollStudentFromClass(
+      _currentStudentId!,
+      cls.classId,
+    );
+    _studentClasses =
+        await _classService.fetchStudentClasses(_currentStudentId!);
+    setState(() {});
   }
 
-  // Handles the class creation flow
+  // ---------------- DIALOGS ----------------
   void _showCreateClassDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return ClassCreationDialog(
-          onClassCreated: (newClass) async {
-            setState(() {
-              _isLoading = true;
-              _statusMessage = 'Creating new class "${newClass.className}"...';
-            });
-            try {
-              // Call the new service method to save the class to Firebase
-              await _classService.createNewClass(newClass);
-              // Refresh the list of available classes displayed on this screen
-              await _fetchAvailableClasses();
-              setState(() {
-                _statusMessage =
-                    'Class "${newClass.className}" created successfully!';
-              });
-            } catch (e) {
-              print('Class creation error: $e');
-              setState(() {
-                _statusMessage = 'Error creating class: $e';
-              });
-            } finally {
-              setState(() {
-                _isLoading = false;
-              });
-            }
+      builder: (_) => ClassCreationDialog(
+        onClassCreated: _classService.createNewClass,
+      ),
+    );
+  }
+
+  void _openRoster(Classroom cls) {
+    showDialog(
+      context: context,
+      builder: (_) => AdminClassRosterDialog(
+        classroom: cls,
+        onRosterUpdated: () {},
+      ),
+    );
+  }
+
+  void _openClasswork(Classroom cls) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AdminClassworkManagementScreen(
+          classroom: cls,
+          adminId: 'ADM-001',
+        ),
+      ),
+    );
+  }
+
+  void _showEnrollmentDialog() {
+    if (_currentStudentId == null) return;
+
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        child: SizedBox(
+          width: double.infinity,
+          height: 400,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: _StudentEnrollmentPanel(
+              studentId: _currentStudentId,
+              enrolled: _studentClasses,
+              onEnroll: _enroll,
+              onUnenroll: _unenroll,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------- UI ----------------
+  @override
+  Widget build(BuildContext context) {
+    final isWideScreen = MediaQuery.of(context).size.width > 800;
+
+    return Column(
+      children: [
+        _Header(onCreate: _showCreateClassDialog),
+        _StudentSearchBar(
+          controller: _studentIdCtrl,
+          onSearch: _searchStudent,
+          status: _status,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: isWideScreen
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ✅ LEFT — CLASSES
+                      Expanded(
+                        flex: 3,
+                        child: _Panel(
+                          title: 'All Classes',
+                          child: _AdminClassOverview(
+                            stream: _classService.streamAllClasses(),
+                            onRoster: _openRoster,
+                            onClasswork: _openClasswork,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // ✅ RIGHT — ENROLLMENT (Always visible)
+                      Expanded(
+                        flex: 2,
+                        child: _Panel(
+                          title: 'Student Enrollment',
+                          child: _StudentEnrollmentPanel(
+                            studentId: _currentStudentId,
+                            enrolled: _studentClasses,
+                            onEnroll: _enroll,
+                            onUnenroll: _unenroll,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      // Classes Panel
+                      Expanded(
+                        child: _Panel(
+                          title: 'All Classes',
+                          child: _AdminClassOverview(
+                            stream: _classService.streamAllClasses(),
+                            onRoster: _openRoster,
+                            onClasswork: _openClasswork,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (_currentStudentId != null)
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.school),
+                          label: const Text('Manage Enrollment'),
+                          onPressed: _showEnrollmentDialog,
+                        ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------- SHARED PANEL ----------------
+class _Panel extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _Panel({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: const BoxDecoration(
+              color: ColorPalette.secondary,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+            ),
+            child: Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: Colors.white),
+            ),
+          ),
+          Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------- HEADER ----------------
+class _Header extends StatelessWidget {
+  final VoidCallback onCreate;
+  const _Header({required this.onCreate});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: ElevatedButton.icon(
+        icon: const Icon(Ionicons.add_circle),
+        label: const Text('Create New Class'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorPalette.secondary,
+          foregroundColor: ColorPalette.accentBlack,
+          minimumSize: const Size(double.infinity, 48),
+        ),
+        onPressed: onCreate,
+      ),
+    );
+  }
+}
+
+// ---------------- STUDENT SEARCH ----------------
+class _StudentSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onSearch;
+  final String? status;
+
+  const _StudentSearchBar({
+    required this.controller,
+    required this.onSearch,
+    this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasStatus = status != null;
+    final isError = hasStatus && status!.toLowerCase().contains('not found');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: 'Search Student ID',
+              filled: true,
+              fillColor: Colors.grey.shade100,
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.arrow_forward),
+                onPressed: onSearch,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide:
+                    const BorderSide(color: ColorPalette.primary, width: 2),
+              ),
+            ),
+            onSubmitted: (_) => onSearch(),
+          ),
+          if (hasStatus) ...[
+            const SizedBox(height: 6),
+            Text(
+              status!,
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: isError ? Colors.red : Colors.green.shade700,
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------- ADMIN VIEW ----------------
+class _AdminClassOverview extends StatelessWidget {
+  final Stream<List<Classroom>> stream;
+  final void Function(Classroom) onRoster;
+  final void Function(Classroom) onClasswork;
+
+  const _AdminClassOverview({
+    required this.stream,
+    required this.onRoster,
+    required this.onClasswork,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<Classroom>>(
+      stream: stream,
+      builder: (_, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final classes = snapshot.data!;
+        if (classes.isEmpty) {
+          return const Center(child: Text('No classes found'));
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(12),
+          itemCount: classes.length,
+          itemBuilder: (_, i) {
+            final cls = classes[i];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                title: Text(cls.className),
+                subtitle: Text(cls.creator),
+                trailing: Wrap(
+                  spacing: 8,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.people),
+                      tooltip: 'Roster',
+                      onPressed: () => onRoster(cls),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.description),
+                      tooltip: 'Classwork',
+                      onPressed: () => onClasswork(cls),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         );
       },
     );
   }
+}
 
-  // NEW: Shows the class-specific roster management dialog
-  void _showRosterDialog(Classroom classToManage) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AdminClassRosterDialog(
-          classroom: classToManage,
-          // Optional: Refresh the 'Available Classes' list if the roster update affects local display logic
-          onRosterUpdated: _fetchAvailableClasses,
-        );
-      },
-    );
-  }
+// ---------------- STUDENT ENROLLMENT ----------------
+class _StudentEnrollmentPanel extends StatelessWidget {
+  final String? studentId;
+  final List<Classroom> enrolled;
+  final void Function(Classroom) onEnroll;
+  final void Function(Classroom) onUnenroll;
+
+  const _StudentEnrollmentPanel({
+    required this.studentId,
+    required this.enrolled,
+    required this.onEnroll,
+    required this.onUnenroll,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (studentId == null) {
+      return const Center(
+        child: Text('Search a student to manage enrollment'),
+      );
+    }
+
     return Column(
       children: [
-        // 1. Create New Class Button (Updated to call the dialog)
         Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton.icon(
-            onPressed: _showCreateClassDialog, // *** HOOKED UP ***
-            icon: const Icon(Ionicons.add_circle, color: Colors.white),
-            label: const Text('Create New Class'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorPalette.secondary,
-              foregroundColor: ColorPalette.accentBlack,
-              minimumSize: const Size(double.infinity, 50),
-            ),
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            'Classes for $studentId',
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
-
-        // 2. Student Search and Status
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _studentIdController,
-                decoration: InputDecoration(
-                  labelText: 'Search Student ID (e.g., STU-001)',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Ionicons.search),
-                    onPressed: _searchAndFetchClasses,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+        const Divider(height: 1),
+        Expanded(
+          child: enrolled.isEmpty
+              ? const Center(child: Text('No enrolled classes'))
+              : ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: enrolled.length,
+                  itemBuilder: (_, i) {
+                    final cls = enrolled[i];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        title: Text(cls.className),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.remove_circle,
+                              color: Colors.red),
+                          onPressed: () => onUnenroll(cls),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                onSubmitted: (_) => _searchAndFetchClasses(),
-              ),
-              const SizedBox(height: 10),
-              if (_statusMessage != null)
-                Text(
-                  _statusMessage!,
-                  style: TextStyle(
-                    color: _statusMessage!.startsWith('Error')
-                        ? Colors.red
-                        : ColorPalette.secondary,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              const Divider(),
-            ],
-          ),
         ),
-
-        // 3. Main Content: Enrolled Classes vs. Available Classes
-        if (_isLoading) const LinearProgressIndicator(),
-
-        if (_currentStudentId != null)
-          Expanded(
-            child: Row(
-              children: [
-                // Left: Currently Enrolled Classes (Student-centric view)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Enrolled Classes',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(color: ColorPalette.secondary)),
-                        const SizedBox(height: 8),
-                        Expanded(
-                          child: _enrolledClasses.isEmpty
-                              ? const Center(
-                                  child: Text('Not enrolled in any classes.'))
-                              : ListView.builder(
-                                  itemCount: _enrolledClasses.length,
-                                  itemBuilder: (context, index) {
-                                    final cls = _enrolledClasses[index];
-                                    return Card(
-                                      child: ListTile(
-                                        title: Text(cls.className),
-                                        subtitle: Text(cls.classId),
-                                        trailing: IconButton(
-                                          icon: const Icon(
-                                              Icons.remove_circle_outline,
-                                              color: Colors.red),
-                                          onPressed: () => _unenrollStudent(
-                                              cls.classId, cls.className),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Right: Available Classes (Global list, now with Roster link)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Available Classes', // Renamed label
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(color: ColorPalette.secondary)),
-                        const SizedBox(height: 8),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: _availableClasses.length,
-                            itemBuilder: (context, index) {
-                              final cls = _availableClasses[index];
-                              // Check if the searched student is already enrolled (for the original function)
-                              final isEnrolled = _enrolledClasses
-                                  .any((e) => e.classId == cls.classId);
-
-                              return Card(
-                                color: isEnrolled
-                                    ? Colors.grey[200]
-                                    : Colors.white,
-                                child: ListTile(
-                                  title: Text(cls.className),
-                                  subtitle: Text(cls.classId),
-                                  trailing: Row(
-                                    // Use Row for multiple actions
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      // 1. Enrollment action (only visible if a student is searched)
-                                      if (_currentStudentId != null)
-                                        IconButton(
-                                          icon: Icon(
-                                            isEnrolled
-                                                ? Icons.check
-                                                : Ionicons.add_circle,
-                                            color: isEnrolled
-                                                ? Colors.green
-                                                : ColorPalette.secondary,
-                                          ),
-                                          onPressed: isEnrolled
-                                              ? null // Cannot enroll twice
-                                              : () => _enrollStudent(
-                                                  cls.classId, cls.className),
-                                          tooltip: isEnrolled
-                                              ? 'Enrolled'
-                                              : 'Enroll Student',
-                                        ),
-
-                                      // 2. Class Roster Management (new feature)
-                                      IconButton(
-                                        icon: const Icon(Ionicons.people,
-                                            color: ColorPalette.accentBlack),
-                                        tooltip: 'Manage Class Roster',
-                                        onPressed: () => _showRosterDialog(cls),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          // Default instruction message
-          Expanded(
-            child: Center(
-              child: Text(
-                'Enter a student ID above to manage their class enrollment, or click "Manage Roster" next to any class.',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
       ],
     );
   }
