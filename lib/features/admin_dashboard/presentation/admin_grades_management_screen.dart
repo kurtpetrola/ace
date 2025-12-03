@@ -5,6 +5,7 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/services/grade_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ace/features/admin_dashboard/presentation/widgets/add_grade_form.dart';
+import 'package:ace/features/shared/widget/grades_table.dart';
 
 class AdminGradesManagementScreen extends StatefulWidget {
   const AdminGradesManagementScreen({super.key});
@@ -18,10 +19,9 @@ class _AdminGradesManagementScreenState
     extends State<AdminGradesManagementScreen> {
   final TextEditingController _studentIdController = TextEditingController();
   final GradeService _gradeService = GradeService();
+
   Map<String, dynamic>? _studentGrades;
-
   String? _currentStudentId;
-
   String _message = 'Enter a Student ID and press Search.';
   bool _isLoading = false;
 
@@ -45,9 +45,7 @@ class _AdminGradesManagementScreenState
     });
 
     try {
-      // 1. VALIDATE STUDENT EXISTENCE FIRST
       final exists = await _gradeService.checkStudentExists(studentId);
-
       if (!exists) {
         setState(() {
           _message =
@@ -58,7 +56,6 @@ class _AdminGradesManagementScreenState
         return;
       }
 
-      // 2. If student exists, proceed to fetch grades
       setState(() {
         _message = 'Student account confirmed. Fetching grades...';
       });
@@ -70,7 +67,6 @@ class _AdminGradesManagementScreenState
         _message = _studentGrades!.isNotEmpty
             ? 'Grades found for $studentId.'
             : 'Student account found. No grades registered yet.';
-        // Set the ID only on successful confirmation and fetch
         _currentStudentId = studentId;
       });
     } catch (e) {
@@ -87,7 +83,7 @@ class _AdminGradesManagementScreenState
     }
   }
 
-  // --- UI Building ---
+  // --- UI ---
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -108,49 +104,15 @@ class _AdminGradesManagementScreenState
             ),
             const SizedBox(height: 20),
 
-            // Search Bar Section
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _studentIdController,
-                    decoration: const InputDecoration(
-                      labelText: 'Search Student ID',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      if (value.isEmpty && _currentStudentId != null) {
-                        setState(() {
-                          _currentStudentId = null;
-                          _studentGrades = null;
-                          _message = 'Enter a Student ID and press Search.';
-                        });
-                      }
-                    },
-                    onSubmitted: (_) => _searchStudent(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.search, size: 30),
-                  color: ColorPalette.secondary,
-                  onPressed: _isLoading ? null : _searchStudent,
-                ),
-              ],
+            // --- SEARCH BAR (replicated from AdminClassManagement) ---
+            _StudentSearchBar(
+              controller: _studentIdController,
+              onSearch: _searchStudent,
+              status: _message,
+              isLoading: _isLoading,
             ),
-            const SizedBox(height: 10),
-            Text(
-              _message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: ColorPalette.secondary.withOpacity(0.8),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-            const SizedBox(height: 20),
 
+            const SizedBox(height: 20),
             _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _buildGradesView(),
@@ -160,16 +122,12 @@ class _AdminGradesManagementScreenState
     );
   }
 
-  // Method to combine the current grades table and the grade form
   Widget _buildGradesView() {
-    if (_currentStudentId == null) {
-      return Container();
-    }
+    if (_currentStudentId == null) return Container();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // 1. Current Grades Table (If grades exist)
         if (_studentGrades != null && _studentGrades!.isNotEmpty) ...[
           const Divider(height: 30, thickness: 1),
           const Text(
@@ -181,59 +139,74 @@ class _AdminGradesManagementScreenState
             ),
           ),
           const SizedBox(height: 10),
-          _buildGradesTable(),
+          GradeTable(grades: _studentGrades!),
           const Divider(height: 30, thickness: 1),
         ],
-
-        // 2. The Grade Input Form (Always shown if student ID is successfully validated)
         AddGradeForm(studentId: _currentStudentId!),
       ],
     );
   }
+}
 
-  // Builds the table of subjects
-  Widget _buildGradesTable() {
-    final List<DataRow> rows = _studentGrades!.entries.map((entry) {
-      final subjectCode = entry.key;
-      final gradeDetails = entry.value is Map
-          ? Map<String, dynamic>.from(entry.value)
-          : <String, dynamic>{};
+// ---------------- REUSABLE STUDENT SEARCH BAR ----------------
+class _StudentSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onSearch;
+  final String? status;
+  final bool isLoading;
 
-      final latestGrade = gradeDetails['Final'] ??
-          gradeDetails['P3'] ??
-          gradeDetails['P2'] ??
-          gradeDetails['P1'] ??
-          'N/A';
+  const _StudentSearchBar({
+    required this.controller,
+    required this.onSearch,
+    this.status,
+    this.isLoading = false,
+  });
 
-      return DataRow(cells: [
-        DataCell(Text(subjectCode)),
-        DataCell(Text(latestGrade.toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold))),
-        DataCell(Text(gradeDetails['P1']?.toString() ?? '-')),
-        DataCell(Text(gradeDetails['P2']?.toString() ?? '-')),
-        DataCell(Text(gradeDetails['P3']?.toString() ?? '-')),
-        DataCell(Text(gradeDetails['Final']?.toString() ?? '-')),
-      ]);
-    }).toList();
+  @override
+  Widget build(BuildContext context) {
+    final hasStatus = status != null;
+    final isError = hasStatus && status!.toLowerCase().contains('not found');
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: const [
-          DataColumn(
-              label: Text('Course Code',
-                  style: TextStyle(fontWeight: FontWeight.bold))),
-          DataColumn(
-              label: Text('Latest',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: ColorPalette.secondary))),
-          DataColumn(label: Text('P1')),
-          DataColumn(label: Text('P2')),
-          DataColumn(label: Text('P3')),
-          DataColumn(label: Text('Final')),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: 'Search Student ID',
+              filled: true,
+              fillColor: Colors.grey.shade100,
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.arrow_forward),
+                onPressed: isLoading ? null : onSearch,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide:
+                    const BorderSide(color: ColorPalette.primary, width: 2),
+              ),
+            ),
+            onSubmitted: (_) => onSearch(),
+          ),
+          if (hasStatus) ...[
+            const SizedBox(height: 6),
+            Text(
+              status!,
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: isError ? Colors.red : Colors.green.shade700,
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
         ],
-        rows: rows,
       ),
     );
   }
