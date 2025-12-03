@@ -18,7 +18,6 @@ class _CreatePostDialogState extends State<CreatePostDialog> {
 
   void _submitPost() async {
     if (_controller.text.trim().isEmpty) {
-      // Simple validation using ScaffoldMessenger
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Post cannot be empty.')),
@@ -27,11 +26,7 @@ class _CreatePostDialogState extends State<CreatePostDialog> {
       return;
     }
 
-    if (mounted) {
-      setState(() {
-        _isPosting = true;
-      });
-    }
+    if (mounted) setState(() => _isPosting = true);
 
     bool success = false;
     try {
@@ -48,36 +43,38 @@ class _CreatePostDialogState extends State<CreatePostDialog> {
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isPosting = false;
-        });
-        if (success) {
-          Navigator.of(context).pop(); // Close dialog on success
-        }
+        setState(() => _isPosting = false);
+        if (success) Navigator.of(context).pop();
       }
     }
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('New Class Post'),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: const Text(
+        'New Class Post',
+        style: TextStyle(color: ColorPalette.accentBlack),
+      ),
       content: TextField(
         controller: _controller,
         autofocus: true,
         maxLines: 5,
         maxLength: 500,
+        style: const TextStyle(color: ColorPalette.accentBlack),
         decoration: InputDecoration(
           hintText: 'Share an update, question, or comment...',
-          border: const OutlineInputBorder(),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.secondary),
+            borderRadius: BorderRadius.circular(8),
+            borderSide:
+                const BorderSide(color: ColorPalette.secondary, width: 2),
           ),
         ),
       ),
@@ -89,7 +86,10 @@ class _CreatePostDialogState extends State<CreatePostDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorPalette.secondary,
-            foregroundColor: Colors.white,
+            foregroundColor: ColorPalette.accentBlack,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           onPressed: _isPosting ? null : _submitPost,
           child: _isPosting
@@ -98,10 +98,14 @@ class _CreatePostDialogState extends State<CreatePostDialog> {
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(ColorPalette.accentBlack),
                   ),
                 )
-              : const Text('Post'),
+              : const Text(
+                  'Post',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
         ),
       ],
     );
