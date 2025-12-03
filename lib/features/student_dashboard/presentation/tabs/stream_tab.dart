@@ -12,37 +12,28 @@ class StreamTab extends StatelessWidget {
   final Classroom classroom;
   // Initialize the new stream service
   final StreamService _streamService = StreamService();
-  // Get the Hive box reference (assuming it's already open)
+  // Get the Hive box reference for login data
   final Box _loginbox = Hive.box("_loginbox");
 
   StreamTab({super.key, required this.classroom});
 
   // Function to format the timestamp into a human-readable string
   String _formatTimestamp(DateTime timestamp) {
-    final difference = DateTime.now().difference(timestamp);
-    if (difference.inDays > 0) {
-      return '${difference.inDays} days ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hours ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minutes ago';
-    } else {
-      return 'Just now';
-    }
+    final diff = DateTime.now().difference(timestamp);
+    if (diff.inDays > 0) return '${diff.inDays} days ago';
+    if (diff.inHours > 0) return '${diff.inHours} hours ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes} minutes ago';
+    return 'Just now';
   }
 
-  // Function to show the create post dialog
+  // Function to show the create post dialog and handle post creation
   void _showCreatePostDialog(BuildContext context) {
-    // ⚠️ CRITICAL: Retrieve the authenticated user's ID and Name from Hive
-    // 'User' holds the studentId/adminId, and 'UserName' holds the fullname.
     final String currentUserId =
         _loginbox.get('User', defaultValue: 'Unknown-ID');
     final String currentUserName =
         _loginbox.get('UserName', defaultValue: 'Unknown User');
 
-    // Basic check for valid data before creating a post
     if (currentUserId == 'Unknown-ID' || currentUserName == 'Unknown User') {
-      // If session data is missing, notify the user.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content:
@@ -53,62 +44,58 @@ class StreamTab extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return CreatePostDialog(
-          onCreatePost: (content) => _streamService.createPost(
-            classroom.classId,
-            currentUserId, // Use the real user ID
-            currentUserName, // Use the real user Name
-            content,
-          ),
-        );
-      },
+      builder: (context) => CreatePostDialog(
+        onCreatePost: (content) => _streamService.createPost(
+          classroom.classId,
+          currentUserId,
+          currentUserName,
+          content,
+        ),
+      ),
     );
   }
 
-  // Widget to display a single stream post
-  Widget _buildPostCard(
-      BuildContext context, String authorName, String content, String footer) {
+// Widget to display a single stream post card
+  Widget _buildPostCard(BuildContext context, Post post) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: ColorPalette.secondary.withOpacity(0.1),
+                  backgroundColor: ColorPalette.accentBlack.withOpacity(0.15),
                   child: Text(
-                    authorName.isNotEmpty ? authorName[0] : '?',
+                    post.authorName.isNotEmpty ? post.authorName[0] : '?',
                     style: const TextStyle(
-                        color: ColorPalette.secondary,
-                        fontWeight: FontWeight.bold),
+                      color: ColorPalette.accentBlack,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Text(authorName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(post.authorName,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: ColorPalette.accentBlack)),
+                    Text(
+                      _formatTimestamp(post.timestamp),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ),
               ],
             ),
-            const Divider(height: 20),
-            Text(content, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                footer,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: Colors.grey[600]),
-              ),
-            ),
+            Text(post.content, style: Theme.of(context).textTheme.bodyLarge),
           ],
         ),
       ),
@@ -124,10 +111,9 @@ class StreamTab extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
+
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Error loading stream: ${snapshot.error.toString()}'),
-          );
+          return Center(child: Text('Error loading stream: ${snapshot.error}'));
         }
 
         final posts = snapshot.data ?? [];
@@ -136,30 +122,28 @@ class StreamTab extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Welcome to ${classroom.className} Stream!',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Class ID: ${classroom.classId}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text('Welcome to ${classroom.className} Stream!',
+                        style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 6),
+                    Text('Class ID: ${classroom.classId}',
+                        style: Theme.of(context).textTheme.titleMedium),
                     const Divider(height: 30),
 
-                    // Post Creation Card
+                    // Create Post Card
                     Card(
                       elevation: 2,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor:
-                              ColorPalette.secondary.withOpacity(0.1),
+                              ColorPalette.accentBlack.withOpacity(0.15),
                           child: const Icon(Icons.edit_note,
-                              color: ColorPalette.secondary),
+                              color: ColorPalette.accentBlack),
                         ),
                         title: const Text('Share something with your class...'),
                         onTap: () => _showCreatePostDialog(context),
@@ -167,13 +151,11 @@ class StreamTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    Text(
-                      'Recent Posts (${posts.length})',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
+                    Text('Recent Posts (${posts.length})',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
                     const Divider(),
                   ],
                 ),
@@ -182,32 +164,17 @@ class StreamTab extends StatelessWidget {
             // Real-time List of Posts
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final post = posts[index];
-                  // Display dynamic posts from Firebase, newest first
-                  return _buildPostCard(
-                    context,
-                    post.authorName,
-                    post.content,
-                    '${post.authorName} • ${_formatTimestamp(post.timestamp)}',
-                  );
-                },
+                (context, index) => _buildPostCard(context, posts[index]),
                 childCount: posts.length,
               ),
             ),
-            // Show a message if there are no posts
             if (posts.isEmpty)
               SliverToBoxAdapter(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 50.0),
-                    child: Text(
-                      'No posts in the stream yet.',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(color: Colors.grey),
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: Center(
+                    child: Text('No posts in the stream yet.',
+                        style: TextStyle(color: Colors.grey[600])),
                   ),
                 ),
               ),
