@@ -24,7 +24,6 @@ class _AddGradeFormState extends State<AddGradeForm> {
 
   bool _isLoading = false;
 
-  // Grade types that match your database structure (e.g., P1, P2, Final)
   final List<String> gradeTypes = ['P1', 'P2', 'P3', 'Final'];
 
   // --- Submission Logic ---
@@ -32,9 +31,7 @@ class _AddGradeFormState extends State<AddGradeForm> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       try {
         // Call the user's existing GradeService method
@@ -42,14 +39,13 @@ class _AddGradeFormState extends State<AddGradeForm> {
           studentId: widget.studentId,
           subjectCode: _subjectCode!,
           gradeType: _selectedGradeType!,
-          // Pass the score as a String, as required by updateStudentGrade's signature
           gradeValue: _scoreController.text,
         );
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Grade saved successfully! Student record updated."),
+            content: Text("Grade saved successfully!"),
             backgroundColor: ColorPalette.secondary,
           ),
         );
@@ -70,9 +66,7 @@ class _AddGradeFormState extends State<AddGradeForm> {
           ),
         );
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -80,14 +74,26 @@ class _AddGradeFormState extends State<AddGradeForm> {
   // --- UI Building ---
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Form(
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+          children: [
             Text(
               'Add Grade for Student: ${widget.studentId}',
               style: const TextStyle(
@@ -109,30 +115,24 @@ class _AddGradeFormState extends State<AddGradeForm> {
             ),
             const SizedBox(height: 16),
 
-            // Grade Type (Period) Dropdown
+            // Grade Type Dropdown
             DropdownButtonFormField<String>(
               decoration:
                   _inputDecoration('Select Grade Type (P1, Final, etc.)'),
               value: _selectedGradeType,
               hint: const Text('Grade Type',
                   style: TextStyle(color: ColorPalette.darkGrey)),
-              items: gradeTypes.map((String type) {
-                return DropdownMenuItem<String>(
+              items: gradeTypes.map((type) {
+                return DropdownMenuItem(
                   value: type,
                   child: Text(type,
                       style: const TextStyle(color: ColorPalette.accentBlack)),
                 );
               }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedGradeType = newValue;
-                });
-              },
+              onChanged: (value) => setState(() => _selectedGradeType = value),
               validator: (value) =>
                   value == null ? 'Select a grade type' : null,
-              onSaved: (value) => _selectedGradeType = value,
               dropdownColor: Colors.white,
-              style: const TextStyle(color: ColorPalette.accentBlack),
             ),
             const SizedBox(height: 16),
 
@@ -158,7 +158,7 @@ class _AddGradeFormState extends State<AddGradeForm> {
               onPressed: _isLoading ? null : _submitGrade,
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorPalette.secondary,
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -193,14 +193,14 @@ class _AddGradeFormState extends State<AddGradeForm> {
       labelText: label,
       labelStyle: const TextStyle(color: ColorPalette.darkGrey),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: ColorPalette.lightGray,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: ColorPalette.secondary, width: 2),
+        borderSide: const BorderSide(color: ColorPalette.primary, width: 2),
       ),
     );
   }
