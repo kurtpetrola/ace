@@ -10,8 +10,13 @@ import 'package:ace/features/student_dashboard/presentation/tabs/people_tab.dart
 
 class StudentClassroomPage extends StatelessWidget {
   final Classroom classroom;
+  final String studentId;
 
-  const StudentClassroomPage({super.key, required this.classroom});
+  const StudentClassroomPage({
+    super.key,
+    required this.classroom,
+    required this.studentId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +114,10 @@ class StudentClassroomPage extends StatelessWidget {
           body: TabBarView(
             children: [
               StreamTab(classroom: classroom),
-              ClassworkTab(classroom: classroom),
+              ClassworkTab(
+                classroom: classroom,
+                studentId: studentId,
+              ),
               PeopleTab(classroom: classroom),
             ],
           ),
