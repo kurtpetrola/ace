@@ -10,6 +10,10 @@ Academia Classroom Explorer is an application designed to help students view, mo
 - **Cross-Platform**: Seamless installation and smooth operation on both Android and iOS devices.
 - **Responsive Design**: UI dynamically adjusts to maintain an optimal user experience across different screen sizes.
 
+## 📥 Installation
+
+You can download the latest **Android APK** file and install the application manually from the **[releases page](https://github.com/kurtpetrola/ace/releases)**.
+
 ## 💻 Tech Stack
 
 | Component             | Technology   | Purpose                                                                                                                                 |
