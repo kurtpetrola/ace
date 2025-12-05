@@ -1,16 +1,25 @@
-// lib/features/student_dashboard/presentation/widgets/personal_info_section.dart
+// lib/features/shared/widget/personal_info_section.dart
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:ace/models/user.dart';
 import 'package:ace/common/widgets/dialogs/alertdialog.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/student_dashboard/presentation/widgets/profile_info_tile.dart';
-import 'package:hive/hive.dart';
+import 'package:ace/features/shared/widget/profile_info_tile.dart';
 
 class PersonalInfoSection extends StatelessWidget {
   final User user;
+  final String role;
+  final IconData avatarIcon;
+  final bool isAdmin;
 
-  const PersonalInfoSection({super.key, required this.user});
+  const PersonalInfoSection({
+    super.key,
+    required this.user,
+    this.role = "Student",
+    this.avatarIcon = Icons.person_outline_rounded,
+    this.isAdmin = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +27,10 @@ class PersonalInfoSection extends StatelessWidget {
     final _loginbox = Hive.box("_loginbox");
 
     final infoList = [
-      {'label': 'Student ID', 'value': user.userId.toString()},
+      {
+        'label': isAdmin ? 'Admin ID' : 'Student ID',
+        'value': user.userId.toString()
+      },
       {'label': 'Gender', 'value': user.gender.toString()},
       {'label': 'Age', 'value': user.age.toString()},
       {'label': 'E-mail', 'value': user.email.toString()},
@@ -33,12 +45,10 @@ class PersonalInfoSection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Stack(
         children: [
-          // Main card
           Card(
             elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
               child: Column(
@@ -48,7 +58,7 @@ class PersonalInfoSection extends StatelessWidget {
                     radius: 52,
                     backgroundColor: scheme.surfaceVariant,
                     child: Icon(
-                      Icons.person_outline_rounded,
+                      avatarIcon,
                       size: 56,
                       color: scheme.onSurfaceVariant,
                     ),
@@ -63,7 +73,7 @@ class PersonalInfoSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Student',
+                    role,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: scheme.onSurfaceVariant,
                         ),
@@ -121,7 +131,7 @@ class PersonalInfoSection extends StatelessWidget {
             ),
           ),
 
-          // Logout button top-right corner
+          // Top-right logout button
           Positioned(
             top: 16,
             right: 16,
@@ -129,9 +139,7 @@ class PersonalInfoSection extends StatelessWidget {
               color: Colors.transparent,
               child: IconButton(
                 iconSize: 32,
-                icon: const Icon(
-                  Icons.exit_to_app,
-                ),
+                icon: Icon(Icons.exit_to_app, color: scheme.primary),
                 onPressed: () async {
                   final action = await AlertDialogs.yesCancelDialog(
                     context,
@@ -142,8 +150,7 @@ class PersonalInfoSection extends StatelessWidget {
                     _loginbox.put("isLoggedIn", false);
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const SelectionPage(),
-                      ),
+                          builder: (context) => const SelectionPage()),
                     );
                   }
                 },
