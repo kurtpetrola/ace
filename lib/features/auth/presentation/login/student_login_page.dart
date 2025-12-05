@@ -140,8 +140,8 @@ class StudentLoginPage extends ConsumerWidget {
                     // Student Number Field
                     _buildTextField(
                       context,
-                      label: 'Student Number',
-                      hint: 'Enter your student number',
+                      label: 'Student ID',
+                      hint: 'Enter your Student ID',
                       icon: Icons.person,
                       initialValue: state.studentId,
                       onChanged: notifier.setStudentId,
