@@ -19,6 +19,17 @@ Academia Classroom Explorer is an application designed to help students view, mo
 | **State Management**  | **Riverpod** | A compile-safe, scalable solution for managing complex application state and separating business logic from the UI.                     |
 | **Local Persistence** | **Hive**     | Lightweight, high-performance NoSQL key-value database for local data caching (e.g., initial load data) and offline access.             |
 
+## 🔑 Demo Accounts
+
+Use the following accounts to quickly explore the application's different user roles (Student and Admin) without needing to register:
+
+- **Student Account**
+  - **Student ID:** `STU-001`
+  - **Password:** `StudentSecure99!`
+- **Admin Account**
+  - **Admin ID:** `ADM-001`
+  - **Password:** `AdminSecure99!`
+
 ## 🛠 To Do & Future Enhancements
 
 The following features are prioritized for development:
