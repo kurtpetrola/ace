@@ -56,7 +56,7 @@ class StudentRegistrationService {
       // The user's custom studentId (user.uid) is preserved inside the document.
       final Map<String, dynamic> userData = user.toJson();
 
-      await _dbReference.child(authUid).set(userData);
+      await _dbReference.child(user.userId).set(userData);
 
       // 4. Optional: Sign out the user immediately after registration
       // This ensures the user is directed to the login screen next.
