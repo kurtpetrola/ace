@@ -6,7 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:hive/hive.dart';
 import 'dart:convert';
 import 'package:ace/models/user.dart';
-import 'package:ace/features/student_dashboard/presentation/widgets/personal_info_section.dart';
+import 'package:ace/features/shared/widget/personal_info_section.dart';
 
 class StudentAccountScreen extends StatefulWidget {
   const StudentAccountScreen({super.key});
