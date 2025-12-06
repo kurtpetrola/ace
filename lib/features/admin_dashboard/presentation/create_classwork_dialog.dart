@@ -154,35 +154,70 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
     final isEditing = widget.existingClasswork != null;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
       child: Container(
         width: 600,
-        constraints: const BoxConstraints(maxHeight: 700),
-        padding: const EdgeInsets.all(24),
+        constraints: const BoxConstraints(maxHeight: 750),
+        padding: const EdgeInsets.all(30),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(Ionicons.create_outline,
-                      color: ColorPalette.secondary, size: 28),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                        isEditing ? 'Edit Classwork' : 'Create Classwork',
-                        style: Theme.of(context).textTheme.headlineSmall),
-                  ),
-                  IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context)),
-                ],
+              // Header
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: ColorPalette.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                          isEditing
+                              ? Ionicons.create_outline
+                              : Ionicons.add_circle_outline,
+                          color: ColorPalette.primary,
+                          size: 28),
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isEditing ? 'Edit Classwork' : 'Create Classwork',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: ColorPalette.accentBlack,
+                          ),
+                        ),
+                        Text(
+                          'For: ${widget.classroom.className}',
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              Text('For: ${widget.classroom.className}',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-              const Divider(height: 30),
+              const SizedBox(height: 10),
+
+              // Close button absolute positioning or just in a row?
+              // The previous implementation had a close button in a row.
+              // Let's stick to a clean modal look, usually actions are at bottom.
+
+              const Divider(height: 40),
+
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -190,144 +225,273 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
                     children: [
                       // Classwork Type
                       Text('Classwork Type',
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade700)),
+                      const SizedBox(height: 12),
                       Wrap(
-                        spacing: 8,
+                        spacing: 10,
+                        runSpacing: 10,
                         children: ClassworkType.values.map((type) {
+                          final isSelected = _selectedType == type;
                           return ChoiceChip(
                             label: Text(type.displayName),
-                            selected: _selectedType == type,
+                            selected: isSelected,
                             onSelected: (s) =>
                                 setState(() => _selectedType = type),
-                            selectedColor: ColorPalette.secondary,
+                            selectedColor: ColorPalette.primary,
+                            checkmarkColor: Colors.white,
+                            backgroundColor: Colors.white,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? ColorPalette.primary
+                                  : Colors.grey.shade300,
+                            ),
                             labelStyle: TextStyle(
-                                color: _selectedType == type
-                                    ? Colors.white
-                                    : Colors.black),
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
                       // Title
+                      _buildLabel('Title'),
                       TextFormField(
                         controller: _titleController,
-                        decoration: InputDecoration(
-                          labelText: 'Title *',
-                          hintText: 'e.g., Assignment 1',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          prefixIcon: const Icon(Ionicons.document_text),
-                        ),
+                        decoration: _inputDecoration('e.g., Assignment 1',
+                            icon: Ionicons.document_text_outline),
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Enter title'
                             : null,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
                       // Description
+                      _buildLabel('Description'),
                       TextFormField(
                         controller: _descriptionController,
                         maxLines: 4,
-                        decoration: InputDecoration(
-                          labelText: 'Description *',
-                          hintText: 'Instructions...',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
+                        decoration: _inputDecoration('Instructions, details...',
+                            icon: null),
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Enter description'
                             : null,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
                       // Points
-                      TextFormField(
-                        controller: _pointsController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Points *',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          prefixIcon: const Icon(Ionicons.medal),
+                      _buildLabel('Points'),
+                      SizedBox(
+                        width: 150,
+                        child: TextFormField(
+                          controller: _pointsController,
+                          keyboardType: TextInputType.number,
+                          decoration: _inputDecoration('100',
+                              icon: Ionicons.medal_outline),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty)
+                              return 'Required';
+                            if (int.tryParse(v) == null) return 'Invalid';
+                            return null;
+                          },
                         ),
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty)
-                            return 'Enter points';
-                          if (int.tryParse(v) == null)
-                            return 'Enter valid number';
-                          return null;
-                        },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
                       // Due date/time
-                      Text('Due Date (Optional)',
-                          style: Theme.of(context).textTheme.titleMedium),
+                      _buildLabel('Due Date (Optional)'),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _selectDueDate,
-                              icon: const Icon(Ionicons.calendar_outline),
-                              label: Text(_selectedDueDate == null
-                                  ? 'Select Date'
-                                  : '${_selectedDueDate!.month}/${_selectedDueDate!.day}/${_selectedDueDate!.year}'),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _selectDueTime,
-                              icon: const Icon(Ionicons.time_outline),
-                              label: Text(_selectedDueTime?.format(context) ??
-                                  'Select Time'),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_selectedDueDate != null)
-                        TextButton.icon(
-                          onPressed: () => setState(() {
-                            _selectedDueDate = null;
-                            _selectedDueTime = null;
-                          }),
-                          icon: const Icon(Icons.clear, size: 18),
-                          label: const Text('Clear Due Date'),
-                          style:
-                              TextButton.styleFrom(foregroundColor: Colors.red),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
                         ),
-
-                      // Attachment UI removed since Firebase Storage is unavailable
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: _selectDueDate,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Colors.grey.shade300),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Ionicons.calendar_outline,
+                                              size: 18,
+                                              color: Colors.grey.shade600),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              _selectedDueDate == null
+                                                  ? 'Select Date'
+                                                  : '${_selectedDueDate!.month}/${_selectedDueDate!.day}/${_selectedDueDate!.year}',
+                                              style: TextStyle(
+                                                color: _selectedDueDate == null
+                                                    ? Colors.grey
+                                                    : Colors.black87,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: _selectDueTime,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Colors.grey.shade300),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Ionicons.time_outline,
+                                              size: 18,
+                                              color: Colors.grey.shade600),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              _selectedDueTime
+                                                      ?.format(context) ??
+                                                  'Select Time',
+                                              style: TextStyle(
+                                                color: _selectedDueTime == null
+                                                    ? Colors.grey
+                                                    : Colors.black87,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_selectedDueDate != null) ...[
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton.icon(
+                                  onPressed: () => setState(() {
+                                    _selectedDueDate = null;
+                                    _selectedDueTime = null;
+                                  }),
+                                  icon: const Icon(Icons.clear, size: 16),
+                                  label: const Text('Clear Due Date'),
+                                  style: TextButton.styleFrom(
+                                      foregroundColor: Colors.red,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap),
+                                ),
+                              ),
+                            ]
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-              const Divider(height: 30),
+              const Divider(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel')),
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.grey.shade600,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
+                    ),
+                    child: const Text('Cancel', style: TextStyle(fontSize: 16)),
+                  ),
                   const SizedBox(width: 12),
-                  ElevatedButton.icon(
-                    onPressed: _handleSave,
-                    icon: Icon(isEditing ? Ionicons.save : Ionicons.add),
-                    label: Text(isEditing ? 'Save' : 'Create'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorPalette.secondary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12)),
+                  Flexible(
+                    child: ElevatedButton.icon(
+                      onPressed: _handleSave,
+                      icon: Icon(isEditing ? Ionicons.save : Ionicons.add,
+                          size: 20),
+                      label: Text(
+                        isEditing ? 'Save' : 'Create',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorPalette.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16)),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(label,
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700)),
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint, {IconData? icon}) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: icon != null ? Icon(icon, color: Colors.grey) : null,
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade200),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade200),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ColorPalette.primary, width: 1.5),
       ),
     );
   }
