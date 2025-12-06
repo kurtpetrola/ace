@@ -21,29 +21,37 @@ class GradeTable extends StatelessWidget {
       final subjectCode = entry.key;
       final gradeDetails = Map<String, dynamic>.from(entry.value as Map);
 
-      final finalGrade = gradeDetails['Final'] ?? gradeDetails['P3'] ?? '-';
+      // Fetch grades using new keys, falling back to old ones if necessary
+      final prelim = gradeDetails['Prelim'] ?? gradeDetails['P1'] ?? '-';
+      final midterm = gradeDetails['Midterm'] ?? gradeDetails['P2'] ?? '-';
+      final finalTerm = gradeDetails['Final'] ?? gradeDetails['P3'] ?? '-';
+
+      // The calculated average or final grade
+      final average = gradeDetails['Average'] ?? '-';
 
       return DataRow(
         cells: [
           DataCell(Text(subjectCode,
               style: const TextStyle(color: ColorPalette.accentBlack))),
-          DataCell(Text(finalGrade,
+          // Display the calculated Average prominently
+          DataCell(Text(average,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: ColorPalette.accentBlack))),
-          DataCell(Text(gradeDetails['P1'] ?? '-',
+          DataCell(Text(prelim,
               style: const TextStyle(color: ColorPalette.accentBlack))),
-          DataCell(Text(gradeDetails['P2'] ?? '-',
+          DataCell(Text(midterm,
               style: const TextStyle(color: ColorPalette.accentBlack))),
-          DataCell(Text(gradeDetails['P3'] ?? '-',
+          DataCell(Text(finalTerm,
               style: const TextStyle(color: ColorPalette.accentBlack))),
         ],
       );
     }).toList();
 
     return Container(
+      width: double.infinity, // Occupy full width
       decoration: BoxDecoration(
-        color: Colors.white, // Table background
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -54,28 +62,44 @@ class GradeTable extends StatelessWidget {
         ],
         border: Border.all(color: Colors.grey.shade300),
       ),
-      padding: const EdgeInsets.all(12),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          headingRowColor:
-              MaterialStateProperty.all(ColorPalette.primary.withOpacity(0.8)),
-          headingTextStyle: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+      padding:
+          const EdgeInsets.all(0), // Removed inner padding for cleaner look
+      child: ClipRRect(
+        // Clip content to border radius
+        borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              headingRowColor: WidgetStateProperty.all(ColorPalette.primary
+                  .withOpacity(0.9)), // Use WidgetStateProperty
+              headingTextStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Lato', // Consistent font
+              ),
+              dataRowColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+                  // Alternating row colors could be added here if passed index
+                  return ColorPalette.lighterRed.withOpacity(0.2);
+                },
+              ),
+              columns: const [
+                DataColumn(label: Text('Course')),
+                DataColumn(label: Text('Average')),
+                DataColumn(label: Text('Prelim')),
+                DataColumn(label: Text('Midterm')),
+                DataColumn(label: Text('Final')),
+              ],
+              rows: rows,
+              columnSpacing: 20,
+              horizontalMargin: 20,
+              headingRowHeight: 50,
+              dataRowMinHeight: 45,
+              dataRowMaxHeight: 45,
+            ),
           ),
-          dataRowColor: MaterialStateProperty.all(
-              ColorPalette.lighterRed.withOpacity(0.2)),
-          columns: const [
-            DataColumn(label: Text('Course Code')),
-            DataColumn(label: Text('FINAL')),
-            DataColumn(label: Text('P1')),
-            DataColumn(label: Text('P2')),
-            DataColumn(label: Text('P3')),
-          ],
-          rows: rows,
-          columnSpacing: 24,
-          horizontalMargin: 12,
         ),
       ),
     );

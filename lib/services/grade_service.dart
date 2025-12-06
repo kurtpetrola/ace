@@ -17,7 +17,8 @@ class GradeService {
   // NEW: Check for Student Profile Existence
   // ------------------------------------------------------------------
   /// Checks if a student profile exists under the /Students/{studentId} path.
-  Future<bool> checkStudentExists(String studentId) async {
+  Future<bool> checkStudentExists(String studentIdInput) async {
+    final studentId = studentIdInput.trim();
     try {
       final snapshot = await _studentsRef.child(studentId).get();
       // If the snapshot exists, the student profile is confirmed to exist.
@@ -33,7 +34,9 @@ class GradeService {
 
   /// Fetches a single student's grades by their student ID.
   /// Returns a Map<String, dynamic> where keys are subject codes (e.g., 'ITE 115').
-  Future<Map<String, dynamic>?> fetchStudentGrades(String studentId) async {
+  Future<Map<String, dynamic>?> fetchStudentGrades(
+      String studentIdInput) async {
+    final studentId = studentIdInput.trim();
     try {
       final snapshot = await _gradesRef.child(studentId).get();
       if (snapshot.exists && snapshot.value != null) {
@@ -55,19 +58,55 @@ class GradeService {
   Future<void> updateStudentGrade({
     required String studentId,
     required String subjectCode,
-    required String gradeType, // e.g., 'P1', 'P2', 'Final'
-    required String gradeValue, // e.g., '95', '78'
+    required String gradeType, // 'Prelim', 'Midterm', 'Final' (or 'P1', etc.)
+    required String gradeValue,
   }) async {
+    final sId = studentId.trim();
     try {
-      // The update path for a specific grade
-      final path = '$subjectCode/$gradeType';
+      // 1. Reference to the specific subject
+      final subjectRef = _gradesRef.child(sId).child(subjectCode);
 
-      // Use .set() to set the specified field
-      await _gradesRef.child(studentId).child(path).set(gradeValue);
+      // 2. Fetch current grades first to perform calculation
+      final snapshot = await subjectRef.get();
+      Map<String, dynamic> currentGrades = {};
+
+      if (snapshot.exists && snapshot.value != null) {
+        currentGrades =
+            Map<String, dynamic>.from(jsonDecode(jsonEncode(snapshot.value)));
+      }
+
+      // 3. Update the map with the NEW value
+      currentGrades[gradeType] = gradeValue;
+
+      // 4. Calculate Final Grade AUTOMATICALLY if we have all 3 inputs
+      // Check keys based on your new naming convention: 'Prelim', 'Midterm', 'Final'
+      // Or fallback to 'P1', 'P2', 'P3' if using legacy.
+      // 4. Calculate Final Grade AUTOMATICALLY if we have all 3 inputs
+      // Check keys based on your new naming convention: 'Prelim', 'Midterm', 'Final'
+
+      // Try parsing keys. Adjust these keys to match exactly what your dropdown sends.
+      final p1 = double.tryParse(currentGrades['Prelim']?.toString() ??
+          currentGrades['P1']?.toString() ??
+          '');
+      final p2 = double.tryParse(currentGrades['Midterm']?.toString() ??
+          currentGrades['P2']?.toString() ??
+          '');
+      final p3 = double.tryParse(currentGrades['Final']?.toString() ??
+          currentGrades['P3']?.toString() ??
+          '');
+
+      // Only calculate if we have valid numbers for all 3
+      if (p1 != null && p2 != null && p3 != null) {
+        final average = (p1 + p2 + p3) / 3;
+        // Save this as 'Average' to distinguish from the Final Term Grade.
+        currentGrades['Average'] = average.toStringAsFixed(2);
+      }
+
+      // 5. Save the entire updated map for this subject
+      await subjectRef.set(currentGrades);
 
       if (kDebugMode) {
-        print(
-            'Grade updated successfully for $studentId: $subjectCode/$gradeType = $gradeValue');
+        print('Grades updated for $sId in $subjectCode: $currentGrades');
       }
     } catch (e) {
       if (kDebugMode) {
