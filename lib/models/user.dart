@@ -30,9 +30,11 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     // Determine the ID key dynamically, falling back to a generic 'uid' if 'studentid'/'adminid' aren't present.
     // NOTE: It is best practice for the DB to consistently use one key, like 'uid'.
-    final String retrievedId = json["uid"] as String? ??
-        json["studentid"] as String? ??
+    // Determine the ID key dynamically. We prioritize the valid custom IDs (studentid, adminid)
+    // over the internal 'uid' (Firebase Auth ID) which is mainly for security linkage.
+    final String retrievedId = json["studentid"] as String? ??
         json["adminid"] as String? ??
+        json["uid"] as String? ??
         '';
 
     // Safely parse the age, defaulting to 0 if null or not parsable as int.
