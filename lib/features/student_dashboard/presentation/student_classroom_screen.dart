@@ -6,6 +6,7 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/features/student_dashboard/presentation/student_classroom_page.dart';
 import 'package:ace/services/class_service.dart';
+import 'package:ionicons/ionicons.dart';
 
 class StudentClassroomScreen extends StatefulWidget {
   const StudentClassroomScreen({super.key});
@@ -64,10 +65,18 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text(
-                'Error loading classes:\n${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
-                textAlign: TextAlign.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Ionicons.alert_circle_outline,
+                      size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading classes:\n${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             );
           }
@@ -76,110 +85,144 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
 
           if (classrooms.isEmpty) {
             return Center(
-              child: Text(
-                _studentId == null
-                    ? 'Please log in to view your classes.'
-                    : 'You are not enrolled in any classes yet.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: ColorPalette.secondary.withOpacity(0.8),
-                  fontSize: 16,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Ionicons.school_outline,
+                      size: 80, color: Colors.grey.shade300),
+                  const SizedBox(height: 20),
+                  Text(
+                    'No enrolled classes yet',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Join a class to get started',
+                    style: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             );
           }
 
-          return ListView.builder(
-            itemCount: classrooms.length,
-            itemBuilder: (context, index) {
-              final classData = classrooms[index];
+          return RefreshIndicator(
+            onRefresh: () async => _initializeClasses(),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: classrooms.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 20),
+              itemBuilder: (context, index) {
+                final classData = classrooms[index];
 
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                onTap: () {
-                  if (_studentId == null) return;
-
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => StudentClassroomPage(
-                        classroom: classData,
-                        studentId: _studentId!,
-                      ),
-                    ),
-                  );
-                },
-                title: Stack(
-                  children: [
-                    Container(
-                      height: 140,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.grey[800],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: Image.asset(
-                          classData.bannerImgPath,
-                          fit: BoxFit.cover,
+                return GestureDetector(
+                  onTap: () {
+                    if (_studentId == null) return;
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => StudentClassroomPage(
+                          classroom: classData,
+                          studentId: _studentId!,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      top: 30,
-                      left: 30,
-                      right: 56,
-                      child: Text(
-                        classData.className,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.8,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Positioned(
-                      top: 60,
-                      left: 30,
-                      right: 56,
-                      child: Text(
-                        classData.description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
+                    );
+                  },
+                  child: Container(
+                    height: 160,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      image: DecorationImage(
+                        image: AssetImage(classData.bannerImgPath),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.3),
+                          BlendMode.darken,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 12,
-                      left: 30,
-                      child: Text(
-                        classData.creator,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white54,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
-                      ),
+                      ],
                     ),
-                    Positioned(
-                      top: 20,
-                      right: 16,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.more_vert,
-                          color: Colors.white,
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      classData.className,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.black26,
+                                            offset: Offset(0, 2),
+                                            blurRadius: 4,
+                                          )
+                                        ],
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const Icon(Icons.more_vert,
+                                      color: Colors.white),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                classData.description,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.white24),
+                                ),
+                                child: Text(
+                                  classData.creator,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        onPressed: () {},
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
