@@ -6,14 +6,18 @@ import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:ace/models/user.dart';
 import 'dart:convert';
 
-class StudentAuthService {
+import 'package:ace/features/auth/services/auth_service_interface.dart';
+
+class StudentAuthService implements AuthServiceInterface {
   final Box _loginbox = Hive.box("_loginbox");
   static const String wrongCredentialsError = 'Wrong username or password';
 
+  @override
   Future<void> login({
-    required String studentId,
+    required String id,
     required String password,
   }) async {
+    final String studentId = id; // Map generic 'id' to specific usage
     // 1. Efficiently fetch student data to get the required email and name
     DatabaseReference dbReference = FirebaseDatabase.instance
         .ref()
