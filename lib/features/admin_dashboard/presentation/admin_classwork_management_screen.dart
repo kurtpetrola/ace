@@ -188,19 +188,40 @@ class _AdminClassworkManagementScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        iconTheme: const IconThemeData(color: ColorPalette.accentBlack),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Manage Classwork'),
-            Text(widget.classroom.className,
-                style: const TextStyle(fontSize: 14)),
+            const Text(
+              'Manage Classwork',
+              style: TextStyle(
+                color: ColorPalette.accentBlack,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            Text(
+              widget.classroom.className,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
-        backgroundColor: ColorPalette.secondary,
-        foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
+          labelColor: ColorPalette.primary,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: ColorPalette.primary,
+          indicatorWeight: 3,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
             Tab(text: 'Upcoming'),
             Tab(text: 'Overdue'),
@@ -219,20 +240,54 @@ class _AdminClassworkManagementScreenState
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Ionicons.folder_open_outline,
-                            size: 80, color: Colors.grey[300]),
-                        const SizedBox(height: 16),
-                        Text('No $tab classwork',
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.grey[600])),
+                        Container(
+                          padding: const EdgeInsets.all(30),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Ionicons.folder_open_outline,
+                            size: 80,
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'No $tab classwork found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
                         const SizedBox(height: 8),
+                        Text(
+                          'Get started by creating a new assignment.',
+                          style: TextStyle(color: Colors.grey.shade500),
+                        ),
+                        const SizedBox(height: 32),
                         ElevatedButton.icon(
                           onPressed: () => _showCreateDialog(),
                           icon: const Icon(Ionicons.add),
                           label: const Text('Create Classwork'),
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorPalette.secondary,
-                              foregroundColor: Colors.white),
+                            backgroundColor: ColorPalette.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 4,
+                          ),
                         ),
                       ],
                     ),
@@ -240,78 +295,234 @@ class _AdminClassworkManagementScreenState
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   itemCount: list.length,
                   itemBuilder: (context, i) {
                     final cw = list[i];
                     final color = _colorForClasswork(cw);
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(color: color, width: 2),
-                        borderRadius: BorderRadius.circular(12),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: ListTile(
-                        onTap: () => _showCreateDialog(classwork: cw),
-                        leading: CircleAvatar(
-                          backgroundColor: color.withOpacity(0.1),
-                          child: Icon(_iconForType(cw.type), color: color),
-                        ),
-                        title: Text(cw.title),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(cw.description,
-                                maxLines: 2, overflow: TextOverflow.ellipsis),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                if (cw.attachmentUrl != null)
-                                  const Icon(Ionicons.attach,
-                                      size: 16, color: Colors.grey),
-                                const SizedBox(width: 4),
-                                Text(
-                                    cw.dueDate != null
-                                        ? 'Due: ${cw.formattedDueDate}'
-                                        : 'No due date',
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey[600])),
-                                const Spacer(),
-                                if (_submissionCounts[cw.classworkId] != null)
-                                  GestureDetector(
-                                    onTap: () => showDialog(
-                                      context: context,
-                                      builder: (_) => SubmissionsDetailDialog(
-                                        classworkId: cw.classworkId,
-                                        submissionService: _submissionService,
-                                      ),
-                                    ),
-                                    child: Chip(
-                                      label: Text(
-                                          '${_submissionCounts[cw.classworkId]} submitted'),
-                                      backgroundColor:
-                                          Colors.green.withOpacity(0.1),
-                                      labelStyle: const TextStyle(
-                                          color: Colors.green, fontSize: 12),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Color strip
+                              Container(
+                                width: 6,
+                                color: color,
+                              ),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () => _showCreateDialog(classwork: cw),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            // Icon Badge
+                                            Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: color.withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Icon(_iconForType(cw.type),
+                                                  color: color, size: 20),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    cw.title,
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                      color: ColorPalette
+                                                          .accentBlack,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    cw.type.displayName,
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: color,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            PopupMenuButton(
+                                              icon: Icon(Icons.more_vert,
+                                                  color: Colors.grey.shade400),
+                                              itemBuilder: (_) => [
+                                                const PopupMenuItem(
+                                                    value: 'edit',
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(Icons.edit,
+                                                            size: 18),
+                                                        SizedBox(width: 8),
+                                                        Text('Edit'),
+                                                      ],
+                                                    )),
+                                                const PopupMenuItem(
+                                                    value: 'delete',
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                            Icons
+                                                                .delete_outline,
+                                                            size: 18,
+                                                            color: Colors.red),
+                                                        SizedBox(width: 8),
+                                                        Text('Delete',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .red)),
+                                                      ],
+                                                    )),
+                                              ],
+                                              onSelected: (v) {
+                                                if (v == 'edit')
+                                                  _showCreateDialog(
+                                                      classwork: cw);
+                                                if (v == 'delete')
+                                                  _deleteClasswork(cw);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          cw.description,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              height: 1.4),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        const Divider(height: 1),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          children: [
+                                            Icon(Ionicons.calendar_outline,
+                                                size: 14,
+                                                color: Colors.grey.shade500),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              cw.dueDate != null
+                                                  ? cw.formattedDueDate
+                                                  : 'No due date',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.grey.shade600),
+                                            ),
+                                            if (cw.isOverdue) ...[
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red.shade50,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: const Text('OVERDUE',
+                                                    style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              )
+                                            ],
+                                            const Spacer(),
+                                            if (_submissionCounts[
+                                                    cw.classworkId] !=
+                                                null)
+                                              InkWell(
+                                                onTap: () => showDialog(
+                                                  context: context,
+                                                  builder: (_) =>
+                                                      SubmissionsDetailDialog(
+                                                    classworkId: cw.classworkId,
+                                                    submissionService:
+                                                        _submissionService,
+                                                  ),
+                                                ),
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: ColorPalette.primary
+                                                        .withOpacity(0.08),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                          Ionicons
+                                                              .checkmark_done_circle,
+                                                          size: 14,
+                                                          color: ColorPalette
+                                                              .primary),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        '${_submissionCounts[cw.classworkId]} Submitted',
+                                                        style: const TextStyle(
+                                                          color: ColorPalette
+                                                              .primary,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 11,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                              ],
-                            )
-                          ],
-                        ),
-                        trailing: PopupMenuButton(
-                          icon: const Icon(Icons.more_vert),
-                          itemBuilder: (_) => [
-                            const PopupMenuItem(
-                                value: 'edit', child: Text('Edit')),
-                            const PopupMenuItem(
-                                value: 'delete', child: Text('Delete')),
-                          ],
-                          onSelected: (v) {
-                            if (v == 'edit') _showCreateDialog(classwork: cw);
-                            if (v == 'delete') _deleteClasswork(cw);
-                          },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -319,11 +530,12 @@ class _AdminClassworkManagementScreenState
                 );
               }).toList(),
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateDialog(),
-        backgroundColor: ColorPalette.secondary,
+        backgroundColor: ColorPalette.primary,
         foregroundColor: Colors.white,
-        child: const Icon(Ionicons.add),
+        icon: const Icon(Ionicons.add),
+        label: const Text('Add New'),
       ),
     );
   }
