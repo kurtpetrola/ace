@@ -38,6 +38,35 @@ class UserService {
     return students;
   }
 
+  // Fetch all admins from the 'Admins' node
+  Future<List<User>> fetchAllAdmins() async {
+    final snapshot = await _db.child('Admins').get();
+    List<User> admins = [];
+
+    if (snapshot.exists && snapshot.value is Map) {
+      final Map<String, dynamic> adminsMap =
+          jsonDecode(jsonEncode(snapshot.value));
+
+      adminsMap.forEach((adminId, userData) {
+        try {
+          if (userData is Map) {
+            final Map<String, dynamic> data =
+                Map<String, dynamic>.from(userData);
+
+            // Ensure the key is used as the ID
+            if (!data.containsKey('adminid')) {
+              data['adminid'] = adminId;
+            }
+            admins.add(User.fromJson(data));
+          }
+        } catch (e) {
+          print('Error parsing admin $adminId: $e');
+        }
+      });
+    }
+    return admins;
+  }
+
   // Update a user's profile data in the database
   Future<void> updateUser(User user) async {
     // Determine the path based on the role
