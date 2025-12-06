@@ -49,7 +49,7 @@ class _ClassworkTabState extends State<ClassworkTab> {
     }
   }
 
-  /// ✅ NEW — clean, fast submission check
+  /// clean, fast submission check
   Future<bool> _hasSubmitted(Classwork c) async {
     final submission = await _submissionService.getStudentSubmission(
       c.classworkId,
@@ -108,7 +108,7 @@ class _ClassworkTabState extends State<ClassworkTab> {
     return RefreshIndicator(
       onRefresh: _fetchClasswork,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         itemCount: _classworkList.length,
         itemBuilder: (_, i) => _classworkCard(_classworkList[i]),
       ),
@@ -120,11 +120,30 @@ class _ClassworkTabState extends State<ClassworkTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Ionicons.folder_open_outline, size: 80, color: Colors.grey[400]),
-          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Icon(Ionicons.folder_open_outline,
+                size: 80, color: Colors.grey.shade300),
+          ),
+          const SizedBox(height: 24),
           Text(
             'No classwork posted yet',
-            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+            ),
           ),
         ],
       ),
@@ -139,120 +158,240 @@ class _ClassworkTabState extends State<ClassworkTab> {
       builder: (_, snapshot) {
         final submitted = snapshot.data ?? false;
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: color.withOpacity(.1),
-              child: Icon(_getIcon(c.type), color: color),
-            ),
-            title: Text(
-              c.title,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _subtitle(c),
-                  style: TextStyle(
-                    color: c.isOverdue ? Colors.red : Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    _tag(c.type.displayName, color),
-                    const SizedBox(width: 8),
-                    Text('${c.points} pts',
-                        style:
-                            TextStyle(fontSize: 12, color: Colors.grey[600])),
-                    const Spacer(),
-                    if (submitted)
-                      const Chip(
-                        label: Text('Submitted'),
-                        backgroundColor: Color(0x1A4CAF50),
-                        labelStyle: TextStyle(color: Colors.green),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(width: 6, color: color),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => _openDetails(c),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: color.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(_getIcon(c.type),
+                                      color: color, size: 20),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        c.title,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        c.type.displayName,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: color,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (submitted)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Ionicons.checkmark_circle,
+                                            size: 14, color: Colors.green),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'Done',
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              _subtitle(c),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: c.isOverdue
+                                    ? Colors.red
+                                    : Colors.grey.shade600,
+                                fontWeight: c.isOverdue
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Divider(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('${c.points} Points',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey.shade500)),
+                                Text('Tap to view details',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade400)),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                  ],
-                ),
-              ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () => _openDetails(c),
           ),
         );
       },
     );
   }
 
-  Widget _tag(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withOpacity(.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 11,
-          color: color,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
   void _openDetails(Classwork c) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(c.title),
-        content: Text(c.description),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      c.title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 16),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 300),
+                child: SingleChildScrollView(
+                  child: Text(
+                    c.description,
+                    style: const TextStyle(fontSize: 15, height: 1.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FutureBuilder<bool>(
+                future: _hasSubmitted(c),
+                builder: (_, snap) {
+                  final submitted = snap.data ?? false;
+
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: submitted
+                          ? null
+                          : () async {
+                              Navigator.pop(context);
+
+                              final submission = await showDialog<Submission>(
+                                context: context,
+                                builder: (_) => SubmissionDialog(
+                                  classwork: c,
+                                  studentId: widget.studentId,
+                                ),
+                              );
+
+                              if (submission != null) {
+                                await _submissionService
+                                    .submitSubmission(submission);
+                                await _fetchClasswork();
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Submission successful'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                      icon: Icon(submitted
+                          ? Ionicons.checkmark_done_circle
+                          : Ionicons.cloud_upload),
+                      label:
+                          Text(submitted ? 'Already Submitted' : 'Submit Work'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: submitted
+                            ? Colors.grey.shade300
+                            : _getColor(c.type),
+                        foregroundColor: submitted ? Colors.grey : Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          FutureBuilder<bool>(
-            future: _hasSubmitted(c),
-            builder: (_, snap) {
-              final submitted = snap.data ?? false;
-
-              return ElevatedButton(
-                onPressed: submitted
-                    ? null
-                    : () async {
-                        Navigator.pop(context);
-
-                        final submission = await showDialog<Submission>(
-                          context: context,
-                          builder: (_) => SubmissionDialog(
-                            classwork: c,
-                            studentId: widget.studentId,
-                          ),
-                        );
-
-                        if (submission != null) {
-                          await _submissionService.submitSubmission(submission);
-
-                          await _fetchClasswork();
-
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Submission successful'),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                child: Text(submitted ? 'Submitted' : 'Submit Work'),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
