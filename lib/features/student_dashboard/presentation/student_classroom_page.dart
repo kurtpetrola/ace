@@ -27,85 +27,55 @@ class StudentClassroomPage extends StatelessWidget {
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              // Custom AppBar with Banner and Class Info
               SliverAppBar(
-                backgroundColor: ColorPalette.accentBlack,
-                expandedHeight: 250.0,
-                pinned: true,
-                floating: false,
-                forceElevated: innerBoxIsScrolled,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: false,
-                  titlePadding: const EdgeInsets.only(left: 16.0, bottom: 65.0),
-                  title: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        classroom.className,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        classroom.description,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Created by: ${classroom.creator}',
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset(
-                        classroom.bannerImgPath,
-                        fit: BoxFit.cover,
-                        color: Colors.black.withOpacity(0.4),
-                        colorBlendMode: BlendMode.darken,
-                      ),
-                    ],
+                backgroundColor: Colors.white,
+                title: Text(
+                  classroom.className,
+                  style: const TextStyle(
+                    color: ColorPalette.accentBlack,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                // Tab Bar is placed at the bottom of the AppBar
-                bottom: const TabBar(
-                  indicatorColor: Colors.white,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.white54,
-                  tabs: [
-                    Tab(
-                      icon: Icon(Ionicons.chatbubble_ellipses_outline),
-                      text: 'Stream',
-                    ),
-                    Tab(
-                      icon: Icon(Ionicons.folder_open_outline),
-                      text: 'Classwork',
-                    ),
-                    Tab(
-                      icon: Icon(Ionicons.people_outline),
-                      text: 'People',
-                    ),
+                centerTitle: true,
+                pinned: true,
+                floating: true,
+                forceElevated: innerBoxIsScrolled,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back,
+                      color: ColorPalette.accentBlack),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Ionicons.information_circle_outline,
+                        color: ColorPalette.accentBlack),
+                    onPressed: () {
+                      // show class details
+                    },
+                  ),
+                ],
+                bottom: TabBar(
+                  labelColor: ColorPalette.primary,
+                  unselectedLabelColor: Colors.grey.shade400,
+                  indicatorColor: ColorPalette.primary,
+                  indicatorWeight: 3,
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14,
+                  ),
+                  tabs: const [
+                    Tab(text: 'Stream'),
+                    Tab(text: 'Classwork'),
+                    Tab(text: 'People'),
                   ],
                 ),
               ),
             ];
           },
-          // Tab Bar Views
           body: TabBarView(
             children: [
               StreamTab(classroom: classroom),
