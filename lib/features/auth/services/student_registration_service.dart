@@ -36,7 +36,7 @@ class StudentRegistrationService {
     fb_auth.UserCredential userCredential;
 
     try {
-      // 2. 🛡️ Create the user SECURELY in Firebase Authentication
+      // 2. Create the user SECURELY in Firebase Authentication
       // This hashes the password and saves the email for later login.
       userCredential =
           await fb_auth.FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -55,6 +55,8 @@ class StudentRegistrationService {
       // We use the Firebase Auth UID (authUid) as the database key.
       // The user's custom studentId (user.uid) is preserved inside the document.
       final Map<String, dynamic> userData = user.toJson();
+      // SECURITY: Save the Auth UID so we can link this record to the logged-in user in Security Rules
+      userData['uid'] = authUid;
 
       await _dbReference.child(user.userId).set(userData);
 
