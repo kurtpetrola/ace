@@ -3,6 +3,18 @@
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/services/grade_service.dart';
+import 'package:flutter/services.dart';
+
+class _UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
 
 class AddGradeForm extends StatefulWidget {
   // The student ID must be passed to this form after the admin searches for them.
@@ -24,7 +36,7 @@ class _AddGradeFormState extends State<AddGradeForm> {
 
   bool _isLoading = false;
 
-  final List<String> gradeTypes = ['P1', 'P2', 'P3', 'Final'];
+  final List<String> gradeTypes = ['Prelim', 'Midterm', 'Final'];
 
   // --- Submission Logic ---
   Future<void> _submitGrade() async {
@@ -74,134 +86,195 @@ class _AddGradeFormState extends State<AddGradeForm> {
   // --- UI Building ---
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
+      elevation: 4,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(vertical: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Add Grade for Student: ${widget.studentId}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: ColorPalette.accentBlack,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: ColorPalette.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.add_task,
+                        color: ColorPalette.primary, size: 28),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Add New Grade',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: ColorPalette.accentBlack,
+                          ),
+                        ),
+                        Text(
+                          'Student ID: ${widget.studentId}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: ColorPalette.darkGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
+              const Divider(height: 32, thickness: 1),
 
-            // Subject Code Input
-            TextFormField(
-              decoration: _inputDecoration('Subject Code (e.g., ITE 115)'),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'Enter subject code' : null,
-              onSaved: (value) => _subjectCode = value!.toUpperCase().trim(),
-              keyboardType: TextInputType.text,
-              style: const TextStyle(color: ColorPalette.accentBlack),
-            ),
-            const SizedBox(height: 16),
+              // Subject Code Input
+              TextFormField(
+                decoration: _inputDecoration(
+                    'Subject Code', 'e.g., ITE 115', Icons.auto_stories),
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter the subject code'
+                    : null,
+                onSaved: (value) => _subjectCode = value!.toUpperCase().trim(),
+                keyboardType: TextInputType.text,
+                inputFormatters: [
+                  FilteringTextInputFormatter.singleLineFormatter,
+                  _UpperCaseTextFormatter(),
+                ],
+                style: const TextStyle(
+                    color: ColorPalette.accentBlack,
+                    fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 20),
 
-            // Grade Type Dropdown
-            DropdownButtonFormField<String>(
-              decoration:
-                  _inputDecoration('Select Grade Type (P1, Final, etc.)'),
-              value: _selectedGradeType,
-              hint: const Text('Grade Type',
-                  style: TextStyle(color: ColorPalette.darkGrey)),
-              items: gradeTypes.map((type) {
-                return DropdownMenuItem(
-                  value: type,
-                  child: Text(type,
-                      style: const TextStyle(color: ColorPalette.accentBlack)),
-                );
-              }).toList(),
-              onChanged: (value) => setState(() => _selectedGradeType = value),
-              validator: (value) =>
-                  value == null ? 'Select a grade type' : null,
-              dropdownColor: Colors.white,
-            ),
-            const SizedBox(height: 16),
+              // Grade Type Dropdown
+              DropdownButtonFormField<String>(
+                decoration: _inputDecoration(
+                    'Grade Type', 'Select Period', Icons.grade),
+                value: _selectedGradeType,
+                hint: const Text('Choose Period',
+                    style: TextStyle(color: ColorPalette.darkGrey)),
+                items: gradeTypes.map((type) {
+                  return DropdownMenuItem(
+                    value: type,
+                    child: Text(type,
+                        style:
+                            const TextStyle(color: ColorPalette.accentBlack)),
+                  );
+                }).toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedGradeType = value),
+                validator: (value) =>
+                    value == null ? 'Please select a grade type' : null,
+                dropdownColor: Colors.white,
+                icon: const Icon(Icons.arrow_drop_down_circle,
+                    color: ColorPalette.primary),
+              ),
+              const SizedBox(height: 20),
 
-            // Score Input
-            TextFormField(
-              controller: _scoreController,
-              decoration: _inputDecoration('Score Value'),
-              validator: (value) {
-                if (value == null || value.isEmpty) return 'Enter a score';
-                // Basic validation to ensure it's a number
-                if (double.tryParse(value) == null)
-                  return 'Score must be a number';
-                return null;
-              },
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(color: ColorPalette.accentBlack),
-            ),
-            const SizedBox(height: 24),
+              // Score Input
+              TextFormField(
+                controller: _scoreController,
+                decoration: _inputDecoration('Score', '0-100', Icons.numbers),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter a score';
+                  if (double.tryParse(value) == null) {
+                    return 'Score must be a number';
+                  }
+                  return null;
+                },
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                style: const TextStyle(
+                    color: ColorPalette.accentBlack,
+                    fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 32),
 
-            // Submit Button
-            ElevatedButton(
-              onPressed: _isLoading ? null : _submitGrade,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorPalette.secondary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              // Submit Button
+              SizedBox(
+                height: 54,
+                child: ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _submitGrade,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorPalette.secondary,
+                    foregroundColor: ColorPalette.accentBlack,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: _isLoading
+                      ? const SizedBox.shrink()
+                      : const Icon(Icons.save_rounded, size: 22),
+                  label: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: ColorPalette.accentBlack,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Text(
+                          'Save Grade',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                 ),
               ),
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: ColorPalette.accentBlack,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : const Text(
-                      'Save Grade',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: ColorPalette.accentBlack,
-                      ),
-                    ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Helper function for consistent input decoration
-  InputDecoration _inputDecoration(String label) {
+  // Helper function for polished input decoration
+  InputDecoration _inputDecoration(String label, String hint, IconData icon) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: ColorPalette.darkGrey),
+      hintText: hint,
+      prefixIcon: Icon(icon, color: ColorPalette.primary.withOpacity(0.7)),
+      labelStyle: TextStyle(
+          color: ColorPalette.accentBlack.withOpacity(0.7),
+          fontWeight: FontWeight.w500),
+      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.6)),
       filled: true,
-      fillColor: ColorPalette.lightGray,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide.none,
+      fillColor: Colors.grey.shade50,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: ColorPalette.primary, width: 2),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
     );
   }
 }
