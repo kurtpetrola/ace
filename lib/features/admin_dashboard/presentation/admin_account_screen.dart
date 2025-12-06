@@ -18,10 +18,7 @@ class AdminAccount extends StatefulWidget {
 class _AdminAccountState extends State<AdminAccount> {
   DateTime backPressedTime = DateTime.now();
   final _loginbox = Hive.box("_loginbox");
-  late var fullname =
-      _loginbox.get("User"); // Full name used as key for Firebase
-  String title = 'AlertDialog';
-  bool tappedYes = false;
+  late var adminId = _loginbox.get("User"); // ID used as key for Firebase
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +81,7 @@ class _AdminAccountState extends State<AdminAccount> {
   // Refactored getAdminUser function: Returns a single Future<User>
   Future<User> getAdminUser() async {
     DatabaseReference databaseReference =
-        FirebaseDatabase.instance.ref().child("Admins/$fullname");
+        FirebaseDatabase.instance.ref().child("Admins/$adminId");
     try {
       DataSnapshot snapshot = await databaseReference.get();
       if (snapshot.exists && snapshot.value != null) {
@@ -93,7 +90,7 @@ class _AdminAccountState extends State<AdminAccount> {
         User myUserObj = User.fromJson(myObj);
         return myUserObj;
       } else {
-        throw Exception("Admin data not found for $fullname.");
+        throw Exception("Admin data not found for $adminId.");
       }
     } catch (error) {
       rethrow;
