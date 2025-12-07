@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:ace/services/notification_service.dart';
-import 'package:ace/core/constants/app_colors.dart';
 
 class NotificationBadge extends StatelessWidget {
   final String studentId;
