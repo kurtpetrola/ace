@@ -3,13 +3,17 @@
 import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/models/classwork.dart';
+import 'package:ace/services/class_service.dart';
+import 'package:ace/services/notification_service.dart';
 
 class ClassworkService {
   final DatabaseReference _db = FirebaseDatabase.instance.ref();
+  final ClassService _classService = ClassService();
+  final NotificationService _notificationService = NotificationService();
 
   // --- CREATE Operations ---
   /// Creates a new classwork and associates it with a class
-  Future<String?> createClasswork(Classwork classwork) async {
+  Future<String?> createClasswork(Classwork classwork, String className) async {
     try {
       final classworkRef = _db.child('Classwork').push();
       final classworkId = classworkRef.key!;
@@ -22,6 +26,20 @@ class ClassworkService {
       };
 
       await _db.update(updates);
+
+      // Trigger notifications for enrolled students
+      final enrolledStudents =
+          await _classService.fetchStudentsInClass(classwork.classId);
+      final studentIds = enrolledStudents.map((s) => s.userId).toList();
+
+      if (studentIds.isNotEmpty) {
+        await _notificationService.createNotificationForNewClasswork(
+          classwork.copyWith(classworkId: classworkId),
+          studentIds,
+          className,
+        );
+      }
+
       return classworkId;
     } catch (e) {
       print('Error creating classwork: $e');

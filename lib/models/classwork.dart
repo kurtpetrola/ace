@@ -104,6 +104,33 @@ class Classwork {
         'attachmentUrl': attachmentUrl,
       };
 
+  /// Create a copy with modified fields
+  Classwork copyWith({
+    String? classworkId,
+    String? classId,
+    String? title,
+    String? description,
+    ClassworkType? type,
+    DateTime? dueDate,
+    int? points,
+    String? createdBy,
+    DateTime? createdAt,
+    String? attachmentUrl,
+  }) {
+    return Classwork(
+      classworkId: classworkId ?? this.classworkId,
+      classId: classId ?? this.classId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      dueDate: dueDate ?? this.dueDate,
+      points: points ?? this.points,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      attachmentUrl: attachmentUrl ?? this.attachmentUrl,
+    );
+  }
+
   // Helper method to check if classwork is overdue
   bool get isOverdue {
     if (dueDate == null) return false;
