@@ -2,11 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/auth/wrapper_screen.dart';
+import 'package:ace/services/fcm_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // 1.5. Set up FCM background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   // 2. Initialize Hive second
   await Hive.initFlutter();

@@ -6,6 +6,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:ace/features/student_dashboard/presentation/student_account_screen.dart';
 import 'package:ace/features/student_dashboard/presentation/student_classroom_screen.dart';
 import 'package:ace/features/student_dashboard/presentation/student_grades_screen.dart';
+import 'package:ace/features/student_dashboard/presentation/widgets/notification_badge.dart';
+import 'package:ace/features/student_dashboard/presentation/student_notifications_screen.dart';
+import 'package:ace/services/fcm_service.dart';
 
 class StudentHomescreenPage extends StatefulWidget {
   // 1. Add required studentId to the StatefulWidget
@@ -33,6 +36,17 @@ class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
       GradesView(studentId: widget.studentId), // Pass the ID here
       StudentAccountScreen(),
     ];
+
+    // 3. Initialize FCM for push notifications
+    _initializeFCM();
+  }
+
+  Future<void> _initializeFCM() async {
+    try {
+      await FCMService().initialize(widget.studentId);
+    } catch (e) {
+      print('Error initializing FCM: $e');
+    }
   }
 
   @override
@@ -48,6 +62,20 @@ class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
         backgroundColor: ColorPalette.accentBlack,
         elevation: 0,
         automaticallyImplyLeading: false,
+        actions: [
+          NotificationBadge(
+            studentId: widget.studentId,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => StudentNotificationsScreen(
+                    studentId: widget.studentId,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: pages[pageIndex],
       bottomNavigationBar: BottomNavigationBar(

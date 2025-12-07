@@ -8,84 +8,109 @@ import 'package:ace/features/student_dashboard/presentation/tabs/stream_tab.dart
 import 'package:ace/features/student_dashboard/presentation/tabs/classwork_tab.dart';
 import 'package:ace/features/student_dashboard/presentation/tabs/people_tab.dart';
 
-class StudentClassroomPage extends StatelessWidget {
+class StudentClassroomPage extends StatefulWidget {
   final Classroom classroom;
   final String studentId;
+  final int initialTab;
 
   const StudentClassroomPage({
     super.key,
     required this.classroom,
     required this.studentId,
+    this.initialTab = 0,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
+  State<StudentClassroomPage> createState() => _StudentClassroomPageState();
+}
+
+class _StudentClassroomPageState extends State<StudentClassroomPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
       length: 3,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                title: Text(
-                  classroom.className,
-                  style: const TextStyle(
-                    color: ColorPalette.accentBlack,
-                    fontWeight: FontWeight.bold,
-                  ),
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              backgroundColor: Colors.white,
+              title: Text(
+                widget.classroom.className,
+                style: const TextStyle(
+                  color: ColorPalette.accentBlack,
+                  fontWeight: FontWeight.bold,
                 ),
-                centerTitle: true,
-                pinned: true,
-                floating: true,
-                forceElevated: innerBoxIsScrolled,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back,
+              ),
+              centerTitle: true,
+              pinned: true,
+              floating: true,
+              forceElevated: innerBoxIsScrolled,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back,
+                    color: ColorPalette.accentBlack),
+                onPressed: () => Navigator.pop(context),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Ionicons.information_circle_outline,
                       color: ColorPalette.accentBlack),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    // show class details
+                  },
                 ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Ionicons.information_circle_outline,
-                        color: ColorPalette.accentBlack),
-                    onPressed: () {
-                      // show class details
-                    },
-                  ),
+              ],
+              bottom: TabBar(
+                controller: _tabController,
+                labelColor: ColorPalette.primary,
+                unselectedLabelColor: Colors.grey.shade400,
+                indicatorColor: ColorPalette.primary,
+                indicatorWeight: 3,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14,
+                ),
+                tabs: const [
+                  Tab(text: 'Stream'),
+                  Tab(text: 'Classwork'),
+                  Tab(text: 'People'),
                 ],
-                bottom: TabBar(
-                  labelColor: ColorPalette.primary,
-                  unselectedLabelColor: Colors.grey.shade400,
-                  indicatorColor: ColorPalette.primary,
-                  indicatorWeight: 3,
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  unselectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 14,
-                  ),
-                  tabs: const [
-                    Tab(text: 'Stream'),
-                    Tab(text: 'Classwork'),
-                    Tab(text: 'People'),
-                  ],
-                ),
               ),
-            ];
-          },
-          body: TabBarView(
-            children: [
-              StreamTab(classroom: classroom),
-              ClassworkTab(
-                classroom: classroom,
-                studentId: studentId,
-              ),
-              PeopleTab(classroom: classroom),
-            ],
-          ),
+            ),
+          ];
+        },
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            StreamTab(classroom: widget.classroom),
+            ClassworkTab(
+              classroom: widget.classroom,
+              studentId: widget.studentId,
+            ),
+            PeopleTab(classroom: widget.classroom),
+          ],
         ),
       ),
     );

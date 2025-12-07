@@ -103,7 +103,8 @@ class _AdminClassworkManagementScreenState
           ),
         );
       } else {
-        String? id = await _service.createClasswork(newClasswork);
+        String? id = await _service.createClasswork(
+            newClasswork, widget.classroom.className);
         _fetchClasswork();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
