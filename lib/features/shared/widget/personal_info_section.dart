@@ -73,13 +73,13 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Academic Classroom Environment',
+            Text('Academia Classroom Explorer',
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text('Version: $_appVersion'),
             const SizedBox(height: 16),
             Text(
-              'A modern classroom management system for students and administrators.',
+              'Academia Classroom Explorer is an application designed to help students view, monitor, and manage their grades and educational information in a convenient, orderly, and efficient manner.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
