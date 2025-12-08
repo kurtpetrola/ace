@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_class_management_screen.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_user_management_screen.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_grades_management_screen.dart';
@@ -30,15 +29,14 @@ class _AdminHomeScreenPageState extends State<AdminHomeScreenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // Optional: Admin dashboard might use a different primary background color
-      backgroundColor: ColorPalette.accentBlack,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       appBar: AppBar(
         title: Text(
           _getPageTitle(pageIndex),
-          style: const TextStyle(
-              color: ColorPalette.secondary, fontWeight: FontWeight.bold),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        backgroundColor: ColorPalette.accentBlack,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -52,13 +50,16 @@ class _AdminHomeScreenPageState extends State<AdminHomeScreenPage> {
             pageIndex = index;
           });
         },
-        backgroundColor: ColorPalette.secondary,
+        backgroundColor:
+            Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         selectedItemColor:
-            ColorPalette.accentBlack, // Highlighted tab uses the primary color
-        unselectedItemColor: ColorPalette.accentBlack.withOpacity(0.6),
-        selectedIconTheme: const IconThemeData(size: 30),
-        unselectedIconTheme: const IconThemeData(size: 26),
-
+            Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor:
+            Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+        selectedIconTheme:
+            Theme.of(context).bottomNavigationBarTheme.selectedIconTheme,
+        unselectedIconTheme:
+            Theme.of(context).bottomNavigationBarTheme.unselectedIconTheme,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Ionicons.school_outline),

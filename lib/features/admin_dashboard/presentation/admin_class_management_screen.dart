@@ -216,9 +216,11 @@ class _Panel extends StatelessWidget {
     return Container(
       height: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+            color:
+                Theme.of(context).dividerTheme.color ?? Colors.grey.shade300),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -232,8 +234,8 @@ class _Panel extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
-            decoration: const BoxDecoration(
-              color: ColorPalette.secondary,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             ),
             child: Text(
@@ -264,8 +266,8 @@ class _Header extends StatelessWidget {
         icon: const Icon(Ionicons.add_circle),
         label: const Text('Create New Class'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorPalette.secondary,
-          foregroundColor: ColorPalette.accentBlack,
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
           minimumSize: const Size(double.infinity, 48),
         ),
         onPressed: onCreate,
@@ -301,7 +303,7 @@ class _StudentSearchBar extends StatelessWidget {
             decoration: InputDecoration(
               labelText: 'Search Student ID',
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: Theme.of(context).cardTheme.color,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.arrow_forward),

@@ -1,7 +1,6 @@
 // lib/features/admin_dashboard/presentation/admin_grades_management_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/services/grade_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ace/features/admin_dashboard/presentation/widgets/add_grade_form.dart';
@@ -93,13 +92,13 @@ class _AdminGradesManagementScreenState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Admin Grade Oversight',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: ColorPalette.secondary,
+                color: Theme.of(context).primaryColor,
               ),
             ),
             const SizedBox(height: 20),
@@ -130,12 +129,12 @@ class _AdminGradesManagementScreenState
       children: [
         if (_studentGrades != null && _studentGrades!.isNotEmpty) ...[
           const Divider(height: 30, thickness: 1),
-          const Text(
+          Text(
             'Current Grades',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: ColorPalette.accentBlack,
+              color: Theme.of(context).textTheme.titleLarge?.color,
             ),
           ),
           const SizedBox(height: 10),
@@ -177,7 +176,9 @@ class _StudentSearchBar extends StatelessWidget {
             decoration: InputDecoration(
               labelText: 'Search Student ID',
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: Theme.of(context).cardTheme.color == Colors.white
+                  ? Colors.grey.shade100
+                  : Theme.of(context).colorScheme.surface,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.arrow_forward),
@@ -185,12 +186,14 @@ class _StudentSearchBar extends StatelessWidget {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade400),
+                borderSide: BorderSide(
+                    color: Theme.of(context).dividerTheme.color ??
+                        Colors.grey.shade400),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide:
-                    const BorderSide(color: ColorPalette.primary, width: 2),
+                    BorderSide(color: Theme.of(context).primaryColor, width: 2),
               ),
             ),
             onSubmitted: (_) => onSearch(),

@@ -116,7 +116,7 @@ class StreamTab extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -145,7 +145,7 @@ class StreamTab extends StatelessWidget {
                   child: Text(
                     'Announce something to your class...',
                     style: TextStyle(
-                      color: Colors.grey.shade500,
+                      color: Theme.of(context).hintColor,
                       fontSize: 14,
                     ),
                   ),
@@ -153,7 +153,7 @@ class StreamTab extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(Ionicons.send,
@@ -172,9 +172,11 @@ class StreamTab extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+            color:
+                Theme.of(context).dividerTheme.color ?? Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.05),
@@ -206,10 +208,10 @@ class StreamTab extends StatelessWidget {
                 children: [
                   Text(
                     post.authorName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: ColorPalette.accentBlack,
+                      color: Theme.of(context).textTheme.titleMedium?.color,
                     ),
                   ),
                   Text(
@@ -228,10 +230,10 @@ class StreamTab extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             post.content,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               height: 1.5,
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
         ],

@@ -34,20 +34,27 @@ class _AdminPasswordState extends State<AdminPassword> {
         decoration: InputDecoration(
           hintText: widget.hintText,
           suffixIcon: IconButton(
-            icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+            icon: Icon(
+              _obscureText ? Icons.visibility : Icons.visibility_off,
+              color: Theme.of(context).iconTheme.color,
+            ),
             onPressed: () {
               setState(() {
                 _obscureText = !_obscureText;
               });
             },
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
           ),
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: Theme.of(context).dividerTheme.color ??
+                    Colors.grey.shade400),
           ),
-          fillColor: Colors.white,
+          fillColor: Theme.of(context).cardTheme.color == Colors.white
+              ? Colors.white
+              : Theme.of(context).colorScheme.surface,
           filled: true,
         ),
       ),

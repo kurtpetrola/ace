@@ -47,16 +47,16 @@ class _StudentClassroomPageState extends State<StudentClassroomPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               title: Text(
                 widget.classroom.className,
-                style: const TextStyle(
-                  color: ColorPalette.accentBlack,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.titleLarge?.color,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -65,14 +65,14 @@ class _StudentClassroomPageState extends State<StudentClassroomPage>
               floating: true,
               forceElevated: innerBoxIsScrolled,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back,
-                    color: ColorPalette.accentBlack),
+                icon: Icon(Icons.arrow_back,
+                    color: Theme.of(context).iconTheme.color),
                 onPressed: () => Navigator.pop(context),
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Ionicons.information_circle_outline,
-                      color: ColorPalette.accentBlack),
+                  icon: Icon(Ionicons.information_circle_outline,
+                      color: Theme.of(context).iconTheme.color),
                   onPressed: () {
                     // show class details
                   },

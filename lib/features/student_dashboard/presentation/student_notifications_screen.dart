@@ -77,25 +77,23 @@ class _StudentNotificationsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Notifications',
-          style: TextStyle(
-            color: ColorPalette.accentBlack,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: ColorPalette.accentBlack),
+          icon:
+              Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Ionicons.checkmark_done_outline,
-                color: ColorPalette.accentBlack),
+            icon: Icon(Ionicons.checkmark_done_outline,
+                color: Theme.of(context).iconTheme.color),
             onPressed: () async {
               await _notificationService.markAllAsRead(widget.studentId);
               if (mounted) {
@@ -169,7 +167,7 @@ class _StudentNotificationsScreenState
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
                 ),
@@ -185,7 +183,7 @@ class _StudentNotificationsScreenState
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
                 ),
@@ -223,13 +221,14 @@ class _StudentNotificationsScreenState
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color:
-              isUnread ? ColorPalette.primary.withOpacity(0.05) : Colors.white,
+          color: isUnread
+              ? ColorPalette.primary.withOpacity(0.05)
+              : Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isUnread
                 ? ColorPalette.primary.withOpacity(0.3)
-                : Colors.grey.shade200,
+                : Theme.of(context).dividerTheme.color ?? Colors.grey.shade200,
           ),
         ),
         child: InkWell(
@@ -263,7 +262,7 @@ class _StudentNotificationsScreenState
                           fontSize: 15,
                           fontWeight:
                               isUnread ? FontWeight.bold : FontWeight.w600,
-                          color: ColorPalette.accentBlack,
+                          color: Theme.of(context).textTheme.titleMedium?.color,
                         ),
                       ),
                       const SizedBox(height: 4),

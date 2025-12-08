@@ -1,7 +1,6 @@
 // lib/features/student_dashboard/presentation/student_homescreen_page.dart
 
 import 'package:flutter/material.dart';
-import 'package:ace/core/constants/app_colors.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:ace/features/student_dashboard/presentation/student_account_screen.dart';
 import 'package:ace/features/student_dashboard/presentation/student_classroom_screen.dart';
@@ -52,14 +51,13 @@ class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorPalette.accentBlack,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           _getPageTitle(pageIndex),
-          style: const TextStyle(
-              color: ColorPalette.secondary, fontWeight: FontWeight.bold),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        backgroundColor: ColorPalette.accentBlack,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
@@ -85,11 +83,16 @@ class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
             pageIndex = index;
           });
         },
-        backgroundColor: ColorPalette.secondary,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black.withOpacity(0.6),
-        selectedIconTheme: const IconThemeData(size: 30),
-        unselectedIconTheme: const IconThemeData(size: 26),
+        backgroundColor:
+            Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        selectedItemColor:
+            Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor:
+            Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+        selectedIconTheme:
+            Theme.of(context).bottomNavigationBarTheme.selectedIconTheme,
+        unselectedIconTheme:
+            Theme.of(context).bottomNavigationBarTheme.unselectedIconTheme,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Ionicons.book_outline),

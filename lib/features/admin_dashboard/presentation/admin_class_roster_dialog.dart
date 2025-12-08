@@ -141,11 +141,20 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
   Widget _buildPersonTile(User student) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: ColorPalette.accentBlack.withOpacity(0.1),
-        child: const Icon(Icons.person, color: ColorPalette.accentBlack),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey.shade800
+            : ColorPalette.accentBlack.withOpacity(0.1),
+        child: Icon(Icons.person,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : ColorPalette.accentBlack),
       ),
-      title: Text(student.fullname),
-      subtitle: Text('ID: ${student.userId} | Age: ${student.age}'),
+      title: Text(student.fullname,
+          style:
+              TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+      subtitle: Text('ID: ${student.userId} | Age: ${student.age}',
+          style:
+              TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
       trailing: IconButton(
         icon: const Icon(Icons.remove_circle, color: Colors.red),
         onPressed: () => _unenrollStudent(student.userId, student.fullname),
@@ -157,7 +166,11 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Manage Roster: ${widget.classroom.className}'),
+      title: Text('Manage Roster: ${widget.classroom.className}',
+          style:
+              TextStyle(color: Theme.of(context).textTheme.titleLarge?.color)),
+      backgroundColor: Theme.of(context).cardTheme.color,
+      surfaceTintColor: Theme.of(context).cardTheme.color,
       content: SizedBox(
         width: 400, // Fixed width for better dialog appearance
         height: 600, // Fixed height
@@ -169,10 +182,14 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
                 backgroundColor: Colors.red.withOpacity(0.1),
                 child: const Icon(Icons.school, color: Colors.red),
               ),
-              title: Text(widget.classroom.creator),
-              subtitle: const Text('Teacher/Creator'),
+              title: Text(widget.classroom.creator,
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color)),
+              subtitle: Text('Teacher/Creator',
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodySmall?.color)),
             ),
-            const Divider(),
+            Divider(color: Theme.of(context).dividerTheme.color),
 
             // Status Message and Loading
             if (_isLoading) const LinearProgressIndicator(),
@@ -183,7 +200,9 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
                     style: TextStyle(
                         color: _statusMessage!.startsWith('Error')
                             ? Colors.red
-                            : ColorPalette.secondary,
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? Colors.greenAccent
+                                : ColorPalette.secondary,
                         fontStyle: FontStyle.italic)),
               ),
 
@@ -192,13 +211,31 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: TextField(
                 controller: _studentIdController,
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge?.color),
                 decoration: InputDecoration(
                   labelText: 'Enter Student ID to Add',
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color),
                   suffixIcon: IconButton(
-                    icon: const Icon(Ionicons.add_circle),
+                    icon: Icon(Ionicons.add_circle,
+                        color: Theme.of(context).iconTheme.color),
                     onPressed: _addStudentBySearch,
                   ),
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).dividerTheme.color ??
+                            Colors.grey),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).dividerTheme.color ??
+                            Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
+                  ),
                 ),
                 onSubmitted: (_) => _addStudentBySearch(),
               ),

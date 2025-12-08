@@ -88,12 +88,12 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
         Container(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardTheme.color,
             borderRadius:
                 const BorderRadius.vertical(bottom: Radius.circular(20)),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.black.withOpacity(0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
@@ -146,7 +146,9 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                   hintText: 'Search by Name, ID, or Dept...',
                   prefixIcon: const Icon(Ionicons.search, color: Colors.grey),
                   filled: true,
-                  fillColor: Colors.grey.shade100,
+                  fillColor: Theme.of(context).cardTheme.color == Colors.white
+                      ? Colors.grey.shade100
+                      : Theme.of(context).colorScheme.surface,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -215,16 +217,18 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.08),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
                       ],
-                      border: Border.all(color: Colors.grey.shade100),
+                      border: Border.all(
+                          color: Theme.of(context).dividerTheme.color ??
+                              Colors.grey.shade100),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -260,10 +264,13 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                                   user.fullname.isNotEmpty
                                       ? user.fullname
                                       : 'No Name',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: ColorPalette.accentBlack,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.color,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
