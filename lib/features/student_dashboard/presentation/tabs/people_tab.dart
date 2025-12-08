@@ -79,7 +79,7 @@ class _PeopleTabState extends State<PeopleTab> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -91,7 +91,8 @@ class _PeopleTabState extends State<PeopleTab> {
         border: Border.all(
           color: isTeacher
               ? ColorPalette.primary.withOpacity(0.1)
-              : Colors.grey.withOpacity(0.3),
+              : Theme.of(context).dividerTheme.color ??
+                  Colors.grey.withOpacity(0.3),
         ),
       ),
       child: ListTile(
@@ -100,11 +101,13 @@ class _PeopleTabState extends State<PeopleTab> {
           radius: 24,
           backgroundColor: isTeacher
               ? ColorPalette.primary.withOpacity(0.1)
-              : Colors.grey.shade100,
+              : Theme.of(context).scaffoldBackgroundColor,
           child: Text(
             initials.toUpperCase(),
             style: TextStyle(
-              color: isTeacher ? ColorPalette.primary : Colors.grey.shade700,
+              color: isTeacher
+                  ? ColorPalette.primary
+                  : Theme.of(context).textTheme.bodyMedium?.color,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -112,10 +115,10 @@ class _PeopleTabState extends State<PeopleTab> {
         ),
         title: Text(
           user.fullname,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: ColorPalette.accentBlack,
+            color: Theme.of(context).textTheme.titleMedium?.color,
           ),
         ),
         subtitle: isTeacher
@@ -140,7 +143,7 @@ class _PeopleTabState extends State<PeopleTab> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -168,10 +171,10 @@ class _PeopleTabState extends State<PeopleTab> {
         ),
         title: Text(
           name,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            color: ColorPalette.accentBlack,
+            color: Theme.of(context).textTheme.titleMedium?.color,
           ),
         ),
         subtitle: const Text(
@@ -226,7 +229,7 @@ class _PeopleTabState extends State<PeopleTab> {
           Text(
             '${_students.length} students',
             style: TextStyle(
-              color: Colors.grey.shade500,
+              color: Theme.of(context).textTheme.bodySmall?.color,
               fontSize: 14,
             ),
           ),
@@ -237,9 +240,11 @@ class _PeopleTabState extends State<PeopleTab> {
               padding: const EdgeInsets.all(30),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(
+                    color: Theme.of(context).dividerTheme.color ??
+                        Colors.grey.shade200),
               ),
               child: Column(
                 children: [
@@ -249,7 +254,7 @@ class _PeopleTabState extends State<PeopleTab> {
                   Text(
                     'No other students yet',
                     style: TextStyle(
-                      color: Colors.grey.shade500,
+                      color: Theme.of(context).hintColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),

@@ -32,18 +32,22 @@ class GradeTable extends StatelessWidget {
       return DataRow(
         cells: [
           DataCell(Text(subjectCode,
-              style: const TextStyle(color: ColorPalette.accentBlack))),
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color))),
           // Display the calculated Average prominently
           DataCell(Text(average,
-              style: const TextStyle(
+              style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: ColorPalette.accentBlack))),
+                  color: Theme.of(context).textTheme.bodyMedium?.color))),
           DataCell(Text(prelim,
-              style: const TextStyle(color: ColorPalette.accentBlack))),
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color))),
           DataCell(Text(midterm,
-              style: const TextStyle(color: ColorPalette.accentBlack))),
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color))),
           DataCell(Text(finalTerm,
-              style: const TextStyle(color: ColorPalette.accentBlack))),
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color))),
         ],
       );
     }).toList();
@@ -51,7 +55,7 @@ class GradeTable extends StatelessWidget {
     return Container(
       width: double.infinity, // Occupy full width
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -60,7 +64,9 @@ class GradeTable extends StatelessWidget {
             offset: const Offset(0, 3),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+            color:
+                Theme.of(context).dividerTheme.color ?? Colors.grey.shade300),
       ),
       padding:
           const EdgeInsets.all(0), // Removed inner padding for cleaner look

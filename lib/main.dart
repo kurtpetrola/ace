@@ -9,6 +9,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:ace/services/fcm_service.dart';
+import 'package:ace/core/theme/theme_provider.dart';
+import 'package:ace/core/theme/theme_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,15 +39,22 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   final bool userLoggedIn;
 
   const MyApp({super.key, required this.userLoggedIn}); // Pass login state
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the theme mode provider
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // Apply theme based on theme mode
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       // Use the injected login state to determine the home screen
       home: userLoggedIn ? const WrapperScreen() : const SelectionPage(),
     );

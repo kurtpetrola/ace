@@ -1,4 +1,4 @@
-// alertdialog.dart
+// lib/common/widgets/dialogs/alertdialog.dart
 
 import 'package:flutter/material.dart';
 
@@ -16,12 +16,14 @@ class AlertDialogs {
       builder: (BuildContext context) {
         return AlertDialog(
           insetPadding: const EdgeInsets.only(top: 200, bottom: 200),
-          titleTextStyle: const TextStyle(
+          titleTextStyle: TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 24,
-              color: Color(0xff262626)),
-          contentTextStyle: const TextStyle(
-              fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black),
+              color: Theme.of(context).textTheme.titleLarge?.color),
+          contentTextStyle: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodyMedium?.color),
           buttonPadding: const EdgeInsets.all(10),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
@@ -32,16 +34,16 @@ class AlertDialogs {
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 minimumSize: const Size(130.0, 45.0),
-                backgroundColor: const Color(0xFFEEEEEE),
+                backgroundColor: Theme.of(context).cardTheme.color,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
               onPressed: () => Navigator.of(context).pop(DialogsAction.cancel),
-              child: const Text(
+              child: Text(
                 'CANCEL',
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontFamily: 'Lato',
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
@@ -51,16 +53,16 @@ class AlertDialogs {
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 minimumSize: const Size(130.0, 45.0),
-                backgroundColor: const Color(0xff262626),
+                backgroundColor: Theme.of(context).primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
               onPressed: () => Navigator.of(context).pop(DialogsAction.yes),
-              child: const Text(
+              child: Text(
                 'CONFIRM',
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontFamily: 'Lato',
                     fontSize: 14,
                     fontWeight: FontWeight.w600),

@@ -123,7 +123,7 @@ class _ClassworkTabState extends State<ClassworkTab> {
           Container(
             padding: const EdgeInsets.all(30),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardTheme.color,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -161,7 +161,7 @@ class _ClassworkTabState extends State<ClassworkTab> {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -206,10 +206,13 @@ class _ClassworkTabState extends State<ClassworkTab> {
                                     children: [
                                       Text(
                                         c.title,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
-                                          color: Colors.black87,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.color,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
@@ -298,8 +301,8 @@ class _ClassworkTabState extends State<ClassworkTab> {
       context: context,
       builder: (_) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        backgroundColor: Theme.of(context).cardTheme.color,
+        surfaceTintColor: Theme.of(context).cardTheme.color,
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(

@@ -155,8 +155,8 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: Theme.of(context).cardTheme.color,
+      surfaceTintColor: Theme.of(context).cardTheme.color,
       child: Container(
         width: 600,
         constraints: const BoxConstraints(maxHeight: 750),
@@ -191,16 +191,17 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
                       children: [
                         Text(
                           isEditing ? 'Edit Classwork' : 'Create Classwork',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: ColorPalette.accentBlack,
+                            color:
+                                Theme.of(context).textTheme.titleLarge?.color,
                           ),
                         ),
                         Text(
                           'For: ${widget.classroom.className}',
                           style: TextStyle(
-                            color: Colors.grey.shade500,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -242,14 +243,20 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
                                 setState(() => _selectedType = type),
                             selectedColor: ColorPalette.primary,
                             checkmarkColor: Colors.white,
-                            backgroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).cardTheme.color,
                             side: BorderSide(
                               color: isSelected
                                   ? ColorPalette.primary
-                                  : Colors.grey.shade300,
+                                  : Theme.of(context).dividerTheme.color ??
+                                      Colors.grey.shade300,
                             ),
                             labelStyle: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black87,
+                              color: isSelected
+                                  ? Colors.white
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color,
                               fontWeight: isSelected
                                   ? FontWeight.bold
                                   : FontWeight.normal,
@@ -428,7 +435,8 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.grey.shade600,
+                      foregroundColor:
+                          Theme.of(context).textTheme.bodyMedium?.color,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 16),
                     ),
@@ -470,24 +478,32 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
           style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.grey.shade700)),
+              color: Theme.of(context).textTheme.titleMedium?.color)),
     );
   }
 
   InputDecoration _inputDecoration(String hint, {IconData? icon}) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: icon != null ? Icon(icon, color: Colors.grey) : null,
+      prefixIcon: icon != null
+          ? Icon(icon, color: Theme.of(context).iconTheme.color)
+          : null,
       filled: true,
-      fillColor: Colors.grey.shade50,
+      fillColor: Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).colorScheme.surface
+          : Colors.grey.shade50,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: BorderSide(
+            color:
+                Theme.of(context).dividerTheme.color ?? Colors.grey.shade200),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: BorderSide(
+            color:
+                Theme.of(context).dividerTheme.color ?? Colors.grey.shade200),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

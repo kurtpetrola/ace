@@ -182,9 +182,9 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                               const Color(0xFF0D0D0D),
                             ]
                           : [
-                              const Color(0xFF3A3A3A),
-                              const Color(0xFF2A2A2A),
-                              const Color(0xFF1A1A1A),
+                              ColorPalette.primary, // #D31144
+                              const Color(0xFFA30D35), // Darker shade
+                              const Color(0xFF76001F), // Accent Dark Red
                             ],
                     ),
                     borderRadius: const BorderRadius.only(
@@ -318,19 +318,28 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                             icon: Ionicons.settings_outline,
                             label: 'Settings',
                             onTap: _showSettingsDialog,
-                            color: const Color(0xFF606060),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey.shade400
+                                    : const Color(0xFF606060),
                           ),
                           QuickActionButton(
                             icon: Ionicons.help_circle_outline,
                             label: 'Help',
                             onTap: _showHelpDialog,
-                            color: const Color(0xFF707070),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey.shade400
+                                    : const Color(0xFF707070),
                           ),
                           QuickActionButton(
                             icon: Ionicons.information_circle_outline,
                             label: 'About',
                             onTap: _showAboutDialog,
-                            color: const Color(0xFF505050),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey.shade400
+                                    : const Color(0xFF505050),
                           ),
                         ],
                       ),

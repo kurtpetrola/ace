@@ -50,10 +50,12 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: Theme.of(context).cardTheme.color,
+      surfaceTintColor: Theme.of(context).cardTheme.color,
       child: Padding(
         padding: const EdgeInsets.all(30),
         child: Form(
@@ -78,7 +80,7 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -87,13 +89,14 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: ColorPalette.accentBlack,
+                            color:
+                                Theme.of(context).textTheme.titleLarge?.color,
                           ),
                         ),
                         Text(
                           'Type your answer below',
                           style: TextStyle(
-                            color: Colors.grey,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                             fontSize: 14,
                           ),
                         ),
@@ -108,20 +111,34 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
               TextFormField(
                 controller: _answerController,
                 maxLines: 8,
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Write your answer here...',
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).hintColor.withOpacity(0.6),
+                  ),
                   filled: true,
-                  fillColor: Colors.grey.shade50,
+                  fillColor: isDarkMode
+                      ? Theme.of(context).colorScheme.surface
+                      : Colors.grey.shade50,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).dividerTheme.color ??
+                          Colors.grey.shade200,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).dividerTheme.color ??
+                          Colors.grey.shade200,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -144,7 +161,8 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
                     onPressed:
                         _isSubmitting ? null : () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.grey.shade600,
+                      foregroundColor:
+                          Theme.of(context).textTheme.bodyMedium?.color,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 16),
                     ),

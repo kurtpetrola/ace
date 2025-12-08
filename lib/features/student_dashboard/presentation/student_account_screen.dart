@@ -1,6 +1,7 @@
 // lib/features/student_dashboard/presentation/student_account_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hive/hive.dart';
@@ -8,15 +9,17 @@ import 'dart:convert';
 import 'package:ace/models/user.dart';
 import 'package:ace/features/shared/widget/personal_info_section.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:ace/core/theme/theme_provider.dart';
 
-class StudentAccountScreen extends StatefulWidget {
+class StudentAccountScreen extends ConsumerStatefulWidget {
   const StudentAccountScreen({super.key});
 
   @override
-  State<StudentAccountScreen> createState() => _StudentAccountScreenState();
+  ConsumerState<StudentAccountScreen> createState() =>
+      _StudentAccountScreenState();
 }
 
-class _StudentAccountScreenState extends State<StudentAccountScreen> {
+class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
   final _loginbox = Hive.box("_loginbox");
   late var fullname = _loginbox.get("User");
 
@@ -26,7 +29,7 @@ class _StudentAccountScreenState extends State<StudentAccountScreen> {
     final double topPadding = MediaQuery.of(context).padding.top + 16;
 
     return Scaffold(
-      backgroundColor: ColorPalette.accentBlack,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         toolbarHeight: 0,
@@ -41,16 +44,13 @@ class _StudentAccountScreenState extends State<StudentAccountScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(
-                    color: ColorPalette.primary,
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Loading your profile...',
-                    style: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 14,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -69,21 +69,16 @@ class _StudentAccountScreenState extends State<StudentAccountScreen> {
                     color: Colors.orange.shade300,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     "Something went wrong",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 18,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Please check the console for details",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade400,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
@@ -125,6 +120,8 @@ class _StudentAccountScreenState extends State<StudentAccountScreen> {
                   statLabel2: 'Pending Work',
                   statIcon2: Ionicons.time_outline,
                 ),
+                const SizedBox(height: 24),
+                _buildDarkModeToggle(context),
               ],
             ),
           );
@@ -242,5 +239,61 @@ class _StudentAccountScreenState extends State<StudentAccountScreen> {
       print('[ERROR] Fatal error in _getUserWithStats: $error');
       rethrow;
     }
+  }
+
+  /// Build dark mode toggle widget
+  Widget _buildDarkModeToggle(BuildContext context) {
+    final isDarkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
+    final themeNotifier = ref.read(themeModeProvider.notifier);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isDarkMode ? Ionicons.moon : Ionicons.sunny,
+                color: Theme.of(context).iconTheme.color,
+                size: 24,
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Dark Mode',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isDarkMode ? 'Enabled' : 'Disabled',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Switch(
+            value: isDarkMode,
+            onChanged: (_) => themeNotifier.toggleTheme(),
+            activeColor: ColorPalette.primary,
+          ),
+        ],
+      ),
+    );
   }
 }

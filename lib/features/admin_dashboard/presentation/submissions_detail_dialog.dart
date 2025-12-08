@@ -41,6 +41,8 @@ class _SubmissionsDetailDialogState extends State<SubmissionsDetailDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Theme.of(context).cardTheme.color,
+      surfaceTintColor: Theme.of(context).cardTheme.color,
       child: Container(
         width: 400,
         constraints: const BoxConstraints(maxHeight: 500),

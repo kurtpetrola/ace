@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/features/student_dashboard/presentation/student_classroom_page.dart';
 import 'package:ace/services/class_service.dart';
@@ -54,8 +53,15 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get theme colors
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final emptyStateColor =
+        isDark ? Colors.grey.shade300 : Colors.grey.shade600;
+    final emptyStateTextColor =
+        isDark ? Colors.grey.shade600 : Colors.grey.shade400;
+
     return Scaffold(
-      backgroundColor: ColorPalette.accentBlack,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: FutureBuilder<List<Classroom>>(
         future: _classesFuture,
         builder: (context, snapshot) {
@@ -89,12 +95,12 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Ionicons.school_outline,
-                      size: 80, color: Colors.grey.shade300),
+                      size: 80, color: emptyStateColor),
                   const SizedBox(height: 20),
                   Text(
                     'No enrolled classes yet',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
@@ -103,7 +109,7 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
                   Text(
                     'Join a class to get started',
                     style: TextStyle(
-                      color: Colors.grey.shade400,
+                      color: emptyStateTextColor,
                       fontSize: 14,
                     ),
                   ),

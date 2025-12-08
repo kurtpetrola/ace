@@ -1,7 +1,6 @@
 // lib/features/student_dashboard/presentation/student_grade_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:ace/core/constants/app_colors.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/services/grade_service.dart';
@@ -62,7 +61,7 @@ class GradesView extends ConsumerWidget {
     final loadingState = ref.watch(studentGradesStreamProvider(studentId));
 
     return Scaffold(
-      backgroundColor: ColorPalette.accentBlack,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: loadingState.isLoading && grades.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : _buildGradesContent(context, grades),
@@ -72,9 +71,9 @@ class GradesView extends ConsumerWidget {
   Widget _buildGradesContent(
       BuildContext context, Map<String, dynamic> grades) {
     if (grades.isEmpty) {
-      return const Center(
-          child:
-              Text("No grades found.", style: TextStyle(color: Colors.white)));
+      return Center(
+          child: Text("No grades found.",
+              style: Theme.of(context).textTheme.bodyLarge));
     }
 
     return Center(
@@ -82,7 +81,7 @@ class GradesView extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
