@@ -28,7 +28,7 @@ class AdminButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
       ),
       child: const Text(
-        "ADMINISTRATOR",
+        "ADMINISTRATION",
         style: TextStyle(
           color: ColorPalette.accentBlack,
           fontFamily: 'Lato',
