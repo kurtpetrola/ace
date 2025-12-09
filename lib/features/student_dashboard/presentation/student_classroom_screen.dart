@@ -127,103 +127,102 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
               itemBuilder: (context, index) {
                 final classData = classrooms[index];
 
-                return GestureDetector(
-                  onTap: () {
-                    if (_studentId == null) return;
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => StudentClassroomPage(
-                          classroom: classData,
-                          studentId: _studentId!,
-                        ),
+                return Container(
+                  height: 160,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    image: DecorationImage(
+                      image: AssetImage(classData.bannerImgPath),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.3),
+                        BlendMode.darken,
                       ),
-                    );
-                  },
-                  child: Container(
-                    height: 160,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(
-                        image: AssetImage(classData.bannerImgPath),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.3),
-                          BlendMode.darken,
-                        ),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                     ),
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      classData.className,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black26,
-                                            offset: Offset(0, 2),
-                                            blurRadius: 4,
-                                          )
-                                        ],
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const Icon(Icons.more_vert,
-                                      color: Colors.white),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                classData.description,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.white24),
-                                ),
-                                child: Text(
-                                  classData.creator,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () {
+                        if (_studentId == null) return;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => StudentClassroomPage(
+                              classroom: classData,
+                              studentId: _studentId!,
+                            ),
                           ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    classData.className,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black26,
+                                          offset: Offset(0, 2),
+                                          blurRadius: 4,
+                                        )
+                                      ],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const Icon(Icons.more_vert,
+                                    color: Colors.white),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              classData.description,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.white24),
+                              ),
+                              child: Text(
+                                classData.creator,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 );
