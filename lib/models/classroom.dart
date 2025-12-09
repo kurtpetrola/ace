@@ -9,6 +9,7 @@ class Classroom {
   final String creator;
   // This will store a URL or asset path string.
   final String bannerImgPath;
+  final String? teacherId; // Added for linking to Teacher account
 
   Classroom({
     required this.classId,
@@ -16,6 +17,7 @@ class Classroom {
     required this.description,
     required this.creator,
     required this.bannerImgPath,
+    this.teacherId,
   });
 
   factory Classroom.fromJson(String id, Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Classroom {
       creator: json['creator'] as String? ?? 'Unknown Teacher',
       bannerImgPath: json['bannerImgPath'] as String? ??
           'assets/images/banner/default.jpg',
+      teacherId: json['teacherId'] as String?,
     );
   }
 
@@ -36,6 +39,7 @@ class Classroom {
         'description': description,
         'creator': creator,
         'bannerImgPath': bannerImgPath,
+        'teacherId': teacherId,
       };
 
   // Method specifically for saving to Firebase Realtime DB, excluding the classId
@@ -45,6 +49,7 @@ class Classroom {
         'description': description,
         'creator': creator,
         'bannerImgPath': bannerImgPath,
+        'teacherId': teacherId,
       };
 }
 

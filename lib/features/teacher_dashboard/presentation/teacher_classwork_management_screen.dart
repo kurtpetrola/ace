@@ -1,32 +1,32 @@
-// lib/features/admin_dashboard/presentation/admin_classwork_management_screen.dart
+// lib/features/teacher_dashboard/presentation/teacher_classwork_management_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:ace/core/constants/app_colors.dart';
+
 import 'package:ace/models/classroom.dart';
 import 'package:ace/models/classwork.dart';
 import 'package:ace/services/classwork_service.dart';
 import 'package:ace/services/submission_service.dart';
-import 'package:ace/features/admin_dashboard/presentation/create_classwork_dialog.dart';
-import 'package:ace/features/admin_dashboard/presentation/submissions_detail_dialog.dart';
+import 'package:ace/features/teacher_dashboard/presentation/dialogs/create_classwork_dialog.dart';
+import 'package:ace/features/teacher_dashboard/presentation/dialogs/submissions_detail_dialog.dart';
 
-class AdminClassworkManagementScreen extends StatefulWidget {
+class TeacherClassworkManagementScreen extends StatefulWidget {
   final Classroom classroom;
-  final String adminId;
+  final String teacherId; // Renamed from adminId
 
-  const AdminClassworkManagementScreen({
+  const TeacherClassworkManagementScreen({
     super.key,
     required this.classroom,
-    required this.adminId,
+    required this.teacherId, // Renamed from adminId
   });
 
   @override
-  State<AdminClassworkManagementScreen> createState() =>
-      _AdminClassworkManagementScreenState();
+  State<TeacherClassworkManagementScreen> createState() =>
+      _TeacherClassworkManagementScreenState();
 }
 
-class _AdminClassworkManagementScreenState
-    extends State<AdminClassworkManagementScreen>
+class _TeacherClassworkManagementScreenState
+    extends State<TeacherClassworkManagementScreen>
     with SingleTickerProviderStateMixin {
   final ClassworkService _service = ClassworkService();
   final SubmissionService _submissionService = SubmissionService();
@@ -83,9 +83,9 @@ class _AdminClassworkManagementScreenState
   void _showCreateDialog({Classwork? classwork}) {
     showDialog<Classwork>(
       context: context,
-      builder: (_) => CreateClassworkDialog(
+      builder: (_) => TeacherCreateClassworkDialog(
         classroom: widget.classroom,
-        adminId: widget.adminId,
+        teacherId: widget.teacherId,
         existingClasswork: classwork,
       ),
     ).then((newClasswork) async {
@@ -189,38 +189,22 @@ class _AdminClassworkManagementScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: ColorPalette.accentBlack),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Manage Classwork',
-              style: TextStyle(
-                color: ColorPalette.accentBlack,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-            Text(
-              widget.classroom.className,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        title: Text(
+          'Manage Classwork',
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: ColorPalette.primary,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: ColorPalette.primary,
+          labelColor: Theme.of(context).tabBarTheme.labelColor ??
+              Theme.of(context).colorScheme.primary,
+          unselectedLabelColor:
+              Theme.of(context).tabBarTheme.unselectedLabelColor ??
+                  Theme.of(context).colorScheme.onSurfaceVariant,
+          indicatorColor: Theme.of(context).tabBarTheme.indicatorColor ??
+              Theme.of(context).colorScheme.primary,
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
@@ -244,11 +228,11 @@ class _AdminClassworkManagementScreenState
                         Container(
                           padding: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).cardTheme.color,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Colors.black.withOpacity(0.05),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -257,7 +241,10 @@ class _AdminClassworkManagementScreenState
                           child: Icon(
                             Ionicons.folder_open_outline,
                             size: 80,
-                            color: Colors.grey.shade300,
+                            color: Theme.of(context)
+                                .iconTheme
+                                .color
+                                ?.withOpacity(0.3),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -280,7 +267,8 @@ class _AdminClassworkManagementScreenState
                           icon: const Icon(Ionicons.add),
                           label: const Text('Create Classwork'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorPalette.primary,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 12),
@@ -306,11 +294,11 @@ class _AdminClassworkManagementScreenState
                     return Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.08),
+                            color: Colors.black.withOpacity(0.05),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -357,13 +345,13 @@ class _AdminClassworkManagementScreenState
                                                 children: [
                                                   Text(
                                                     cw.title,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16,
-                                                      color: ColorPalette
-                                                          .accentBlack,
-                                                    ),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleMedium
+                                                        ?.copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                   ),
                                                   const SizedBox(height: 2),
                                                   Text(
@@ -380,7 +368,9 @@ class _AdminClassworkManagementScreenState
                                             ),
                                             PopupMenuButton(
                                               icon: Icon(Icons.more_vert,
-                                                  color: Colors.grey.shade400),
+                                                  color: Theme.of(context)
+                                                      .iconTheme
+                                                      .color),
                                               itemBuilder: (_) => [
                                                 const PopupMenuItem(
                                                     value: 'edit',
@@ -424,9 +414,10 @@ class _AdminClassworkManagementScreenState
                                           cw.description,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              color: Colors.grey.shade600,
-                                              height: 1.4),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(height: 1.4),
                                         ),
                                         const SizedBox(height: 16),
                                         const Divider(height: 1),
@@ -458,9 +449,12 @@ class _AdminClassworkManagementScreenState
                                                   borderRadius:
                                                       BorderRadius.circular(4),
                                                 ),
-                                                child: const Text('OVERDUE',
+                                                child: Text('OVERDUE',
                                                     style: TextStyle(
-                                                        color: Colors.red,
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .titleMedium
+                                                            ?.color,
                                                         fontSize: 10,
                                                         fontWeight:
                                                             FontWeight.bold)),
@@ -474,7 +468,7 @@ class _AdminClassworkManagementScreenState
                                                 onTap: () => showDialog(
                                                   context: context,
                                                   builder: (_) =>
-                                                      SubmissionsDetailDialog(
+                                                      TeacherSubmissionsDetailDialog(
                                                     classworkId: cw.classworkId,
                                                     submissionService:
                                                         _submissionService,
@@ -486,7 +480,9 @@ class _AdminClassworkManagementScreenState
                                                       horizontal: 10,
                                                       vertical: 4),
                                                   decoration: BoxDecoration(
-                                                    color: ColorPalette.primary
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
                                                         .withOpacity(0.08),
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -494,18 +490,22 @@ class _AdminClassworkManagementScreenState
                                                   ),
                                                   child: Row(
                                                     children: [
-                                                      const Icon(
+                                                      Icon(
                                                           Ionicons
                                                               .checkmark_done_circle,
                                                           size: 14,
-                                                          color: ColorPalette
-                                                              .primary),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary),
                                                       const SizedBox(width: 4),
                                                       Text(
                                                         '${_submissionCounts[cw.classworkId]} Submitted',
-                                                        style: const TextStyle(
-                                                          color: ColorPalette
-                                                              .primary,
+                                                        style: TextStyle(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           fontSize: 11,
@@ -533,7 +533,7 @@ class _AdminClassworkManagementScreenState
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateDialog(),
-        backgroundColor: ColorPalette.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Ionicons.add),
         label: const Text('Add New'),

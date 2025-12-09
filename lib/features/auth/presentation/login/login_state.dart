@@ -1,10 +1,10 @@
-// login_state.dart
+// lib/features/auth/presentation/login/login_state.dart
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'login_state.freezed.dart';
 
-enum UserType { student, admin }
+enum UserType { student, admin, teacher }
 
 @freezed
 class LoginState with _$LoginState {

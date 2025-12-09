@@ -36,6 +36,29 @@ class ClassService {
     });
   }
 
+  // Stream for a specific teacher's classes
+  Stream<List<Classroom>> streamTeacherClasses(String teacherId) {
+    return _db
+        .child('Classes')
+        .orderByChild('teacherId')
+        .equalTo(teacherId)
+        .onValue
+        .map((event) {
+      final snap = event.snapshot;
+      if (!snap.exists || snap.value == null) return [];
+
+      final Map<String, dynamic> raw =
+          Map<String, dynamic>.from(snap.value as Map);
+
+      return raw.entries.map((entry) {
+        return Classroom.fromJson(
+          entry.key,
+          Map<String, dynamic>.from(entry.value),
+        );
+      }).toList();
+    });
+  }
+
   // CREATE CLASS
 
   // Generates correct Firebase key
