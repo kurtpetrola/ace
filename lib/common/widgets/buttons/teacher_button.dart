@@ -1,13 +1,13 @@
-// register_button.dart
+// teacher_button.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
-import 'package:ace/features/auth/presentation/registration/registration_page.dart';
+import 'package:ace/features/auth/presentation/login/teacher_login_page.dart';
 
-class RegisterButton extends StatelessWidget {
+class TeacherButton extends StatelessWidget {
   final Function()? onTap;
 
-  const RegisterButton({
+  const TeacherButton({
     super.key,
     required this.onTap,
   });
@@ -15,9 +15,9 @@ class RegisterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async {
+      onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) => RegisterPage(),
+          builder: (BuildContext context) => const TeacherLoginPage(),
         ));
       },
       style: ElevatedButton.styleFrom(
@@ -29,7 +29,7 @@ class RegisterButton extends StatelessWidget {
         minimumSize: const Size(double.infinity, 50),
       ),
       child: const Text(
-        "REGISTER",
+        "TEACHERS",
         style: TextStyle(
           color: ColorPalette.accentBlack,
           fontFamily: 'Lato',
