@@ -67,12 +67,45 @@ class UserService {
     return admins;
   }
 
+  // Fetch all teachers from the 'Teachers' node
+  Future<List<User>> fetchAllTeachers() async {
+    final snapshot = await _db.child('Teachers').get();
+    List<User> teachers = [];
+
+    if (snapshot.exists && snapshot.value is Map) {
+      final Map<String, dynamic> teachersMap =
+          jsonDecode(jsonEncode(snapshot.value));
+
+      teachersMap.forEach((teacherId, userData) {
+        try {
+          if (userData is Map) {
+            final Map<String, dynamic> data =
+                Map<String, dynamic>.from(userData);
+
+            if (!data.containsKey('teacherid')) {
+              data['teacherid'] = teacherId;
+            }
+            teachers.add(User.fromJson(data));
+          }
+        } catch (e) {
+          print('Error parsing teacher $teacherId: $e');
+        }
+      });
+    }
+    return teachers;
+  }
+
   // Update a user's profile data in the database
   Future<void> updateUser(User user) async {
     // Determine the path based on the role
-    String path = user.role == 'admin'
-        ? 'Admins/${user.userId}'
-        : 'Students/${user.userId}';
+    String path;
+    if (user.role == 'admin') {
+      path = 'Admins/${user.userId}';
+    } else if (user.role == 'teacher') {
+      path = 'Teachers/${user.userId}';
+    } else {
+      path = 'Students/${user.userId}';
+    }
 
     // Convert to JSON, but remove the ID fields as they are part of the path key
     // The email is also generally fixed in Firebase Auth.
@@ -98,5 +131,11 @@ class UserService {
     } else {
       throw Exception('Invalid email format. Password reset failed.');
     }
+  }
+
+  // Check if a teacher ID already exists
+  Future<bool> checkTeacherIdExists(String teacherId) async {
+    final snapshot = await _db.child('Teachers/$teacherId').get();
+    return snapshot.exists;
   }
 }

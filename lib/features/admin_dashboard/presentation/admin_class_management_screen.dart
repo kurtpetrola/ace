@@ -6,7 +6,6 @@ import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_class_roster_dialog.dart';
-import 'package:ace/features/admin_dashboard/presentation/admin_classwork_management_screen.dart';
 import 'package:ace/features/admin_dashboard/presentation/class_creation_dialog.dart';
 
 class AdminClassManagementScreen extends StatefulWidget {
@@ -92,17 +91,6 @@ class _AdminClassManagementScreenState
     );
   }
 
-  void _openClasswork(Classroom cls) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => AdminClassworkManagementScreen(
-          classroom: cls,
-          adminId: 'ADM-001',
-        ),
-      ),
-    );
-  }
-
   void _showEnrollmentDialog() {
     if (_currentStudentId == null) return;
 
@@ -154,7 +142,6 @@ class _AdminClassManagementScreenState
                           child: _AdminClassOverview(
                             stream: _classService.streamAllClasses(),
                             onRoster: _openRoster,
-                            onClasswork: _openClasswork,
                           ),
                         ),
                       ),
@@ -184,7 +171,6 @@ class _AdminClassManagementScreenState
                           child: _AdminClassOverview(
                             stream: _classService.streamAllClasses(),
                             onRoster: _openRoster,
-                            onClasswork: _openClasswork,
                           ),
                         ),
                       ),
@@ -342,12 +328,10 @@ class _StudentSearchBar extends StatelessWidget {
 class _AdminClassOverview extends StatelessWidget {
   final Stream<List<Classroom>> stream;
   final void Function(Classroom) onRoster;
-  final void Function(Classroom) onClasswork;
 
   const _AdminClassOverview({
     required this.stream,
     required this.onRoster,
-    required this.onClasswork,
   });
 
   @override
@@ -381,11 +365,6 @@ class _AdminClassOverview extends StatelessWidget {
                       icon: const Icon(Icons.people),
                       tooltip: 'Roster',
                       onPressed: () => onRoster(cls),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.description),
-                      tooltip: 'Classwork',
-                      onPressed: () => onClasswork(cls),
                     ),
                   ],
                 ),

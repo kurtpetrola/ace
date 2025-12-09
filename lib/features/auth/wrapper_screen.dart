@@ -9,6 +9,7 @@ import 'package:ace/models/user.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/student_dashboard/presentation/student_homescreen_page.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_homescreen_page.dart';
+import 'package:ace/features/teacher_dashboard/presentation/teacher_dashboard.dart';
 // Note: HomeScreenPage must now accept a 'studentId' argument.
 
 class WrapperScreen extends StatefulWidget {
@@ -38,10 +39,12 @@ class _WrapperScreenState extends State<WrapperScreen> {
     print(
         'WrapperScreen: Attempting to navigate for User ID: $userId, Type: $userType');
 
-    // 1. Determine the correct Firebase path (Admins/ or Students/)
+    // 1. Determine the correct Firebase path (Admins/ or Students/ or Teachers/)
     String firebaseNode;
     if (userType == "Admin") {
       firebaseNode = "Admins"; // Use the Admins node for admins
+    } else if (userType == "Teacher") {
+      firebaseNode = "Teachers";
     } else {
       // Default to Students node if type is null or anything else (e.g., 'Student')
       firebaseNode = "Students";
@@ -77,6 +80,9 @@ class _WrapperScreenState extends State<WrapperScreen> {
           // Navigate to Admin Dashboard
           destinationPage = const AdminHomeScreenPage();
           print('WrapperScreen: Redirecting to Admin Dashboard.');
+        } else if (role == 'teacher') {
+          destinationPage = TeacherDashboard(teacherId: userId);
+          print('WrapperScreen: Redirecting to Teacher Dashboard.');
         } else {
           // Default: Navigate to Student Dashboard
           // We now pass the userId to the HomeScreenPage for Riverpod consumption.

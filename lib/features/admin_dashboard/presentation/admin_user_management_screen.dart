@@ -6,6 +6,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:ace/models/user.dart';
 import 'package:ace/services/user_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/widgets/edit_user_dialog.dart';
+import 'package:ace/features/admin_dashboard/presentation/dialogs/create_teacher_dialog.dart';
 
 class AdminUserManagementScreen extends StatefulWidget {
   const AdminUserManagementScreen({super.key});
@@ -40,8 +41,10 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
     setState(() {
       if (_selectedSegment.contains('students')) {
         _studentsFuture = _userService.fetchAllStudents();
-      } else {
+      } else if (_selectedSegment.contains('admins')) {
         _studentsFuture = _userService.fetchAllAdmins();
+      } else {
+        _studentsFuture = _userService.fetchAllTeachers();
       }
     });
 
@@ -82,269 +85,306 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Header & Search
-        Container(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardTheme.color,
-            borderRadius:
-                const BorderRadius.vertical(bottom: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Segmented Control
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                      value: 'students',
-                      label: Text('Students'),
-                      icon: Icon(Icons.school)),
-                  ButtonSegment(
-                      value: 'admins',
-                      label: Text('Admins'),
-                      icon: Icon(Icons.admin_panel_settings)),
-                ],
-                selected: _selectedSegment,
-                onSelectionChanged: (Set<String> newSelection) {
-                  setState(() {
-                    _selectedSegment = newSelection;
-                    _searchController.clear(); // Clear search on switch
-                    _fetchUserList();
-                  });
-                },
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.selected)) {
-                      return ColorPalette.secondary.withOpacity(0.2);
-                    }
-                    return Colors.transparent;
-                  }),
-                  foregroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.selected)) {
-                      return ColorPalette.accentBlack;
-                    }
-                    return Colors.grey;
-                  }),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      floatingActionButton: _buildFAB(),
+      body: Column(
+        children: [
+          // Header & Search
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color,
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Search Bar
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search by Name, ID, or Dept...',
-                  prefixIcon: const Icon(Ionicons.search, color: Colors.grey),
-                  filled: true,
-                  fillColor: Theme.of(context).cardTheme.color == Colors.white
-                      ? Colors.grey.shade100
-                      : Theme.of(context).colorScheme.surface,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
+              ],
+            ),
+            child: Column(
+              children: [
+                // Segmented Control
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(
+                        value: 'students',
+                        label: Text('Students'),
+                        icon: Icon(Icons.school)),
+                    ButtonSegment(
+                        value: 'teachers',
+                        label: Text('Teachers'),
+                        icon: Icon(Icons.person_outline)),
+                    ButtonSegment(
+                        value: 'admins',
+                        label: Text('Admins'),
+                        icon: Icon(Icons.admin_panel_settings)),
+                  ],
+                  selected: _selectedSegment,
+                  onSelectionChanged: (Set<String> newSelection) {
+                    setState(() {
+                      _selectedSegment = newSelection;
+                      _searchController.clear(); // Clear search on switch
+                      _fetchUserList();
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return ColorPalette.secondary.withOpacity(0.2);
+                      }
+                      return Colors.transparent;
+                    }),
+                    foregroundColor:
+                        MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return ColorPalette.accentBlack;
+                      }
+                      return Colors.grey;
+                    }),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                // Search Bar
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by Name, ID, or Dept...',
+                    prefixIcon: const Icon(Ionicons.search, color: Colors.grey),
+                    filled: true,
+                    fillColor: Theme.of(context).cardTheme.color == Colors.white
+                        ? Colors.grey.shade100
+                        : Theme.of(context).colorScheme.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
 
-        // List of users
-        Expanded(
-          child: FutureBuilder<List<User>>(
-            future: _studentsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Error loading users: ${snapshot.error}',
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }
-
-              // Use _filteredUsers instead of snapshot data directly
-              // If _filteredUsers is empty but snapshot has data, it means search found nothing.
-              // If snapshot is empty, it means no users at all.
-              final displayList = _filteredUsers;
-
-              if (displayList.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.search_off,
-                          size: 64, color: Colors.grey.withOpacity(0.5)),
-                      const SizedBox(height: 16),
-                      Text(
-                        _searchController.text.isNotEmpty
-                            ? 'No users found matching "${_searchController.text}"'
-                            : 'No users found.',
-                        style: TextStyle(
-                            color: ColorPalette.secondary.withOpacity(0.8),
-                            fontSize: 16),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                itemCount: displayList.length,
-                itemBuilder: (context, index) {
-                  final user = displayList[index];
-                  final isStudent = user.role != 'admin';
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardTheme.color,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                      border: Border.all(
-                          color: Theme.of(context).dividerTheme.color ??
-                              Colors.grey.shade100),
-                    ),
+          // List of users
+          Expanded(
+            child: FutureBuilder<List<User>>(
+              future: _studentsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          // Avatar
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: isStudent
-                                  ? ColorPalette.primary.withOpacity(0.1)
-                                  : Colors.blue.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              isStudent
-                                  ? Icons.school
-                                  : Icons.admin_panel_settings,
-                              color: isStudent
-                                  ? ColorPalette.primary
-                                  : Colors.blue,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          // Content
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.fullname.isNotEmpty
-                                      ? user.fullname
-                                      : 'No Name',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.color,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 4,
-                                  children: [
-                                    _buildBadge(
-                                        user.userId,
-                                        Colors.grey.shade200,
-                                        Colors.grey.shade700),
-                                    if (isStudent)
-                                      _buildBadge(user.department,
-                                          Colors.orange.shade50, Colors.orange),
-                                    if (!isStudent)
-                                      _buildBadge('Admin', Colors.blue.shade50,
-                                          Colors.blue),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Actions
-                          PopupMenuButton<String>(
-                            icon:
-                                const Icon(Icons.more_vert, color: Colors.grey),
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => EditUserDialog(
-                                    user: user,
-                                    onUserUpdated: _fetchUserList,
-                                  ),
-                                );
-                              } else if (value == 'reset_password') {
-                                _showConsoleMessage(context);
-                              }
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit, size: 20),
-                                    SizedBox(width: 10),
-                                    Text('Edit Profile'),
-                                  ],
-                                ),
-                              ),
-                              const PopupMenuItem<String>(
-                                value: 'reset_password',
-                                child: Row(
-                                  children: [
-                                    Icon(Ionicons.key, size: 20),
-                                    SizedBox(width: 10),
-                                    Text('Reset Password'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      child: Text(
+                        'Error loading users: ${snapshot.error}',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   );
-                },
-              );
-            },
+                }
+
+                final displayList = _filteredUsers;
+
+                if (displayList.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.search_off,
+                            size: 64, color: Colors.grey.withOpacity(0.5)),
+                        const SizedBox(height: 16),
+                        Text(
+                          _searchController.text.isNotEmpty
+                              ? 'No users found matching "${_searchController.text}"'
+                              : 'No users found.',
+                          style: TextStyle(
+                              color: ColorPalette.secondary.withOpacity(0.8),
+                              fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                  itemCount: displayList.length,
+                  itemBuilder: (context, index) {
+                    final user = displayList[index];
+                    final isStudent = user.role == 'student';
+                    final isTeacher = user.role == 'teacher';
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardTheme.color,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                        border: Border.all(
+                            color: Theme.of(context).dividerTheme.color ??
+                                Colors.grey.shade100),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            // Avatar
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: isStudent
+                                    ? ColorPalette.primary.withOpacity(0.1)
+                                    : (isTeacher
+                                        ? Colors.orange.withOpacity(0.1)
+                                        : Colors.blue.withOpacity(0.1)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                isStudent
+                                    ? Icons.school
+                                    : (isTeacher
+                                        ? Icons.person_outline
+                                        : Icons.admin_panel_settings),
+                                color: isStudent
+                                    ? ColorPalette.primary
+                                    : (isTeacher ? Colors.orange : Colors.blue),
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            // Content
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    user.fullname.isNotEmpty
+                                        ? user.fullname
+                                        : 'No Name',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.color,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 4,
+                                    children: [
+                                      _buildBadge(
+                                          user.userId,
+                                          Colors.grey.shade200,
+                                          Colors.grey.shade700),
+                                      if (isStudent)
+                                        _buildBadge(
+                                            user.department,
+                                            Colors.orange.shade50,
+                                            Colors.orange),
+                                      if (isTeacher)
+                                        _buildBadge(
+                                            'Teacher',
+                                            Colors.orange.shade50,
+                                            Colors.orange),
+                                      if (!isStudent && !isTeacher)
+                                        _buildBadge('Admin',
+                                            Colors.blue.shade50, Colors.blue),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Actions
+                            PopupMenuButton<String>(
+                              icon: const Icon(Icons.more_vert,
+                                  color: Colors.grey),
+                              onSelected: (value) {
+                                if (value == 'edit') {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => EditUserDialog(
+                                      user: user,
+                                      onUserUpdated: _fetchUserList,
+                                    ),
+                                  );
+                                } else if (value == 'reset_password') {
+                                  _showConsoleMessage(context);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit, size: 20),
+                                      SizedBox(width: 10),
+                                      Text('Edit Profile'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'reset_password',
+                                  child: Row(
+                                    children: [
+                                      Icon(Ionicons.key, size: 20),
+                                      SizedBox(width: 10),
+                                      Text('Reset Password'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  Widget _buildFAB() {
+    if (_selectedSegment.contains('teachers')) {
+      return FloatingActionButton.extended(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => CreateTeacherDialog(
+              onTeacherCreated: _fetchUserList,
+            ),
+          );
+        },
+        label: const Text('Add Teacher'),
+        icon: const Icon(Icons.add),
+        backgroundColor: ColorPalette.primary,
+        foregroundColor: Colors.white,
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   Widget _buildBadge(String text, Color bgColor, Color textColor) {

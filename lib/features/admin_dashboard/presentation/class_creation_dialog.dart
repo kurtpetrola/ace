@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/models/classroom.dart';
+import 'package:ace/models/user.dart';
+import 'package:ace/services/user_service.dart';
 
 // Mock list of available banner paths for the form (since we don't have file upload)
 const List<String> _mockBannerPaths = [
@@ -34,6 +36,25 @@ class _ClassCreationDialogState extends State<ClassCreationDialog> {
   // Default to the first path
   String _selectedBannerPath = _mockBannerPaths.first;
 
+  final UserService _userService = UserService();
+  List<User> _teachers = [];
+  String? _selectedTeacherId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTeachers();
+  }
+
+  Future<void> _fetchTeachers() async {
+    final teachers = await _userService.fetchAllTeachers();
+    if (mounted) {
+      setState(() {
+        _teachers = teachers;
+      });
+    }
+  }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -45,6 +66,7 @@ class _ClassCreationDialogState extends State<ClassCreationDialog> {
         description: _description,
         creator: _creator,
         bannerImgPath: _selectedBannerPath,
+        teacherId: _selectedTeacherId,
       );
 
       widget.onClassCreated(newClass);
@@ -76,13 +98,34 @@ class _ClassCreationDialogState extends State<ClassCreationDialog> {
                 onSaved: (value) => _description = value!,
                 maxLines: 2,
               ),
-              TextFormField(
-                decoration:
-                    const InputDecoration(labelText: 'Creator/Teacher Name'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter the creator\'s name' : null,
-                onSaved: (value) => _creator = value!,
-              ),
+              // Replaced manual text field with Dropdown for teachers
+              if (_teachers.isEmpty) ...[
+                const Text('Loading Teachers... or No Teachers Found',
+                    style: TextStyle(color: Colors.grey)),
+                const SizedBox(height: 10),
+              ] else ...[
+                DropdownButtonFormField<String>(
+                  items: _teachers.map((t) {
+                    return DropdownMenuItem(
+                      value: t.userId,
+                      child: Text(t.fullname),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedTeacherId = val;
+                      // Also set creator name for display consistency
+                      final teacher =
+                          _teachers.firstWhere((t) => t.userId == val);
+                      _creator = teacher.fullname;
+                    });
+                  },
+                  decoration:
+                      const InputDecoration(labelText: 'Assign Teacher'),
+                  validator: (val) =>
+                      val == null ? 'Please select a teacher' : null,
+                ),
+              ],
               const SizedBox(height: 15),
               // Dropdown to select a banner path
               DropdownButtonFormField<String>(
