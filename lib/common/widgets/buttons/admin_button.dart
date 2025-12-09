@@ -25,7 +25,8 @@ class AdminButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        minimumSize: const Size(double.infinity, 50),
       ),
       child: const Text(
         "ADMINISTRATION",
