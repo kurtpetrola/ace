@@ -107,7 +107,7 @@ class LoginNotifier extends _$LoginNotifier {
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
-      String message = 'An unexpected error occurred during login.';
+      String message = 'An unexpected error occurred: ${e.toString()}';
 
       // Existing error handling logic
       if (e.toString().contains(AdminAuthService.wrongCredentialsError)) {

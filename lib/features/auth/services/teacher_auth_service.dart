@@ -29,12 +29,21 @@ class TeacherAuthService implements AuthServiceInterface {
     }
 
     // Decode and map the data
-    Map<String, dynamic> userDataMap = jsonDecode(jsonEncode(snapshot.value));
+    Map<String, dynamic> userDataMap;
+    User user;
+    String email;
+    String name;
 
-    // Ensure User model can handle flexible IDs or role-specific logging
-    User user = User.fromJson(userDataMap);
-    final String email = user.email;
-    final String name = user.fullname;
+    try {
+      userDataMap = jsonDecode(jsonEncode(snapshot.value));
+      // Ensure User model can handle flexible IDs or role-specific logging
+      user = User.fromJson(userDataMap);
+      email = user.email;
+      name = user.fullname;
+    } catch (e) {
+      print('ERROR parsing teacher data: $e');
+      throw Exception('Data error: Unable to parse teacher profile. ($e)');
+    }
 
     if (email.isEmpty) {
       print(
