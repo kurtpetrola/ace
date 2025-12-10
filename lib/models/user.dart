@@ -33,11 +33,12 @@ class User {
     // Determine the ID key dynamically. We prioritize the valid custom IDs (studentid, adminid)
     // over the internal 'uid' (Firebase Auth ID) which is mainly for security linkage.
     // Determine the ID key dynamically, falling back to a generic 'uid' if 'studentid'/'adminid' aren't present.
-    final String retrievedId = json["studentid"] as String? ??
-        json["adminid"] as String? ??
-        json["teacherid"] as String? ??
-        json["uid"] as String? ??
-        '';
+    final String retrievedId = (json["studentid"] ??
+            json["adminid"] ??
+            json["teacherid"] ??
+            json["uid"] ??
+            '')
+        .toString();
 
     // Safely parse the age, defaulting to 0 if null or not parsable as int.
     final int parsedAge = int.tryParse(json["age"]?.toString() ?? '0') ?? 0;
