@@ -110,17 +110,18 @@ class LoginNotifier extends _$LoginNotifier {
       String message = 'An unexpected error occurred: ${e.toString()}';
 
       // Existing error handling logic
-      if (e.toString().contains(AdminAuthService.wrongCredentialsError)) {
-        message = 'Wrong Admin ID or password.';
-      } else if (e
-          .toString()
-          .contains(StudentAuthService.wrongCredentialsError)) {
-        message = 'Wrong Student ID or password.';
-      } else if (e
-          .toString()
-          .contains(TeacherAuthService.wrongCredentialsError)) {
-        message = 'Wrong Teacher ID or password.';
-      } else if (e.toString().contains('network-request-failed')) {
+      String errorStr = e.toString();
+      // Logic Fix: Check the generic error string against the current UserType context
+      // All services use "Wrong username or password" so checking the string alone is ambiguous.
+      if (errorStr.contains('Wrong username or password')) {
+        if (state.userType == UserType.admin) {
+          message = 'Wrong Admin ID or password.';
+        } else if (state.userType == UserType.student) {
+          message = 'Wrong Student ID or password.';
+        } else if (state.userType == UserType.teacher) {
+          message = 'Wrong Teacher ID or password.';
+        }
+      } else if (errorStr.contains('network-request-failed')) {
         message = 'Network error. Check your connection.';
       }
 
