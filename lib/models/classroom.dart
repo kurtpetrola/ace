@@ -27,7 +27,7 @@ class Classroom {
       description: json['description'] as String? ?? 'No description provided.',
       creator: json['creator'] as String? ?? 'Unknown Teacher',
       bannerImgPath: json['bannerImgPath'] as String? ??
-          'assets/images/banner/default.jpg',
+          'assets/images/banner/banner_image_8.jpg', // Default changed to a valid file
       teacherId: json['teacherId'] as String?,
     );
   }
@@ -60,14 +60,14 @@ final List<Classroom> mockClassroomList = [
     className: 'Calculus I',
     description: 'Introduction to Derivatives and Integrals.',
     creator: 'Dr. Evelyn Reed',
-    bannerImgPath: 'assets/images/banner/banner1.jpg',
+    bannerImgPath: 'assets/images/banner/banner_image_1.jpg',
   ),
   Classroom(
     classId: 'CS201',
     className: 'Data Structures',
     description: 'Arrays, Linked Lists, and Trees.',
     creator: 'Prof. Alan Turing',
-    bannerImgPath: 'assets/images/banner/banner2.jpg',
+    bannerImgPath: 'assets/images/banner/banner_image_2.jpg',
   ),
   // Add more mock classes for testing admin enrollment
   Classroom(
@@ -75,6 +75,6 @@ final List<Classroom> mockClassroomList = [
     className: 'World History Since 1945',
     description: 'A look at the post-WWII era.',
     creator: 'Ms. Clara Barton',
-    bannerImgPath: 'assets/images/banner/banner3.jpg',
+    bannerImgPath: 'assets/images/banner/banner_image_3.jpg',
   ),
 ];
