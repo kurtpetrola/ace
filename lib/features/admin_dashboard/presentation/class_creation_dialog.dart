@@ -8,14 +8,14 @@ import 'package:ace/services/user_service.dart';
 
 // Mock list of available banner paths for the form (since we don't have file upload)
 const List<String> _mockBannerPaths = [
-  'assets/images/banner/banner1.jpg',
-  'assets/images/banner/banner2.jpg',
-  'assets/images/banner/banner3.jpg',
-  'assets/images/banner/banner4.jpg',
-  'assets/images/banner/banner5.jpg',
-  'assets/images/banner/banner6.jpg',
-  'assets/images/banner/banner7.jpg',
-  'assets/images/banner/banner8.jpg',
+  'assets/images/banner/banner_image_1.jpg',
+  'assets/images/banner/banner_image_2.jpg',
+  'assets/images/banner/banner_image_3.jpg',
+  'assets/images/banner/banner_image_4.jpg',
+  'assets/images/banner/banner_image_5.jpg',
+  'assets/images/banner/banner_image_6.jpg',
+  'assets/images/banner/banner_image_7.jpg',
+  'assets/images/banner/banner_image_8.jpg',
 ];
 
 class ClassCreationDialog extends StatefulWidget {
