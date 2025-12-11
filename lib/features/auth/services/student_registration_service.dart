@@ -20,29 +20,24 @@ class StudentRegistrationService {
     required User user,
     required String password,
   }) async {
-    // 1. Initial Check: Check if the custom Student ID (e.g., STU-001) is already in use
-    // This is optional if you rely solely on email uniqueness, but good for custom ID enforcement.
-    // NOTE: This check should ideally be done against *all* student documents,
-    // not just based on the custom ID as the key, since the key is now the Auth UID.
-    // To keep it simple, we'll rely on email uniqueness for now, as checking all documents
-    // is expensive. The code below is removed for performance but kept commented for context.
-    /*
-    final dbSnapshot = await _dbReference.child(user.uid).get();
-    if (dbSnapshot.exists) {
-      throw Exception('Student ID (${user.uid}) already registered.');
-    }
-    */
-
     fb_auth.UserCredential userCredential;
 
     try {
-      // 2. Create the user SECURELY in Firebase Authentication
+      // 1. Create the user SECURELY in Firebase Authentication
       // This hashes the password and saves the email for later login.
       userCredential =
           await fb_auth.FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: user.email,
         password: password,
       );
+
+      // 2. Database Check (Must be done AFTER auth to satisfy Security Rules)
+      // Check if the custom Student ID (e.g., STU-001) is already in use
+      final dbSnapshot = await _dbReference.child(user.userId).get();
+      if (dbSnapshot.exists) {
+        await userCredential.user?.delete();
+        throw Exception('Student ID (${user.userId}) already registered.');
+      }
 
       final authUid = userCredential.user?.uid;
 
@@ -82,6 +77,10 @@ class StudentRegistrationService {
       }
       throw Exception(errorMsg);
     } catch (e) {
+      // If the error message is already formatted by us (Exception: ...), rethrow it
+      if (e.toString().contains('already registered')) {
+        rethrow;
+      }
       // Handle database or other errors
       throw Exception('An unexpected error occurred: ${e}');
     }
