@@ -21,6 +21,7 @@ class TeacherLoginPage extends ConsumerWidget {
     Widget? suffixIcon,
     bool isPassword = false,
     bool obscureText = false,
+    TextInputType? keyboardType, // Added parameter
   }) {
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25),
@@ -28,8 +29,8 @@ class TeacherLoginPage extends ConsumerWidget {
         initialValue: initialValue,
         onChanged: onChanged,
         obscureText: obscureText,
-        keyboardType:
-            isPassword ? TextInputType.visiblePassword : TextInputType.text,
+        keyboardType: keyboardType ??
+            (isPassword ? TextInputType.visiblePassword : TextInputType.text),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: ColorPalette.accentBlack),
@@ -128,12 +129,13 @@ class TeacherLoginPage extends ConsumerWidget {
                       ),
                     _buildTextField(
                       context,
-                      label: 'Teacher ID',
-                      hint: 'Enter your Teacher ID',
-                      icon: Icons.school,
-                      initialValue: state.studentId, // Reuse generic field
-                      onChanged: notifier.setStudentId, // Reuse generic setter
-                      errorText: state.studentIdError,
+                      label: 'Email Address',
+                      hint: 'Enter your Email',
+                      icon: Icons.email,
+                      initialValue: state.email,
+                      onChanged: notifier.setEmail,
+                      errorText: state.emailError,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(

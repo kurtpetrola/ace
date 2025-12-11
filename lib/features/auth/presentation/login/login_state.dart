@@ -13,19 +13,19 @@ class LoginState with _$LoginState {
 
   // Factory constructor defines the immutable state fields
   const factory LoginState({
-    @Default('') String studentId,
+    @Default('') String email,
     @Default('') String password,
     @Default(false) bool isLoading,
     @Default(false) bool isPasswordVisible,
     @Default('') String errorMessage,
     required UserType userType,
     // --- ADDED Validation Error Fields ---
-    String? studentIdError,
+    String? emailError,
     String? passwordError,
     // ------------------------------------
   }) = _LoginState;
 
   // Custom getter for form validation is now focused on basic presence
   // Detailed validation is now handled in the Notifier's `validateForm` method.
-  bool get isReadyToValidate => studentId.isNotEmpty && password.isNotEmpty;
+  bool get isReadyToValidate => email.isNotEmpty && password.isNotEmpty;
 }
