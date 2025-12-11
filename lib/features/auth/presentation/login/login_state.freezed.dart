@@ -16,14 +16,14 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$LoginState {
-  String get studentId => throw _privateConstructorUsedError;
+  String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isPasswordVisible => throw _privateConstructorUsedError;
   String get errorMessage => throw _privateConstructorUsedError;
   UserType get userType =>
       throw _privateConstructorUsedError; // --- ADDED Validation Error Fields ---
-  String? get studentIdError => throw _privateConstructorUsedError;
+  String? get emailError => throw _privateConstructorUsedError;
   String? get passwordError => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -38,13 +38,13 @@ abstract class $LoginStateCopyWith<$Res> {
       _$LoginStateCopyWithImpl<$Res, LoginState>;
   @useResult
   $Res call(
-      {String studentId,
+      {String email,
       String password,
       bool isLoading,
       bool isPasswordVisible,
       String errorMessage,
       UserType userType,
-      String? studentIdError,
+      String? emailError,
       String? passwordError});
 }
 
@@ -61,19 +61,19 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? studentId = null,
+    Object? email = null,
     Object? password = null,
     Object? isLoading = null,
     Object? isPasswordVisible = null,
     Object? errorMessage = null,
     Object? userType = null,
-    Object? studentIdError = freezed,
+    Object? emailError = freezed,
     Object? passwordError = freezed,
   }) {
     return _then(_value.copyWith(
-      studentId: null == studentId
-          ? _value.studentId
-          : studentId // ignore: cast_nullable_to_non_nullable
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
               as String,
       password: null == password
           ? _value.password
@@ -95,9 +95,9 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
           ? _value.userType
           : userType // ignore: cast_nullable_to_non_nullable
               as UserType,
-      studentIdError: freezed == studentIdError
-          ? _value.studentIdError
-          : studentIdError // ignore: cast_nullable_to_non_nullable
+      emailError: freezed == emailError
+          ? _value.emailError
+          : emailError // ignore: cast_nullable_to_non_nullable
               as String?,
       passwordError: freezed == passwordError
           ? _value.passwordError
@@ -116,13 +116,13 @@ abstract class _$$LoginStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String studentId,
+      {String email,
       String password,
       bool isLoading,
       bool isPasswordVisible,
       String errorMessage,
       UserType userType,
-      String? studentIdError,
+      String? emailError,
       String? passwordError});
 }
 
@@ -137,19 +137,19 @@ class __$$LoginStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? studentId = null,
+    Object? email = null,
     Object? password = null,
     Object? isLoading = null,
     Object? isPasswordVisible = null,
     Object? errorMessage = null,
     Object? userType = null,
-    Object? studentIdError = freezed,
+    Object? emailError = freezed,
     Object? passwordError = freezed,
   }) {
     return _then(_$LoginStateImpl(
-      studentId: null == studentId
-          ? _value.studentId
-          : studentId // ignore: cast_nullable_to_non_nullable
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
               as String,
       password: null == password
           ? _value.password
@@ -171,9 +171,9 @@ class __$$LoginStateImplCopyWithImpl<$Res>
           ? _value.userType
           : userType // ignore: cast_nullable_to_non_nullable
               as UserType,
-      studentIdError: freezed == studentIdError
-          ? _value.studentIdError
-          : studentIdError // ignore: cast_nullable_to_non_nullable
+      emailError: freezed == emailError
+          ? _value.emailError
+          : emailError // ignore: cast_nullable_to_non_nullable
               as String?,
       passwordError: freezed == passwordError
           ? _value.passwordError
@@ -187,19 +187,19 @@ class __$$LoginStateImplCopyWithImpl<$Res>
 
 class _$LoginStateImpl extends _LoginState {
   const _$LoginStateImpl(
-      {this.studentId = '',
+      {this.email = '',
       this.password = '',
       this.isLoading = false,
       this.isPasswordVisible = false,
       this.errorMessage = '',
       required this.userType,
-      this.studentIdError,
+      this.emailError,
       this.passwordError})
       : super._();
 
   @override
   @JsonKey()
-  final String studentId;
+  final String email;
   @override
   @JsonKey()
   final String password;
@@ -216,13 +216,13 @@ class _$LoginStateImpl extends _LoginState {
   final UserType userType;
 // --- ADDED Validation Error Fields ---
   @override
-  final String? studentIdError;
+  final String? emailError;
   @override
   final String? passwordError;
 
   @override
   String toString() {
-    return 'LoginState(studentId: $studentId, password: $password, isLoading: $isLoading, isPasswordVisible: $isPasswordVisible, errorMessage: $errorMessage, userType: $userType, studentIdError: $studentIdError, passwordError: $passwordError)';
+    return 'LoginState(email: $email, password: $password, isLoading: $isLoading, isPasswordVisible: $isPasswordVisible, errorMessage: $errorMessage, userType: $userType, emailError: $emailError, passwordError: $passwordError)';
   }
 
   @override
@@ -230,8 +230,7 @@ class _$LoginStateImpl extends _LoginState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LoginStateImpl &&
-            (identical(other.studentId, studentId) ||
-                other.studentId == studentId) &&
+            (identical(other.email, email) || other.email == email) &&
             (identical(other.password, password) ||
                 other.password == password) &&
             (identical(other.isLoading, isLoading) ||
@@ -242,15 +241,15 @@ class _$LoginStateImpl extends _LoginState {
                 other.errorMessage == errorMessage) &&
             (identical(other.userType, userType) ||
                 other.userType == userType) &&
-            (identical(other.studentIdError, studentIdError) ||
-                other.studentIdError == studentIdError) &&
+            (identical(other.emailError, emailError) ||
+                other.emailError == emailError) &&
             (identical(other.passwordError, passwordError) ||
                 other.passwordError == passwordError));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, studentId, password, isLoading,
-      isPasswordVisible, errorMessage, userType, studentIdError, passwordError);
+  int get hashCode => Object.hash(runtimeType, email, password, isLoading,
+      isPasswordVisible, errorMessage, userType, emailError, passwordError);
 
   @JsonKey(ignore: true)
   @override
@@ -261,18 +260,18 @@ class _$LoginStateImpl extends _LoginState {
 
 abstract class _LoginState extends LoginState {
   const factory _LoginState(
-      {final String studentId,
+      {final String email,
       final String password,
       final bool isLoading,
       final bool isPasswordVisible,
       final String errorMessage,
       required final UserType userType,
-      final String? studentIdError,
+      final String? emailError,
       final String? passwordError}) = _$LoginStateImpl;
   const _LoginState._() : super._();
 
   @override
-  String get studentId;
+  String get email;
   @override
   String get password;
   @override
@@ -284,7 +283,7 @@ abstract class _LoginState extends LoginState {
   @override
   UserType get userType;
   @override // --- ADDED Validation Error Fields ---
-  String? get studentIdError;
+  String? get emailError;
   @override
   String? get passwordError;
   @override

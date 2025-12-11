@@ -32,11 +32,11 @@ class LoginNotifier extends _$LoginNotifier {
 
   // --- STATE MUTATORS: Clear error messages when input changes ---
 
-  void setStudentId(String id) {
+  void setEmail(String value) {
     state = state.copyWith(
-      studentId: id.trim(),
+      email: value.trim(),
       errorMessage: '',
-      studentIdError: null, // Clear error on change
+      emailError: null, // Clear error on change
     );
   }
 
@@ -55,14 +55,17 @@ class LoginNotifier extends _$LoginNotifier {
   // --- Local Validation Logic ---
 
   bool _validateForm() {
-    String? idError;
+    String? emailError;
     String? passError;
     bool isValid = true;
 
-    // 1. Validate ID (Student or Admin)
-    if (state.studentId.isEmpty) {
-      idError = 'ID cannot be empty.';
+    // 1. Validate Email
+    if (state.email.isEmpty) {
+      emailError = 'Email cannot be empty.';
       isValid = false;
+    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(state.email)) {
+       emailError = 'Please enter a valid email address.';
+       isValid = false;
     }
 
     // 2. Validate Password
@@ -76,7 +79,7 @@ class LoginNotifier extends _$LoginNotifier {
 
     // Update the state with all computed errors
     state = state.copyWith(
-      studentIdError: idError,
+      emailError: emailError,
       passwordError: passError,
       // Clear generic service error if local validation fails
       errorMessage: isValid ? '' : 'Please enter all required fields.',
@@ -99,7 +102,7 @@ class LoginNotifier extends _$LoginNotifier {
     try {
       // Use standardized login call for both user types
       await _authService.login(
-        id: state.studentId,
+        email: state.email,
         password: state.password,
       );
 
@@ -114,13 +117,7 @@ class LoginNotifier extends _$LoginNotifier {
       // Logic Fix: Check the generic error string against the current UserType context
       // All services use "Wrong username or password" so checking the string alone is ambiguous.
       if (errorStr.contains('Wrong username or password')) {
-        if (state.userType == UserType.admin) {
-          message = 'Wrong Admin ID or password.';
-        } else if (state.userType == UserType.student) {
-          message = 'Wrong Student ID or password.';
-        } else if (state.userType == UserType.teacher) {
-          message = 'Wrong Teacher ID or password.';
-        }
+         message = 'Wrong email or password.';
       } else if (errorStr.contains('network-request-failed')) {
         message = 'Network error. Check your connection.';
       }

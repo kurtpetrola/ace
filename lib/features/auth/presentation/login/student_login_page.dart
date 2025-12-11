@@ -23,6 +23,7 @@ class StudentLoginPage extends ConsumerWidget {
     Widget? suffixIcon,
     bool isPassword = false,
     bool obscureText = false,
+    TextInputType? keyboardType, // Added parameter
   }) {
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25),
@@ -30,8 +31,8 @@ class StudentLoginPage extends ConsumerWidget {
         initialValue: initialValue,
         onChanged: onChanged,
         obscureText: obscureText,
-        keyboardType:
-            isPassword ? TextInputType.visiblePassword : TextInputType.text,
+        keyboardType: keyboardType ??
+            (isPassword ? TextInputType.visiblePassword : TextInputType.text),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: ColorPalette.accentBlack),
@@ -137,15 +138,16 @@ class StudentLoginPage extends ConsumerWidget {
                         ),
                       ),
 
-                    // Student Number Field
+                    // Email Field
                     _buildTextField(
                       context,
-                      label: 'Student ID',
-                      hint: 'Enter your Student ID',
-                      icon: Icons.person,
-                      initialValue: state.studentId,
-                      onChanged: notifier.setStudentId,
-                      errorText: state.studentIdError, // <-- PASSING NEW ERROR
+                      label: 'Email Address',
+                      hint: 'Enter your Email',
+                      icon: Icons.email,
+                      initialValue: state.email,
+                      onChanged: notifier.setEmail,
+                      errorText: state.emailError,
+                      keyboardType: TextInputType.emailAddress,
                     ),
 
                     const SizedBox(height: 20),

@@ -14,59 +14,61 @@ class AdminAuthService implements AuthServiceInterface {
 
   @override
   Future<void> login({
-    required String id, // The ID entered by the admin (e.g., ADM-001)
+    required String email,
     required String password,
   }) async {
-    final String adminId = id; // Map generic 'id' to specific usage
-    // 1. Fetch data directly using the custom adminId as the database KEY.
-    // This is the correct approach given your database structure (e.g., /Admins/ADM-001).
-    DatabaseReference dbReference =
-        FirebaseDatabase.instance.ref().child("Admins/$adminId");
-
-    final snapshot = await dbReference.get();
-
-    if (!snapshot.exists || snapshot.value == null) {
-      // If the direct fetch fails, the admin ID doesn't exist.
-      throw Exception(wrongCredentialsError);
-    }
-
-    // Decode and map the data to get the required email and name
-    Map<String, dynamic> userDataMap = jsonDecode(jsonEncode(snapshot.value));
-    User user = User.fromJson(userDataMap);
-
-    final String adminEmail = user.email;
-    final String adminName = user.fullname;
-
-    // Check if email is valid for Auth
-    if (adminEmail.isEmpty) {
-      print(
-          'ERROR: Admin profile found, but email field is empty for $adminId.');
-      throw Exception(wrongCredentialsError);
-    }
+    final String adminEmail = email.trim();
 
     try {
-      // 2. Validate password SECURELY using Firebase Authentication (Auth uses Email)
-      await fb_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
+      // 1. Validate password SECURELY using Firebase Authentication
+      final userCredential =
+          await fb_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
         email: adminEmail,
         password: password,
       );
 
-      // 3. Successful login: Save state to Hive
+      final fbUser = userCredential.user;
+      if (fbUser == null) {
+        throw Exception("Authentication successful but user is null.");
+      }
+
+      // 2. Fetch admin data
+      // Query by email.
+      DatabaseReference dbReference =
+          FirebaseDatabase.instance.ref().child("Admins");
+
+      final snapshot =
+          await dbReference.orderByChild("email").equalTo(adminEmail).get();
+
+      if (!snapshot.exists || snapshot.value == null) {
+        await fb_auth.FirebaseAuth.instance.signOut();
+        throw Exception(wrongCredentialsError);
+      }
+
+      // 3. Extract Profile Data
+      Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
+      var entry = values.entries.first;
+      String adminId = entry.key;
+      Map<String, dynamic> userDataMap = jsonDecode(jsonEncode(entry.value));
+
+      User user = User.fromJson(userDataMap);
+      final String adminName = user.fullname;
+
+      // 4. Successful login: Save state to Hive
       await _loginbox.put("isLoggedIn", true);
-      // CRITICAL: Ensure this is set correctly for WrapperScreen routing
       await _loginbox.put("UserType", "Admin");
       await _loginbox.put("User", adminId);
       await _loginbox.put("UserName", adminName);
-
-      return; // Success
+      return;
     } on fb_auth.FirebaseAuthException catch (e) {
-      // Handle Authentication errors (user not found, wrong password, etc.)
       if (e.code == 'user-not-found' ||
           e.code == 'wrong-password' ||
           e.code == 'invalid-email') {
         throw Exception(wrongCredentialsError);
       }
       throw Exception('Login failed: ${e.message}');
+    } catch (e) {
+      throw Exception('An error occurred: $e');
     }
   }
 }
