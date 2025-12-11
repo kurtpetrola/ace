@@ -67,7 +67,7 @@ class _TeacherAccountScreenState extends ConsumerState<TeacherAccountScreen> {
           // You could add more stats here like "Total Students" if efficiently queryable
 
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: topPadding, bottom: 24),
+            padding: EdgeInsets.only(top: topPadding, bottom: 60),
             child: Column(
               children: [
                 PersonalInfoSection(
@@ -82,7 +82,7 @@ class _TeacherAccountScreenState extends ConsumerState<TeacherAccountScreen> {
                   statLabel2: 'Pending Reviews', // Future feature
                   statIcon2: Ionicons.time_outline,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 _buildDarkModeToggle(context),
               ],
             ),

@@ -24,6 +24,7 @@ class _ProfileInfoTileState extends State<ProfileInfoTile> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
@@ -33,15 +34,29 @@ class _ProfileInfoTileState extends State<ProfileInfoTile> {
         duration: const Duration(milliseconds: 150),
         height: widget.minHeight,
         decoration: BoxDecoration(
-          color: scheme.surfaceVariant,
+          color: scheme.surface, // Use surface for better contrast
           borderRadius: BorderRadius.circular(20),
+          border: Border(
+            top: BorderSide(
+                color: scheme.outlineVariant.withOpacity(0.5), width: 1),
+            left: BorderSide(
+                color: scheme.outlineVariant.withOpacity(0.5), width: 1),
+            right: BorderSide(
+                color: scheme.outlineVariant.withOpacity(0.5), width: 1),
+            bottom: BorderSide(
+              color: scheme.outlineVariant.withOpacity(0.5),
+              width: _isPressed ? 1 : 4, // 3D effect press
+            ),
+          ),
           boxShadow: _isPressed
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    color: isDark
+                        ? Colors.black.withOpacity(0.3)
+                        : Colors.grey.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
                 ],
         ),
@@ -51,31 +66,48 @@ class _ProfileInfoTileState extends State<ProfileInfoTile> {
             borderRadius: BorderRadius.circular(20),
             splashColor: scheme.primary.withOpacity(0.1),
             onTap: () {
-              // Optional: add callback here
+              // Show full text in a tooltip or dialog if truncated
+              if (widget.value.length > 20) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(widget.value),
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
             },
             child: Center(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Centered label
                     Text(
-                      widget.label,
+                      widget.label.toUpperCase(),
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
                             color: scheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                            fontSize: 10,
                           ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     // Centered value
                     Text(
                       widget.value,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: scheme.onSurface,
+                            fontWeight: FontWeight.w600,
                           ),
                     ),
                   ],
