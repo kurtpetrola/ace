@@ -105,7 +105,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
           final pendingAssignments = data['pendingAssignments'] as int;
 
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: topPadding, bottom: 24),
+            padding: EdgeInsets.only(top: topPadding, bottom: 60),
             child: Column(
               children: [
                 PersonalInfoSection(
@@ -120,7 +120,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
                   statLabel2: 'Pending Work',
                   statIcon2: Ionicons.time_outline,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 _buildDarkModeToggle(context),
               ],
             ),

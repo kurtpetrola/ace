@@ -8,9 +8,7 @@ import 'package:ace/common/widgets/dialogs/alertdialog.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/shared/widget/profile_info_tile.dart';
 import 'package:ace/features/shared/widget/account_stat_card.dart';
-import 'package:ace/features/shared/widget/quick_action_button.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class PersonalInfoSection extends StatefulWidget {
   final User user;
@@ -43,102 +41,10 @@ class PersonalInfoSection extends StatefulWidget {
 }
 
 class _PersonalInfoSectionState extends State<PersonalInfoSection> {
-  String _appVersion = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadAppVersion();
-  }
-
-  Future<void> _loadAppVersion() async {
-    try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      setState(() {
-        _appVersion = 'v${packageInfo.version} (${packageInfo.buildNumber})';
-      });
-    } catch (e) {
-      setState(() {
-        _appVersion = 'v1.0.0';
-      });
-    }
-  }
-
-  void _showAboutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('About ACE'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Academia Classroom Explorer',
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text('Version: $_appVersion'),
-            const SizedBox(height: 16),
-            Text(
-              'Academia Classroom Explorer is an application designed to help students view, monitor, and manage their grades and educational information in a convenient, orderly, and efficient manner.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Help & Support'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Need help? Contact us at:'),
-            const SizedBox(height: 12),
-            ListTile(
-              leading: const Icon(Ionicons.mail_outline),
-              title: const Text('support@ace.edu'),
-              contentPadding: EdgeInsets.zero,
-            ),
-            ListTile(
-              leading: const Icon(Ionicons.globe_outline),
-              title: const Text('www.ace.edu/help'),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSettingsDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings feature coming soon!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final _loginbox = Hive.box("_loginbox");
 
     final infoList = [
@@ -159,19 +65,30 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     final hasStats = widget.statValue1 != null || widget.statValue2 != null;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Stack(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      child: Column(
         children: [
-          Card(
-            elevation: 4,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          // Main Profile Card
+          Container(
+            decoration: BoxDecoration(
+              color: scheme.surface,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
             child: Column(
               children: [
-                // Gradient Header with Avatar (Black & White theme)
+                // Header with Avatar and Role
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(32)),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -187,262 +104,215 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                               const Color(0xFF76001F), // Accent Dark Red
                             ],
                     ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(28),
-                      topRight: Radius.circular(28),
-                    ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
-                    child: Column(
-                      children: [
-                        // Avatar with subtle glow effect
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white.withOpacity(0.1),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 56,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              widget.avatarIcon,
-                              size: 60,
-                              color: ColorPalette.accentBlack,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          widget.user.fullname,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            widget.role,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 40, horizontal: 24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Avatar
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white,
+                                    Colors.white.withOpacity(0.5),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                          ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: isDark
+                                    ? ColorPalette.accentBlack
+                                    : Colors.white,
+                                child: Icon(
+                                  widget.avatarIcon,
+                                  size: 48,
+                                  color: isDark
+                                      ? Colors.white
+                                      : ColorPalette.accentBlack,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Name
+                            Text(
+                              widget.user.fullname,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    height: 1.2,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            // Role Badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                widget.role.toUpperCase(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1,
+                                    ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+
+                      // Logout Button
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: IconButton(
+                          icon: const Icon(Ionicons.log_out_outline,
+                              color: Colors.white),
+                          onPressed: () async {
+                            final action = await AlertDialogs.yesCancelDialog(
+                              context,
+                              'Logout this account?',
+                              'You can always come back any time.',
+                            );
+                            if (action == DialogsAction.yes) {
+                              _loginbox.put("isLoggedIn", false);
+                              if (context.mounted) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SelectionPage()),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                // Content section
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                  child: Column(
-                    children: [
-                      // Statistics Cards (if provided) - Monochromatic grey colors
-                      if (hasStats) ...[
-                        Row(
-                          children: [
-                            if (widget.statValue1 != null)
-                              Expanded(
-                                child: AccountStatCard(
-                                  icon:
-                                      widget.statIcon1 ?? Ionicons.stats_chart,
-                                  label: widget.statLabel1 ?? 'Stat 1',
-                                  value: widget.statValue1.toString(),
-                                  color: widget.isAdmin
-                                      ? const Color(0xFF505050)
-                                      : const Color(0xFF606060),
-                                ),
-                              ),
-                            if (widget.statValue1 != null &&
-                                widget.statValue2 != null)
-                              const SizedBox(width: 12),
-                            if (widget.statValue2 != null)
-                              Expanded(
-                                child: AccountStatCard(
-                                  icon: widget.statIcon2 ?? Ionicons.briefcase,
-                                  label: widget.statLabel2 ?? 'Stat 2',
-                                  value: widget.statValue2.toString(),
-                                  color: widget.isAdmin
-                                      ? const Color(0xFF404040)
-                                      : const Color(0xFF707070),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
+                // Statistics Section
+                if (hasStats)
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      children: [
+                        if (widget.statValue1 != null)
+                          Expanded(
+                            child: AccountStatCard(
+                              icon: widget.statIcon1 ?? Ionicons.stats_chart,
+                              label: widget.statLabel1 ?? 'Stat 1',
+                              value: widget.statValue1.toString(),
+                              color: widget.isAdmin
+                                  ? const Color(0xFF505050)
+                                  : const Color(0xFF606060),
+                            ),
+                          ),
+                        if (widget.statValue1 != null &&
+                            widget.statValue2 != null)
+                          const SizedBox(width: 12),
+                        if (widget.statValue2 != null)
+                          Expanded(
+                            child: AccountStatCard(
+                              icon: widget.statIcon2 ?? Ionicons.briefcase,
+                              label: widget.statLabel2 ?? 'Stat 2',
+                              value: widget.statValue2.toString(),
+                              color: widget.isAdmin
+                                  ? const Color(0xFF404040)
+                                  : const Color(0xFF707070),
+                            ),
+                          ),
                       ],
+                    ),
+                  ),
 
-                      // Quick Actions - Grey colors
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Quick Actions',
-                          style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: scheme.onSurfaceVariant,
-                                  ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          QuickActionButton(
-                            icon: Ionicons.settings_outline,
-                            label: 'Settings',
-                            onTap: _showSettingsDialog,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey.shade400
-                                    : const Color(0xFF606060),
-                          ),
-                          QuickActionButton(
-                            icon: Ionicons.help_circle_outline,
-                            label: 'Help',
-                            onTap: _showHelpDialog,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey.shade400
-                                    : const Color(0xFF707070),
-                          ),
-                          QuickActionButton(
-                            icon: Ionicons.information_circle_outline,
-                            label: 'About',
-                            onTap: _showAboutDialog,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey.shade400
-                                    : const Color(0xFF505050),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
+                const SizedBox(height: 8),
 
-                      Divider(color: scheme.outlineVariant),
-                      const SizedBox(height: 20),
-
-                      // Section Label
-                      Align(
-                        alignment: Alignment.centerLeft,
+                // Personal Information Section
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
                           'Personal Information',
                           style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: scheme.onSurfaceVariant,
+                                    color: scheme.onSurface,
                                   ),
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Responsive grid of info tiles
                       LayoutBuilder(
                         builder: (context, constraints) {
-                          double spacing = 12;
+                          // Adaptive grid layout
                           int crossAxisCount =
-                              constraints.maxWidth > 700 ? 3 : 2;
-                          double width = (constraints.maxWidth -
-                                  spacing * (crossAxisCount - 1)) /
+                              constraints.maxWidth > 600 ? 3 : 2;
+                          double spacing = 12;
+                          double itemWidth = (constraints.maxWidth -
+                                  (spacing * (crossAxisCount - 1))) /
                               crossAxisCount;
-                          double height = 90;
 
                           return Wrap(
                             spacing: spacing,
                             runSpacing: spacing,
                             children: infoList.map((item) {
                               bool fullWidth = item['fullWidth'] == true;
-                              double tileWidth =
-                                  fullWidth ? constraints.maxWidth : width;
 
                               return SizedBox(
-                                width: tileWidth,
-                                height: height,
+                                width: fullWidth
+                                    ? constraints.maxWidth
+                                    : itemWidth,
                                 child: ProfileInfoTile(
                                   label: item['label'] as String,
                                   value: item['value'] as String,
-                                  minHeight: height,
+                                  minHeight: 85,
                                 ),
                               );
                             }).toList(),
                           );
                         },
                       ),
-
-                      // App Version Footer
-                      if (_appVersion.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        Divider(color: scheme.outlineVariant),
-                        const SizedBox(height: 12),
-                        Text(
-                          'ACE $_appVersion',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: scheme.onSurfaceVariant,
-                                  ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
               ],
-            ),
-          ),
-
-          // Top-right logout button
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Material(
-              color: Colors.white.withOpacity(0.2),
-              shape: const CircleBorder(),
-              elevation: 4,
-              child: IconButton(
-                iconSize: 28,
-                icon: const Icon(Ionicons.log_out_outline, color: Colors.white),
-                onPressed: () async {
-                  final action = await AlertDialogs.yesCancelDialog(
-                    context,
-                    'Logout this account?',
-                    'You can always come back any time.',
-                  );
-                  if (action == DialogsAction.yes) {
-                    _loginbox.put("isLoggedIn", false);
-                    if (context.mounted) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => const SelectionPage()),
-                      );
-                    }
-                  }
-                },
-              ),
             ),
           ),
         ],

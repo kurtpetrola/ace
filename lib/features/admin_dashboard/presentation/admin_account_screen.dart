@@ -104,7 +104,7 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
           final totalStudents = data['totalStudents'] as int;
 
           return SingleChildScrollView(
-            padding: EdgeInsets.only(top: topPadding, bottom: 24),
+            padding: EdgeInsets.only(top: topPadding, bottom: 60),
             child: Column(
               children: [
                 PersonalInfoSection(
@@ -119,7 +119,7 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
                   statLabel2: 'Total Students',
                   statIcon2: Ionicons.people_outline,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 _buildDarkModeToggle(context),
               ],
             ),
