@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:ace/models/user.dart';
 import 'dart:convert';
+import 'package:ace/services/hive_constants.dart';
 
 import 'package:ace/features/auth/services/auth_service_interface.dart';
 
@@ -80,5 +81,113 @@ class StudentAuthService implements AuthServiceInterface {
       // Handle other errors (e.g. database failures)
       throw Exception('An error occurred: $e');
     }
+  }
+
+  // --- CACHED USER STATS LOGIC ---
+  Stream<Map<String, dynamic>> streamUserStatsCached(String studentId) async* {
+    final box = Hive.box(HiveConstants.kStudentStatsBox);
+
+    // 1. Yield Cache Immediately
+    if (box.containsKey(studentId)) {
+      final cachedMap = box.get(studentId);
+      if (cachedMap != null) {
+        // We know we stored Map<String, dynamic>
+        // Depending on how Hive returns it (Map<dynamic, dynamic>), we might need casting
+        final cleanMap = Map<String, dynamic>.from(cachedMap as Map);
+        // Convert the 'user' sub-map back to a User object for the UI
+        if (cleanMap['user'] is Map) {
+          cleanMap['user'] =
+              User.fromJson(Map<String, dynamic>.from(cleanMap['user'] as Map));
+        } else if (cleanMap['user'] is String) {
+          // If stored as JSON string (fallback)
+          cleanMap['user'] = User.fromJson(jsonDecode(cleanMap['user']));
+        }
+        yield cleanMap;
+      }
+    }
+
+    // 2. Fetch Fresh Data (Network)
+    try {
+      final freshData = await _fetchRichUserStats(studentId);
+
+      // 3. Update Cache
+      // We must serialize the 'User' object to plain JSON Map for Hive storage safely
+      final cacheableData = Map<String, dynamic>.from(freshData);
+      if (cacheableData['user'] is User) {
+        cacheableData['user'] = (cacheableData['user'] as User).toJson();
+      }
+
+      await box.put(studentId, cacheableData);
+
+      // 4. Yield Fresh Data
+      yield freshData;
+    } catch (e) {
+      // If network fails, we rely on the cache yielded in step 1.
+      print('Error fetching user stats: $e');
+    }
+  }
+
+  // Helper method mirroring the logic originally in StudentAccountScreen
+  Future<Map<String, dynamic>> _fetchRichUserStats(String studentId) async {
+    // Reference assuming studentId is the key in "Students/studentId"
+    // Note: The original code used 'fullname' as the key, but it SHOULD be studentId.
+    // However, looking at the previous file, it used _loginbox.get("User") which IS the ID.
+    DatabaseReference databaseReference =
+        FirebaseDatabase.instance.ref().child("Students/$studentId");
+
+    // Fetch user profile
+    DataSnapshot snapshot = await databaseReference.get();
+    if (!snapshot.exists || snapshot.value == null) {
+      throw Exception("Student data not found for $studentId.");
+    }
+
+    Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
+    User myUserObj = User.fromJson(myObj);
+
+    int enrolledClassesCount = 0;
+    int pendingAssignments = 0;
+
+    // Calculate Stats
+    try {
+      DataSnapshot classesSnapshot =
+          await databaseReference.child('classes').get();
+      if (classesSnapshot.exists && classesSnapshot.value is Map) {
+        enrolledClassesCount = (classesSnapshot.value as Map).keys.length;
+
+        // Pending assignments
+        final classIds = (classesSnapshot.value as Map).keys.toList();
+        for (var classId in classIds) {
+          try {
+            DataSnapshot classworkRefsSnapshot = await FirebaseDatabase.instance
+                .ref()
+                .child('Classes/$classId/classwork')
+                .get();
+
+            if (classworkRefsSnapshot.exists &&
+                classworkRefsSnapshot.value is Map) {
+              final classworkIds =
+                  (classworkRefsSnapshot.value as Map).keys.toList();
+              for (var classworkId in classworkIds) {
+                // Check if student has submitted
+                DataSnapshot submissionSnapshot = await FirebaseDatabase
+                    .instance
+                    .ref()
+                    .child('submissions/$classworkId/$studentId')
+                    .get();
+                if (!submissionSnapshot.exists) {
+                  pendingAssignments++;
+                }
+              }
+            }
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
+
+    return {
+      'user': myUserObj,
+      'enrolledClasses': enrolledClassesCount,
+      'pendingAssignments': pendingAssignments,
+    };
   }
 }

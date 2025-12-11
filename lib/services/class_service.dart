@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/models/user.dart';
+import 'package:hive/hive.dart';
+import 'package:ace/services/hive_constants.dart';
 
 class ClassService {
   final DatabaseReference _db = FirebaseDatabase.instance.ref();
@@ -88,33 +90,70 @@ class ClassService {
   // STUDENT → CLASSES
 
   Future<List<Classroom>> fetchStudentClasses(String studentId) async {
-    final classesSnap = await _db.child('Students/$studentId/classes').get();
+    try {
+      final classesSnap = await _db.child('Students/$studentId/classes').get();
 
-    if (!classesSnap.exists || classesSnap.value == null) {
+      if (!classesSnap.exists || classesSnap.value == null) {
+        return [];
+      }
+
+      final Map<String, dynamic> idMap =
+          Map<String, dynamic>.from(classesSnap.value as Map);
+
+      final allClassesSnap = await _db.child('Classes').get();
+      if (!allClassesSnap.exists || allClassesSnap.value == null) return [];
+
+      final Map<String, dynamic> all =
+          Map<String, dynamic>.from(allClassesSnap.value as Map);
+
+      final List<Classroom> result = [];
+
+      for (final id in idMap.keys) {
+        if (all.containsKey(id)) {
+          result.add(Classroom.fromJson(
+            id,
+            Map<String, dynamic>.from(all[id]),
+          ));
+        }
+      }
+
+      // Cache the result
+      final box = Hive.box(HiveConstants.kClassBox);
+      await box.put(studentId, result);
+
+      return result;
+    } catch (e) {
+      // Fallback to cache if network fails
+      final box = Hive.box(HiveConstants.kClassBox);
+      if (box.containsKey(studentId)) {
+        final cachedClasses = box.get(studentId);
+        if (cachedClasses is List) {
+          return cachedClasses.cast<Classroom>();
+        }
+      }
       return [];
     }
+  }
 
-    final Map<String, dynamic> idMap =
-        Map<String, dynamic>.from(classesSnap.value as Map);
+  // STREAM with CACHE Strategy
+  Stream<List<Classroom>> streamStudentClassesCached(String studentId) async* {
+    final box = Hive.box(HiveConstants.kClassBox);
 
-    final allClassesSnap = await _db.child('Classes').get();
-    if (!allClassesSnap.exists || allClassesSnap.value == null) return [];
-
-    final Map<String, dynamic> all =
-        Map<String, dynamic>.from(allClassesSnap.value as Map);
-
-    final List<Classroom> result = [];
-
-    for (final id in idMap.keys) {
-      if (all.containsKey(id)) {
-        result.add(Classroom.fromJson(
-          id,
-          Map<String, dynamic>.from(all[id]),
-        ));
+    // 1. Yield Cache
+    if (box.containsKey(studentId)) {
+      final cached = box.get(studentId);
+      if (cached is List) {
+        yield cached.cast<Classroom>();
       }
     }
 
-    return result;
+    // 2. Fetch Network (Reuse existing logic which also updates cache)
+    try {
+      final freshData = await fetchStudentClasses(studentId);
+      yield freshData;
+    } catch (e) {
+      // If network fails, we've already yielded cache above.
+    }
   }
 
   // CLASS → STUDENTS (ROSTER)

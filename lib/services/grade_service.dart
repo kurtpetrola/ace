@@ -3,6 +3,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+import 'package:ace/services/hive_constants.dart';
 
 class GradeService {
   // Path for grades: /StudentGrades
@@ -116,8 +118,35 @@ class GradeService {
     }
   }
 
-  /// Provides a stream of real-time grade updates for a specific student ID.
-  Stream<DatabaseEvent> getStudentGradesStream(String studentId) {
-    return _gradesRef.child(studentId).onValue;
+  /// **NEW: Cached Stream Strategy**
+  /// 1. Immediately emit cached data from Hive (if available).
+  /// 2. Listen to Firebase and emit new data + update Hive on change.
+  Stream<Map<String, dynamic>> getStudentGradesStreamCached(
+      String studentId) async* {
+    final box = Hive.box(HiveConstants.kGradesBox);
+
+    // 1. Emit Check Cache first
+    if (box.containsKey(studentId)) {
+      final cachedData = box.get(studentId);
+      if (cachedData is Map) {
+        yield Map<String, dynamic>.from(cachedData);
+      }
+    }
+
+    // 2. Listen to Network
+    yield* _gradesRef.child(studentId).onValue.map((event) {
+      if (event.snapshot.exists && event.snapshot.value != null) {
+        // Safe decode
+        final raw = event.snapshot.value;
+        // Handling the dynamic -> Map specific to this project structure
+        final data = jsonDecode(jsonEncode(raw)) as Map<String, dynamic>;
+
+        // Update Cache
+        box.put(studentId, data);
+
+        return data;
+      }
+      return <String, dynamic>{};
+    });
   }
 }

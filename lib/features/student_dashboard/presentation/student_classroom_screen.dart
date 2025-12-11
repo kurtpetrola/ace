@@ -18,7 +18,7 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
   final ClassService _classService = ClassService();
 
   String? _studentId;
-  Future<List<Classroom>>? _classesFuture;
+  Stream<List<Classroom>>? _classesStream;
 
   @override
   void initState() {
@@ -42,9 +42,9 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
     _studentId = _getStudentId();
 
     if (_studentId != null) {
-      _classesFuture = _classService.fetchStudentClasses(_studentId!);
+      _classesStream = _classService.streamStudentClassesCached(_studentId!);
     } else {
-      _classesFuture = Future.value([]);
+      _classesStream = Stream.value([]);
       debugPrint('Student ID is null. Cannot fetch classes.');
     }
 
@@ -62,8 +62,8 @@ class _StudentClassroomState extends State<StudentClassroomScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: FutureBuilder<List<Classroom>>(
-        future: _classesFuture,
+      body: StreamBuilder<List<Classroom>>(
+        stream: _classesStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
