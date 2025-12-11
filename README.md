@@ -14,16 +14,26 @@ Academia Classroom Explorer is an application designed to help students view, mo
 - **Grade Monitoring**: Real-time view of grades (Prelim, Midterm, Final) and calculated averages.
 - **Join Classes**: Easy enrollment using unique class codes.
 
+### **Teacher Module**
+- **Classroom Management**: Create and manage classes, subject codes, and schedules.
+- **Assignment System**: Post assignments, quizzes, and materials for students.
+- **Grading Portal**:
+  - View student submissions.
+  - Assign grades and provide feedback.
+- **Roster Control**: Monitor class enrollment and student details.
+
 ### **Admin Module**
-- **Class Management**: Create new classes, generate class codes, and manage class details.
-- **Roster Management**:
-  - View and manage students in each class.
-  - Manually add or remove students from specific rosters.
-- **Classwork Management**: Create and assign tasks (Assignments, Quizzes, Projects) with points and due dates.
+- **System Oversight**: centralized view of all classes and users.
 - **User Management**:
-  - Distinct "Admin" and "Student" role management.
-  - Search and filter users database.
+  - Distinct role management (Admin, Teacher, Student).
+  - Search and filter user database.
+  - Approve or remove accounts.
 - **Grades Oversight**: Monitor academic performance across different classes.
+
+### **Offline Capabilities**
+- **Zero-Latency Loading**: Instant access to Classes, Grades, and Profile Stats using Hive caching.
+- **Offline Startup**: Bypasses network checks to launch immediately into the dashboard.
+- **Background Sync**: Automatically updates cached data when internet connection is restored.
 
 ## 📥 Installation
 
@@ -36,8 +46,8 @@ You can download the latest **Android APK** file and install the application man
 | **Framework** | **Flutter** | Cross-platform UI toolkit for building beautiful, natively compiled applications. |
 | **Language** | **Dart** | Optimized for fast apps on any platform. |
 | **State Management** | **Riverpod** | Robust, compile-safe state management solution for scalable architecture. |
-| **Backend** | **Firebase** | Handles Authentication, Cloud Firestore (Database), and potential Storage needs. |
-| **Local Storage** | **Hive** | Fast, lightweight NoSQL database for local caching and offline capabilities. |
+| **Backend** | **Firebase** | Handles Authentication (Email/Password), Cloud Firestore, and Realtime Database. |
+| **Local Storage** | **Hive** | **Offline-First**. Primary local database for caching classes, grades, and user sessions. |
 
 ## 🛠 Future Enhancements
 
@@ -51,12 +61,11 @@ The following features are planned for future updates to further enhance functio
 
 ## 🔑 Demo Access
 
-Use the following accounts to quickly explore the application's different user roles (Student and Admin) without needing to register:
+The application now uses **Email & Password** for secure login.
 
-**Student Role:**
-- **ID:** `STU-001`
+**Student Access (Demo):**
+- **Email:** `johndoe@ace.com`
 - **Password:** `StudentSecure99!`
 
-**Admin Role:**
-- **ID:** `ADM-001`
-- **Password:** `AdminSecure99!`
+**Admin/Teacher Access:**
+- Available upon request for security reasons.
