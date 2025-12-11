@@ -1,7 +1,6 @@
 // lib/features/student_dashboard/presentation/student_grade_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/services/grade_service.dart';
 import 'package:ace/features/shared/widget/grades_table.dart';
@@ -15,15 +14,15 @@ final gradeService = GradeService();
 
 /// A Family StreamProvider that connects to Firebase Realtime DB.
 final studentGradesStreamProvider =
-    StreamProvider.family<DatabaseEvent, String>((ref, studentId) {
-  return gradeService.getStudentGradesStream(studentId);
+    StreamProvider.family<Map<String, dynamic>, String>((ref, studentId) {
+  return gradeService.getStudentGradesStreamCached(studentId);
 });
 
 /// A Family Provider that processes the raw DatabaseEvent into a clean Map of grades.
 /// This is the provider the UI will consume.
 final gradesDataProvider =
     Provider.family<Map<String, dynamic>, String>((ref, studentId) {
-  // 1. Watch the real-time stream provider
+  // 1. Watch the stream provider (now returns Map)
   final gradesStreamAsync = ref.watch(studentGradesStreamProvider(studentId));
 
   // 2. Process the AsyncValue state
@@ -33,16 +32,7 @@ final gradesDataProvider =
       debugPrint('Error fetching grades: $err');
       return {}; // Return empty map on error
     },
-    data: (event) {
-      if (event.snapshot.value != null) {
-        // Deserialize the data into a clean Map<String, dynamic>
-        final data = event.snapshot.value as Map<dynamic, dynamic>?;
-        if (data != null) {
-          return Map<String, dynamic>.from(data);
-        }
-      }
-      return {}; // Empty grades map
-    },
+    data: (data) => data, // Pass through the Map directly
   );
 });
 

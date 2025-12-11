@@ -1,14 +1,26 @@
-// lib/models/classroom.dart
+import 'package:hive/hive.dart';
 
-// NOTE: Since AssetImage is used in your current code, the bannerImg here
-// represents a path or an identifier, not the image itself.
+part 'classroom.g.dart';
+
+@HiveType(typeId: 0)
 class Classroom {
+  @HiveField(0)
   final String classId;
+
+  @HiveField(1)
   final String className;
+
+  @HiveField(2)
   final String description;
+
+  @HiveField(3)
   final String creator;
+
   // This will store a URL or asset path string.
+  @HiveField(4)
   final String bannerImgPath;
+
+  @HiveField(5)
   final String? teacherId; // Added for linking to Teacher account
 
   Classroom({

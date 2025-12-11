@@ -11,6 +11,8 @@ import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:ace/services/fcm_service.dart';
 import 'package:ace/core/theme/theme_provider.dart';
 import 'package:ace/core/theme/theme_data.dart';
+import 'package:ace/models/classroom.dart';
+import 'package:ace/services/hive_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,8 +28,15 @@ void main() async {
   // 2. Initialize Hive second
   await Hive.initFlutter();
 
-  // 3. Open Hive box and check login status
+  // Register Adapters
+  Hive.registerAdapter(ClassroomAdapter());
+
+  // 3. Open Hive boxes
   final loginBox = await Hive.openBox("_loginbox");
+  await Hive.openBox(HiveConstants.kClassBox);
+  await Hive.openBox(HiveConstants.kGradesBox);
+  await Hive.openBox(HiveConstants.kStudentStatsBox);
+
   final bool userLoggedIn = loginBox.get("isLoggedIn") ?? false;
 
   // 4. Wrap the app with ProviderScope
