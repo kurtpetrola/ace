@@ -69,3 +69,7 @@ The application now uses **Email & Password** for secure login.
 
 **Admin/Teacher Access:**
 - Available upon request for security reasons.
+
+## 💡 Note
+
+This project builds upon the foundation of [Academia Classroom Explorer](https://github.com/kurtpetrola/Academia-Classroom-Explorer), representing the **complete implementation** of all core modules, system integration, and final feature delivery.
