@@ -63,9 +63,10 @@ class LoginNotifier extends _$LoginNotifier {
     if (state.email.isEmpty) {
       emailError = 'Email cannot be empty.';
       isValid = false;
-    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(state.email)) {
-       emailError = 'Please enter a valid email address.';
-       isValid = false;
+    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+        .hasMatch(state.email)) {
+      emailError = 'Please enter a valid email address.';
+      isValid = false;
     }
 
     // 2. Validate Password
@@ -91,7 +92,7 @@ class LoginNotifier extends _$LoginNotifier {
   // 3. Login Execution Logic (NOW uses local validation)
 
   Future<bool> login() async {
-    // un local validation
+    // Run local validation
     if (!_validateForm()) {
       return false;
     }
@@ -117,7 +118,7 @@ class LoginNotifier extends _$LoginNotifier {
       // Logic Fix: Check the generic error string against the current UserType context
       // All services use "Wrong username or password" so checking the string alone is ambiguous.
       if (errorStr.contains('Wrong username or password')) {
-         message = 'Wrong email or password.';
+        message = 'Wrong email or password.';
       } else if (errorStr.contains('network-request-failed')) {
         message = 'Network error. Check your connection.';
       }
