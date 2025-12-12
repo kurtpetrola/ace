@@ -86,15 +86,19 @@ class _AddGradeFormState extends State<AddGradeForm> {
   // --- UI Building ---
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       elevation: 4,
       shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(vertical: 12),
+      // Use theme card color
+      color: theme.cardTheme.color,
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardTheme.color,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Form(
@@ -119,19 +123,18 @@ class _AddGradeFormState extends State<AddGradeForm> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Add New Grade',
-                          style: TextStyle(
+                          style: theme.textTheme.titleLarge?.copyWith(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: ColorPalette.accentBlack,
                           ),
                         ),
                         Text(
                           'Student ID: ${widget.studentId}',
-                          style: const TextStyle(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             fontSize: 14,
-                            color: ColorPalette.darkGrey,
+                            color: theme.textTheme.bodySmall?.color,
                           ),
                         ),
                       ],
@@ -143,8 +146,8 @@ class _AddGradeFormState extends State<AddGradeForm> {
 
               // Subject Code Input
               TextFormField(
-                decoration: _inputDecoration(
-                    'Subject Code', 'e.g., ITE 115', Icons.auto_stories),
+                decoration: _inputDecoration(context, 'Subject Code',
+                    'e.g., ITE 115', Icons.auto_stories),
                 validator: (value) => value == null || value.isEmpty
                     ? 'Please enter the subject code'
                     : null,
@@ -154,32 +157,30 @@ class _AddGradeFormState extends State<AddGradeForm> {
                   FilteringTextInputFormatter.singleLineFormatter,
                   _UpperCaseTextFormatter(),
                 ],
-                style: const TextStyle(
-                    color: ColorPalette.accentBlack,
-                    fontWeight: FontWeight.w600),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 20),
 
               // Grade Type Dropdown
               DropdownButtonFormField<String>(
                 decoration: _inputDecoration(
-                    'Grade Type', 'Select Period', Icons.grade),
+                    context, 'Grade Type', 'Select Period', Icons.grade),
                 value: _selectedGradeType,
-                hint: const Text('Choose Period',
-                    style: TextStyle(color: ColorPalette.darkGrey)),
+                hint: Text('Choose Period',
+                    style: TextStyle(color: theme.hintColor)),
                 items: gradeTypes.map((type) {
                   return DropdownMenuItem(
                     value: type,
-                    child: Text(type,
-                        style:
-                            const TextStyle(color: ColorPalette.accentBlack)),
+                    child: Text(type, style: theme.textTheme.bodyLarge),
                   );
                 }).toList(),
                 onChanged: (value) =>
                     setState(() => _selectedGradeType = value),
                 validator: (value) =>
                     value == null ? 'Please select a grade type' : null,
-                dropdownColor: Colors.white,
+                dropdownColor: theme.cardTheme.color,
                 icon: const Icon(Icons.arrow_drop_down_circle,
                     color: ColorPalette.primary),
               ),
@@ -188,7 +189,8 @@ class _AddGradeFormState extends State<AddGradeForm> {
               // Score Input
               TextFormField(
                 controller: _scoreController,
-                decoration: _inputDecoration('Score', '0-100', Icons.numbers),
+                decoration:
+                    _inputDecoration(context, 'Score', '0-100', Icons.numbers),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Enter a score';
                   if (double.tryParse(value) == null) {
@@ -198,9 +200,9 @@ class _AddGradeFormState extends State<AddGradeForm> {
                 },
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(
-                    color: ColorPalette.accentBlack,
-                    fontWeight: FontWeight.w600),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 32),
 
@@ -247,20 +249,29 @@ class _AddGradeFormState extends State<AddGradeForm> {
   }
 
   // Helper function for polished input decoration
-  InputDecoration _inputDecoration(String label, String hint, IconData icon) {
+  InputDecoration _inputDecoration(
+      BuildContext context, String label, String hint, IconData icon) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return InputDecoration(
       labelText: label,
       hintText: hint,
       prefixIcon: Icon(icon, color: ColorPalette.primary.withOpacity(0.7)),
       labelStyle: TextStyle(
-          color: ColorPalette.accentBlack.withOpacity(0.7),
+          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
           fontWeight: FontWeight.w500),
-      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.6)),
+      hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.6)),
       filled: true,
-      fillColor: Colors.grey.shade50,
+      // Use a slightly different color for input background based on theme
+      fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+        // Make border darker and more visible in light mode
+        borderSide: BorderSide(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade600,
+          width: 1.5,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
