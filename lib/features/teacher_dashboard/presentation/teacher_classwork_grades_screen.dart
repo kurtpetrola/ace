@@ -7,6 +7,7 @@ import 'package:ace/models/user.dart';
 import 'package:ace/models/submission.dart';
 import 'package:ace/services/class_service.dart';
 import 'package:ace/services/submission_service.dart';
+import 'package:ace/services/classwork_service.dart';
 
 class TeacherClassworkGradesScreen extends StatefulWidget {
   final Classroom classroom;
@@ -27,6 +28,7 @@ class _TeacherClassworkGradesScreenState
     extends State<TeacherClassworkGradesScreen> {
   final ClassService _classService = ClassService();
   final SubmissionService _submissionService = SubmissionService();
+  final ClassworkService _classworkService = ClassworkService();
 
   List<User> _students = [];
   Map<String, Submission> _submissions = {}; // studentId -> Submission
@@ -112,6 +114,12 @@ class _TeacherClassworkGradesScreenState
     final controller =
         TextEditingController(text: submission?.grade?.toString() ?? '');
 
+    // CHECK IF Correct Answer is missing
+    final bool isQuiz = widget.classwork.type == ClassworkType.quiz;
+    final bool missingCorrectAnswer = widget.classwork.correctAnswer == null ||
+        widget.classwork.correctAnswer!.isEmpty;
+    final correctAnswerController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -147,6 +155,21 @@ class _TeacherClassworkGradesScreenState
                 border: const OutlineInputBorder(),
               ),
             ),
+            if (isQuiz && missingCorrectAnswer) ...[
+              const SizedBox(height: 16),
+              const Text('Missing Correct Answer',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.orange)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: correctAnswerController,
+                decoration: const InputDecoration(
+                  labelText: 'Set Correct Answer (Optional)',
+                  border: OutlineInputBorder(),
+                  helperText: 'Students will see this after grading',
+                ),
+              ),
+            ],
           ],
         ),
         actions: [
@@ -154,14 +177,25 @@ class _TeacherClassworkGradesScreenState
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final val = int.tryParse(controller.text);
               if (val != null) {
-                if (val > widget.classwork.points) {
-                  // Warning? Allow extra credit? Let's just warn but allow for now
+                // Save Grade
+                await _saveGrade(student.userId, val);
+
+                // Save Correct Answer if provided
+                if (isQuiz &&
+                    missingCorrectAnswer &&
+                    correctAnswerController.text.trim().isNotEmpty) {
+                  final updatedClasswork = widget.classwork.copyWith(
+                    correctAnswer: correctAnswerController.text.trim(),
+                  );
+                  await _classworkService.updateClasswork(updatedClasswork);
+                  // Update widget state hack or simple toast (requires re-push or setState if we want to reflect immediately without pop)
+                  // For now, assume it's saved.
                 }
-                _saveGrade(student.userId, val);
-                Navigator.pop(context);
+
+                if (mounted) Navigator.pop(context);
               }
             },
             child: const Text('Save Grade'),

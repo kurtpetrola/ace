@@ -28,11 +28,15 @@ class _TeacherCreateClassworkDialogState
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
   final TextEditingController _pointsController = TextEditingController();
+  final TextEditingController _correctAnswerController =
+      TextEditingController();
 
   ClassworkType _selectedType = ClassworkType.assignment;
   DateTime? _selectedDueDate;
   TimeOfDay? _selectedDueTime;
+  bool _allowResubmission = true;
 
   @override
   void initState() {
@@ -46,12 +50,17 @@ class _TeacherCreateClassworkDialogState
     final cw = widget.existingClasswork!;
     _titleController.text = cw.title;
     _descriptionController.text = cw.description;
+
     _pointsController.text = cw.points.toString();
+    _correctAnswerController.text = cw.correctAnswer ?? '';
     _selectedType = cw.type;
     if (cw.dueDate != null) {
       _selectedDueDate = cw.dueDate;
       _selectedDueTime = TimeOfDay.fromDateTime(cw.dueDate!);
+      _selectedDueDate = cw.dueDate;
+      _selectedDueTime = TimeOfDay.fromDateTime(cw.dueDate!);
     }
+    _allowResubmission = cw.allowResubmission;
   }
 
   Future<void> _selectDueDate() async {
@@ -95,7 +104,12 @@ class _TeacherCreateClassworkDialogState
       dueDate: finalDueDate,
       points: int.tryParse(_pointsController.text) ?? 100,
       createdBy: widget.teacherId, // Using teacherId
+
       createdAt: widget.existingClasswork?.createdAt ?? DateTime.now(),
+      correctAnswer: _correctAnswerController.text.trim().isNotEmpty
+          ? _correctAnswerController.text.trim()
+          : null,
+      allowResubmission: _allowResubmission,
     );
 
     Navigator.of(context).pop(classwork);
@@ -247,6 +261,35 @@ class _TeacherCreateClassworkDialogState
                             return null;
                           },
                         ),
+                      ),
+                      if (_selectedType == ClassworkType.quiz) ...[
+                        const SizedBox(height: 20),
+                        _buildLabel('Correct Answer'),
+                        TextFormField(
+                          controller: _correctAnswerController,
+                          decoration: _inputDecoration('(Optional)',
+                              icon: Ionicons.checkmark_circle_outline),
+                        ),
+                      ],
+                      const SizedBox(height: 20),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text('Allow Resubmission',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.color)),
+                        subtitle: const Text(
+                          'Students can resubmit work before the due date.',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                        value: _allowResubmission,
+                        onChanged: (val) =>
+                            setState(() => _allowResubmission = val),
+                        activeColor: ColorPalette.primary,
                       ),
                       const SizedBox(height: 24),
                       _buildLabel('Due Date (Optional)'),

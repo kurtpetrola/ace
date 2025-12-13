@@ -49,13 +49,12 @@ class _ClassworkTabState extends State<ClassworkTab> {
     }
   }
 
-  /// clean, fast submission check
-  Future<bool> _hasSubmitted(Classwork c) async {
-    final submission = await _submissionService.getStudentSubmission(
+  /// fetch full submission to check grades
+  Future<Submission?> _getSubmission(Classwork c) async {
+    return await _submissionService.getStudentSubmission(
       c.classworkId,
       widget.studentId,
     );
-    return submission != null;
   }
 
   IconData _getIcon(ClassworkType type) {
@@ -153,10 +152,11 @@ class _ClassworkTabState extends State<ClassworkTab> {
   Widget _classworkCard(Classwork c) {
     final color = _getColor(c.type);
 
-    return FutureBuilder<bool>(
-      future: _hasSubmitted(c),
+    return FutureBuilder<Submission?>(
+      future: _getSubmission(c),
       builder: (_, snapshot) {
-        final submitted = snapshot.data ?? false;
+        final submission = snapshot.data;
+        final isSubmitted = submission != null;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
@@ -227,30 +227,23 @@ class _ClassworkTabState extends State<ClassworkTab> {
                                     ],
                                   ),
                                 ),
-                                if (submitted)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Row(
-                                      children: [
-                                        Icon(Ionicons.checkmark_circle,
-                                            size: 14, color: Colors.green),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Done',
-                                          style: TextStyle(
-                                            color: Colors.green,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                if (isSubmitted) ...[
+                                  if (c.type == ClassworkType.quiz) ...[
+                                    if (submission.grade == null)
+                                      _buildStatusBadge('Pending',
+                                          Colors.orange, Icons.access_time),
+                                    if (submission.grade != null &&
+                                        submission.grade == c.points)
+                                      _buildStatusBadge('Correct', Colors.green,
+                                          Ionicons.checkmark_circle),
+                                    if (submission.grade != null &&
+                                        submission.grade != c.points)
+                                      _buildStatusBadge(
+                                          'Incorrect', Colors.red, Icons.close),
+                                  ] else
+                                    _buildStatusBadge('Done', Colors.green,
+                                        Ionicons.checkmark_circle),
+                                ],
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -296,6 +289,31 @@ class _ClassworkTabState extends State<ClassworkTab> {
     );
   }
 
+  Widget _buildStatusBadge(String text, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _openDetails(Classwork c) {
     showDialog(
       context: context,
@@ -338,57 +356,189 @@ class _ClassworkTabState extends State<ClassworkTab> {
                 ),
               ),
               const SizedBox(height: 24),
-              FutureBuilder<bool>(
-                future: _hasSubmitted(c),
+              FutureBuilder<Submission?>(
+                future: _getSubmission(c),
                 builder: (_, snap) {
-                  final submitted = snap.data ?? false;
+                  final submission = snap.data;
+                  final submitted = submission != null;
 
-                  return SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: submitted
-                          ? null
-                          : () async {
-                              Navigator.pop(context);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Show Correct Answer if Graded
+                      if (submitted &&
+                          submission.grade != null &&
+                          c.correctAnswer != null &&
+                          c.correctAnswer!.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.green.shade200),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Correct Answer',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green.shade700,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                c.correctAnswer!,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.green.shade900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
 
-                              final submission = await showDialog<Submission>(
-                                context: context,
-                                builder: (_) => SubmissionDialog(
-                                  classwork: c,
-                                  studentId: widget.studentId,
+                      SizedBox(
+                        width: double.infinity,
+                        child: Builder(
+                          builder: (innerContext) {
+                            // Logic for button state
+                            final isOverdue = c.isOverdue;
+                            final canResubmit = c.allowResubmission;
+
+                            // 1. If Overdue -> Disable (Always Strict)
+                            if (isOverdue) {
+                              return ElevatedButton.icon(
+                                onPressed: null,
+                                icon: const Icon(Ionicons.time_outline),
+                                label: const Text('Past Due Date'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey.shade300,
+                                  foregroundColor: Colors.grey,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
                                 ),
                               );
+                            }
 
-                              if (submission != null) {
-                                await _submissionService
-                                    .submitSubmission(submission);
-                                await _fetchClasswork();
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Submission successful'),
-                                      backgroundColor: Colors.green,
+                            // 2. If Submitted
+                            if (submitted) {
+                              if (!canResubmit) {
+                                return ElevatedButton.icon(
+                                  onPressed: null,
+                                  icon: const Icon(Ionicons.lock_closed),
+                                  label: const Text('Resubmission Disabled'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey.shade300,
+                                    foregroundColor: Colors.grey,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                  ),
+                                );
+                              }
+
+                              // Allow Resubmission
+                              return ElevatedButton.icon(
+                                onPressed: () async {
+                                  // Use innerContext to pop the dialog
+                                  Navigator.pop(innerContext);
+
+                                  // Use the outer `context` (from State) for the new dialog
+                                  if (!mounted) return;
+                                  final newSubmission =
+                                      await showDialog<Submission>(
+                                    context: context,
+                                    builder: (_) => SubmissionDialog(
+                                      classwork: c,
+                                      studentId: widget.studentId,
                                     ),
                                   );
+
+                                  if (newSubmission != null) {
+                                    await _submissionService
+                                        .submitSubmission(newSubmission);
+                                    await _fetchClasswork();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Resubmission successful'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                icon: const Icon(Ionicons.refresh),
+                                label: const Text('Resubmit Work'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _getColor(c.type),
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                ),
+                              );
+                            }
+
+                            // 3. Not Submitted, Not Overdue -> Allow Submit
+                            return ElevatedButton.icon(
+                              onPressed: () async {
+                                // Pop details dialog using its context
+                                Navigator.pop(innerContext);
+
+                                if (!mounted) return;
+                                // Show submission dialog using parent context
+                                final submission = await showDialog<Submission>(
+                                  context: context,
+                                  builder: (_) => SubmissionDialog(
+                                    classwork: c,
+                                    studentId: widget.studentId,
+                                  ),
+                                );
+
+                                if (submission != null) {
+                                  await _submissionService
+                                      .submitSubmission(submission);
+                                  await _fetchClasswork();
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Submission successful'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
                                 }
-                              }
-                            },
-                      icon: Icon(submitted
-                          ? Ionicons.checkmark_done_circle
-                          : Ionicons.cloud_upload),
-                      label:
-                          Text(submitted ? 'Already Submitted' : 'Submit Work'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: submitted
-                            ? Colors.grey.shade300
-                            : _getColor(c.type),
-                        foregroundColor: submitted ? Colors.grey : Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                              },
+                              icon: const Icon(Ionicons.cloud_upload),
+                              label: const Text('Submit Work'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _getColor(c.type),
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
+                    ],
                   );
                 },
               ),
