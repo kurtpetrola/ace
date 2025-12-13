@@ -1,15 +1,15 @@
 // lib/features/admin_dashboard/presentation/admin_account_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ace/core/constants/app_colors.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:hive/hive.dart';
-import 'package:ace/models/user.dart';
-import 'dart:convert';
-import 'package:ace/features/shared/widget/personal_info_section.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/core/theme/theme_provider.dart';
+import 'package:ace/common/widgets/personal_info_section.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:ace/models/user.dart';
+import 'package:hive/hive.dart';
+import 'dart:convert';
 
 class AdminAccount extends ConsumerStatefulWidget {
   const AdminAccount({super.key});

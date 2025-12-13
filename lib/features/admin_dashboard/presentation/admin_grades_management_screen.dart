@@ -1,10 +1,10 @@
 // lib/features/admin_dashboard/presentation/admin_grades_management_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:ace/services/grade_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ace/common/widgets/grades_table.dart';
+import 'package:ace/services/grade_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/widgets/add_grade_form.dart';
-import 'package:ace/features/shared/widget/grades_table.dart';
 
 class AdminGradesManagementScreen extends StatefulWidget {
   const AdminGradesManagementScreen({super.key});

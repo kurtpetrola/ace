@@ -1,14 +1,14 @@
 // lib/features/student_dashboard/presentation/student_account_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:ace/core/theme/theme_provider.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/common/widgets/personal_info_section.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:ace/models/user.dart';
-import 'package:ace/features/shared/widget/personal_info_section.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:ace/features/auth/services/student_auth_service.dart';
-import 'package:ace/core/theme/theme_provider.dart';
 
 class StudentAccountScreen extends ConsumerStatefulWidget {
   const StudentAccountScreen({super.key});

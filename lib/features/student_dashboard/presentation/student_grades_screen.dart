@@ -1,9 +1,9 @@
 // lib/features/student_dashboard/presentation/student_grade_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:ace/common/widgets/grades_table.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/services/grade_service.dart';
-import 'package:ace/features/shared/widget/grades_table.dart';
 import 'package:ace/services/classwork_service.dart';
 import 'package:ace/services/submission_service.dart';
 import 'package:ace/models/classwork.dart';
