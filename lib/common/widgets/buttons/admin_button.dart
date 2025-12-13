@@ -1,7 +1,8 @@
-// admin_button.dart
+// lib/common/widgets/buttons/admin_button.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/presentation/login/admin_login_page.dart';
 
 class AdminButton extends StatelessWidget {
@@ -14,6 +15,8 @@ class AdminButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return ElevatedButton(
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -21,17 +24,18 @@ class AdminButton extends StatelessWidget {
         ));
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorPalette.secondary,
+        backgroundColor:
+            isDarkMode ? ColorPalette.secondary : ColorPalette.accentBlack,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.symmetric(vertical: 15),
         minimumSize: const Size(double.infinity, 50),
       ),
-      child: const Text(
-        "ADMINISTRATION",
+      child: Text(
+        AceStrings.adminBtn,
         style: TextStyle(
-          color: ColorPalette.accentBlack,
+          color: isDarkMode ? ColorPalette.accentBlack : ColorPalette.secondary,
           fontFamily: 'Lato',
           fontWeight: FontWeight.w700,
           fontSize: 20,

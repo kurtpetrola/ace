@@ -4,6 +4,7 @@ import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/presentation/login/login_notifier.dart';
 import 'package:ace/features/auth/presentation/login/login_state.dart';
 
@@ -23,6 +24,10 @@ class TeacherLoginPage extends ConsumerWidget {
     bool obscureText = false,
     TextInputType? keyboardType, // Added parameter
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25),
       child: TextFormField(
@@ -31,20 +36,23 @@ class TeacherLoginPage extends ConsumerWidget {
         obscureText: obscureText,
         keyboardType: keyboardType ??
             (isPassword ? TextInputType.visiblePassword : TextInputType.text),
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: ColorPalette.accentBlack),
+          labelStyle: TextStyle(color: textColor),
           hintText: hint,
-          hintStyle:
-              const TextStyle(fontSize: 12, color: ColorPalette.accentBlack),
+          hintStyle: TextStyle(
+              fontSize: 12,
+              color:
+                  isDarkMode ? ColorPalette.lightGray : ColorPalette.darkGrey),
           errorText: errorText,
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: textColor),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: colorScheme.primary),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
           errorBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red),
@@ -54,7 +62,7 @@ class TeacherLoginPage extends ConsumerWidget {
             borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
+          prefixIcon: Icon(icon, color: textColor),
           suffixIcon: suffixIcon,
         ),
       ),
@@ -70,6 +78,8 @@ class TeacherLoginPage extends ConsumerWidget {
     final notifier =
         ref.read(loginNotifierProvider(userType: UserType.teacher).notifier);
 
+    final theme = Theme.of(context);
+
     void handleLogin() async {
       bool success = await notifier.login();
       if (success && context.mounted) {
@@ -83,7 +93,7 @@ class TeacherLoginPage extends ConsumerWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: ColorPalette.accentBlack,
+      // backgroundColor: ColorPalette.accentBlack,
       body: Stack(
         children: [
           Center(
@@ -93,7 +103,7 @@ class TeacherLoginPage extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(30)),
-                color: Colors.white,
+                color: theme.cardTheme.color,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -106,10 +116,10 @@ class TeacherLoginPage extends ConsumerWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    const Text(
-                      'Teacher Login',
+                    Text(
+                      AceStrings.teacherLogin,
                       style: TextStyle(
-                        color: ColorPalette.accentBlack,
+                        color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Lato',
                         fontSize: 20,
@@ -129,8 +139,8 @@ class TeacherLoginPage extends ConsumerWidget {
                       ),
                     _buildTextField(
                       context,
-                      label: 'Email Address',
-                      hint: 'Enter your Email',
+                      label: AceStrings.emailLabel,
+                      hint: AceStrings.emailHint,
                       icon: Icons.email,
                       initialValue: state.email,
                       onChanged: notifier.setEmail,
@@ -140,8 +150,8 @@ class TeacherLoginPage extends ConsumerWidget {
                     const SizedBox(height: 20),
                     _buildTextField(
                       context,
-                      label: 'Password',
-                      hint: 'Enter your Password',
+                      label: AceStrings.passwordLabel,
+                      hint: AceStrings.passwordHint,
                       icon: Icons.key,
                       initialValue: state.password,
                       onChanged: notifier.setPassword,
@@ -149,7 +159,7 @@ class TeacherLoginPage extends ConsumerWidget {
                       isPassword: true,
                       obscureText: !state.isPasswordVisible,
                       suffixIcon: IconButton(
-                        color: ColorPalette.accentBlack,
+                        color: theme.colorScheme.onSurface,
                         icon: state.isPasswordVisible
                             ? const Icon(Icons.visibility_off)
                             : const Icon(Icons.visibility),
@@ -166,7 +176,7 @@ class TeacherLoginPage extends ConsumerWidget {
                         onPressed: state.isLoading ? null : handleLogin,
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all<Color>(
-                            ColorPalette.accentBlack,
+                            ColorPalette.primary,
                           ),
                           shape:
                               WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -180,9 +190,9 @@ class TeacherLoginPage extends ConsumerWidget {
                                 color: ColorPalette.secondary,
                                 strokeWidth: 3,
                               )
-                            : const Text(
-                                "TEACHER LOGIN",
-                                style: TextStyle(
+                            : Text(
+                                AceStrings.teacherLogin.toUpperCase(),
+                                style: const TextStyle(
                                   color: ColorPalette.secondary,
                                   fontFamily: 'Inter',
                                   fontSize: 18,

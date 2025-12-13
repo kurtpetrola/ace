@@ -35,6 +35,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     // 2. Read the notifier for calling methods/actions
     final notifier = ref.read(registrationNotifierProvider.notifier);
 
+    final theme = Theme.of(context);
+
     // Define the async registration handler
     Future<void> handleRegister() async {
       // Calling register will internally run validation, update the error states,
@@ -64,7 +66,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: ColorPalette.accentBlack,
+      // backgroundColor: ColorPalette.accentBlack,
       body: Center(
         child: Container(
           height: 700,
@@ -74,7 +76,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             borderRadius: const BorderRadius.all(
               Radius.circular(30),
             ),
-            color: Colors.white,
+            color: theme.cardTheme.color,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
@@ -87,16 +89,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             child: Column(
               children: [
                 const SizedBox(height: 5),
-                const Icon(
+                Icon(
                   Icons.assignment_ind_rounded,
-                  color: ColorPalette.accentBlack,
+                  color: theme.colorScheme.onSurface,
                   size: 70,
                 ),
                 const SizedBox(height: 15),
-                const Text(
-                  'Registration',
+                Text(
+                  AceStrings.registrationTitle,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 20,
                     fontFamily: 'Lato',
                     fontWeight: FontWeight.bold,
@@ -105,33 +107,37 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 10),
                 // --- Text Fields connect directly to the notifier and show errors ---
                 _buildTextField(
+                  context,
                   initialValue: state.fullName,
-                  labelText: 'Full Name',
-                  hintText: 'Enter your Full Name',
+                  labelText: AceStrings.fullNameLabel,
+                  hintText: AceStrings.fullNameHint,
                   icon: Icons.person,
                   onChanged: notifier.setFullName,
                   errorText: state.fullNameError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildTextField(
+                  context,
                   initialValue: state.studentId,
-                  labelText: 'Student Number',
-                  hintText: 'Enter your Student Number',
+                  labelText: AceStrings.studentIdLabel,
+                  hintText: AceStrings.studentIdHint,
                   icon: Icons.assignment_ind_rounded,
                   onChanged: notifier.setStudentId,
                   errorText: state.studentIdError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildTextField(
+                  context,
                   initialValue: state.email,
-                  labelText: 'Email Address',
-                  hintText: 'Enter your Email Address',
+                  labelText: AceStrings.emailLabel,
+                  hintText: AceStrings.emailHint,
                   icon: Icons.email,
                   onChanged: notifier.setEmail,
                   errorText: state.emailError, // Pass error state
                 ),
                 const SizedBox(height: 10),
                 _buildPasswordTextField(
+                  context,
                   state: state,
                   onChanged: notifier.setPassword,
                   onToggleVisibility: notifier.togglePasswordVisibility,
@@ -140,7 +146,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 10),
                 // --- Dropdowns connect directly to the notifier and show errors ---
                 _buildDropdownField(
-                  hint: 'Gender',
+                  context,
+                  hint: AceStrings.genderHint,
                   value: state.gender,
                   items: AceStrings.sex,
                   onChanged: notifier.setGender,
@@ -148,7 +155,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
-                  hint: 'Age',
+                  context,
+                  hint: AceStrings.ageHint,
                   value: state.age,
                   items: AceStrings.ages,
                   onChanged: notifier.setAge,
@@ -156,7 +164,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 const SizedBox(height: 10),
                 _buildDropdownField(
-                  hint: 'Department',
+                  context,
+                  hint: AceStrings.deptHint,
                   value: state.department,
                   items: AceStrings.dept,
                   onChanged: notifier.setDepartment,
@@ -173,7 +182,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     onPressed: !state.isLoading ? handleRegister : null,
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all<Color>(
-                        Colors.black,
+                        ColorPalette.primary, // Primary Red
                       ),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
@@ -186,7 +195,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           ? const CircularProgressIndicator(
                               color: ColorPalette.secondary)
                           : const Text(
-                              "REGISTER",
+                              AceStrings.register,
                               style: TextStyle(
                                 color: ColorPalette.secondary,
                                 fontFamily: 'Lato',
@@ -208,7 +217,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   // --- Widget Builders (Updated for consistent padding and error display) ---
 
-  Widget _buildTextField({
+  Widget _buildTextField(
+    context, {
     required String initialValue,
     required String labelText,
     required String hintText,
@@ -216,25 +226,32 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     required void Function(String) onChanged,
     String? errorText, // optional error text
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: TextFormField(
         initialValue: initialValue,
         onChanged: onChanged,
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           errorText: errorText, // Display error text inline
           labelText: labelText,
           hintText: hintText,
-          labelStyle: const TextStyle(color: ColorPalette.accentBlack),
-          hintStyle:
-              const TextStyle(fontSize: 12, color: ColorPalette.accentBlack),
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          labelStyle: TextStyle(color: textColor),
+          hintStyle: TextStyle(
+              fontSize: 12,
+              color:
+                  isDarkMode ? ColorPalette.lightGray : ColorPalette.darkGrey),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: textColor),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: colorScheme.primary),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
           errorBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red),
@@ -244,36 +261,40 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
+          prefixIcon: Icon(icon, color: textColor),
         ),
       ),
     );
   }
 
-  Widget _buildPasswordTextField({
+  Widget _buildPasswordTextField(
+    context, {
     required RegistrationState state,
     required void Function(String) onChanged,
     required VoidCallback onToggleVisibility,
     String? errorText, // optional error text
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textColor = colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: TextFormField(
         initialValue: state.password,
         onChanged: onChanged,
         obscureText: !state.isPasswordVisible, // Use state from Riverpod
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           errorText: errorText, // Display error text inline
-          labelText: 'Password',
-          labelStyle:
-              const TextStyle(fontSize: 16, color: ColorPalette.accentBlack),
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          labelText: AceStrings.passwordLabel,
+          labelStyle: TextStyle(fontSize: 16, color: textColor),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: textColor),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: colorScheme.primary),
+            borderRadius: const BorderRadius.all(Radius.circular(12.0)),
           ),
           errorBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red),
@@ -283,11 +304,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          hintText: 'Enter a strong password',
+          hintText: AceStrings.passwordStrongHint,
           hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
-          prefixIcon: const Icon(Icons.key, color: ColorPalette.accentBlack),
+          prefixIcon: Icon(Icons.key, color: textColor),
           suffixIcon: IconButton(
-            color: ColorPalette.accentBlack,
+            color: textColor,
             icon: state.isPasswordVisible
                 ? const Icon(Icons.visibility)
                 : const Icon(Icons.visibility_off),
@@ -298,22 +319,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
-  Widget _buildDropdownField({
+  Widget _buildDropdownField(
+    context, {
     required String hint,
     required String? value,
     required List<String> items,
     required void Function(String?) onChanged,
     String? errorText, // optional error text
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textColor = colorScheme.onSurface;
+
     // We use Padding outside for consistent horizontal spacing
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: DropdownButtonFormField<String>(
-        dropdownColor: ColorPalette.hintColor,
+        dropdownColor: Theme.of(context).cardTheme.color,
         hint: Text(
           hint,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: textColor,
             fontFamily: 'Lato',
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -323,7 +348,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         isExpanded: true,
         iconSize: 32,
         icon: const Icon(Icons.arrow_drop_down, color: ColorPalette.secondary),
-        items: items.map(_buildMenuItem).toList(),
+        items: items.map((item) => _buildMenuItem(context, item)).toList(),
         onChanged: onChanged,
         // Use InputDecoration to define the look and handle the errorText
         decoration: InputDecoration(
@@ -358,16 +383,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
-  DropdownMenuItem<String> _buildMenuItem(String item) => DropdownMenuItem(
-        value: item,
-        child: Text(
-          item,
-          style: const TextStyle(
-            fontFamily: 'Lato',
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-            color: ColorPalette.secondary,
-          ),
+  DropdownMenuItem<String> _buildMenuItem(BuildContext context, String item) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    return DropdownMenuItem(
+      value: item,
+      child: Text(
+        item,
+        style: TextStyle(
+          fontFamily: 'Lato',
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
+          color: textColor,
         ),
-      );
+      ),
+    );
+  }
 }
