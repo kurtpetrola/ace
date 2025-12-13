@@ -14,6 +14,8 @@ class AdminButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return ElevatedButton(
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -21,17 +23,18 @@ class AdminButton extends StatelessWidget {
         ));
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorPalette.secondary,
+        backgroundColor:
+            isDarkMode ? ColorPalette.secondary : ColorPalette.accentBlack,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.symmetric(vertical: 15),
         minimumSize: const Size(double.infinity, 50),
       ),
-      child: const Text(
+      child: Text(
         "ADMINISTRATION",
         style: TextStyle(
-          color: ColorPalette.accentBlack,
+          color: isDarkMode ? ColorPalette.accentBlack : ColorPalette.secondary,
           fontFamily: 'Lato',
           fontWeight: FontWeight.w700,
           fontSize: 20,

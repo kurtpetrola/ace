@@ -21,7 +21,7 @@ class RegisterButton extends StatelessWidget {
         ));
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorPalette.secondary,
+        backgroundColor: ColorPalette.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -31,7 +31,7 @@ class RegisterButton extends StatelessWidget {
       child: const Text(
         "REGISTER",
         style: TextStyle(
-          color: ColorPalette.accentBlack,
+          color: ColorPalette.secondary,
           fontFamily: 'Lato',
           fontWeight: FontWeight.w700,
           fontSize: 20,

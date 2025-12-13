@@ -1,4 +1,4 @@
-// student_login_page.dart
+// lib/features/auth/presentation/login/student_login_page.dart
 
 import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +19,16 @@ class StudentLoginPage extends ConsumerWidget {
     required IconData icon,
     required ValueChanged<String> onChanged,
     String initialValue = '',
-    String? errorText, // <-- ADDED: Parameter for specific field error
+    String? errorText,
     Widget? suffixIcon,
     bool isPassword = false,
     bool obscureText = false,
-    TextInputType? keyboardType, // Added parameter
+    TextInputType? keyboardType,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25),
       child: TextFormField(
@@ -33,20 +37,23 @@ class StudentLoginPage extends ConsumerWidget {
         obscureText: obscureText,
         keyboardType: keyboardType ??
             (isPassword ? TextInputType.visiblePassword : TextInputType.text),
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: ColorPalette.accentBlack),
+          labelStyle: TextStyle(color: textColor),
           hintText: hint,
-          hintStyle:
-              const TextStyle(fontSize: 12, color: ColorPalette.accentBlack),
-          errorText: errorText, // <-- USED: Display the field-specific error
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          hintStyle: TextStyle(
+              fontSize: 12,
+              color:
+                  isDarkMode ? ColorPalette.lightGray : ColorPalette.darkGrey),
+          errorText: errorText,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: textColor),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: colorScheme.primary),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
           errorBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red),
@@ -56,7 +63,7 @@ class StudentLoginPage extends ConsumerWidget {
             borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
+          prefixIcon: Icon(icon, color: textColor),
           suffixIcon: suffixIcon,
         ),
       ),
@@ -71,6 +78,8 @@ class StudentLoginPage extends ConsumerWidget {
     // READ the notifier for calling methods
     final notifier =
         ref.read(loginNotifierProvider(userType: UserType.student).notifier);
+
+    final theme = Theme.of(context);
 
     // Function to handle the login and navigation
     void handleLogin() async {
@@ -88,7 +97,7 @@ class StudentLoginPage extends ConsumerWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: ColorPalette.accentBlack,
+      // backgroundColor: ColorPalette.accentBlack, // Removed to use theme
       body: Stack(
         children: [
           Center(
@@ -101,7 +110,7 @@ class StudentLoginPage extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(30)),
-                color: Colors.white,
+                color: theme.cardTheme.color, // Adaptive card color
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -114,10 +123,10 @@ class StudentLoginPage extends ConsumerWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    const Text(
+                    Text(
                       'Student Login',
                       style: TextStyle(
-                        color: ColorPalette.accentBlack,
+                        color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Lato',
                         fontSize: 20,
@@ -164,7 +173,7 @@ class StudentLoginPage extends ConsumerWidget {
                       isPassword: true,
                       obscureText: !state.isPasswordVisible,
                       suffixIcon: IconButton(
-                        color: ColorPalette.accentBlack,
+                        color: theme.colorScheme.onSurface,
                         icon: state.isPasswordVisible
                             ? const Icon(Icons.visibility_off)
                             : const Icon(Icons.visibility),
@@ -185,7 +194,7 @@ class StudentLoginPage extends ConsumerWidget {
                         onPressed: state.isLoading ? null : handleLogin,
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all<Color>(
-                            ColorPalette.accentBlack,
+                            ColorPalette.primary, // Primary Red
                           ),
                           shape:
                               WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -217,9 +226,12 @@ class StudentLoginPage extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        const Text(
+                        Text(
                           "Don't have an account? ",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface,
+                            fontSize: 12,
+                          ),
                         ),
                         GestureDetector(
                           onTap: () {

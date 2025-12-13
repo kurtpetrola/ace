@@ -23,6 +23,10 @@ class AdminLoginPage extends ConsumerWidget {
     bool obscureText = false,
     TextInputType? keyboardType, // Added parameter
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25),
       child: TextFormField(
@@ -31,20 +35,23 @@ class AdminLoginPage extends ConsumerWidget {
         obscureText: obscureText,
         keyboardType: keyboardType ??
             (isPassword ? TextInputType.visiblePassword : TextInputType.text),
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: ColorPalette.accentBlack),
+          labelStyle: TextStyle(color: textColor),
           hintText: hint,
-          hintStyle:
-              const TextStyle(fontSize: 12, color: ColorPalette.accentBlack),
+          hintStyle: TextStyle(
+              fontSize: 12,
+              color:
+                  isDarkMode ? ColorPalette.lightGray : ColorPalette.darkGrey),
           errorText: errorText, // Display the field-specific error
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: textColor),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: ColorPalette.accentBlack),
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: colorScheme.primary),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           ),
           errorBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red),
@@ -54,7 +61,7 @@ class AdminLoginPage extends ConsumerWidget {
             borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          prefixIcon: Icon(icon, color: ColorPalette.accentBlack),
+          prefixIcon: Icon(icon, color: textColor),
           suffixIcon: suffixIcon,
         ),
       ),
@@ -70,6 +77,8 @@ class AdminLoginPage extends ConsumerWidget {
     final notifier =
         ref.read(loginNotifierProvider(userType: UserType.admin).notifier);
 
+    final theme = Theme.of(context);
+
     void handleLogin() async {
       bool success = await notifier.login();
       if (success && context.mounted) {
@@ -84,7 +93,7 @@ class AdminLoginPage extends ConsumerWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: ColorPalette.accentBlack,
+      // backgroundColor: ColorPalette.accentBlack,
       body: Stack(
         children: [
           Center(
@@ -94,7 +103,7 @@ class AdminLoginPage extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(30)),
-                color: Colors.white,
+                color: theme.cardTheme.color,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -107,10 +116,10 @@ class AdminLoginPage extends ConsumerWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    const Text(
+                    Text(
                       'Admin Login',
                       style: TextStyle(
-                        color: ColorPalette.accentBlack,
+                        color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Lato',
                         fontSize: 20,
@@ -157,7 +166,7 @@ class AdminLoginPage extends ConsumerWidget {
                       isPassword: true,
                       obscureText: !state.isPasswordVisible,
                       suffixIcon: IconButton(
-                        color: ColorPalette.accentBlack,
+                        color: theme.colorScheme.onSurface,
                         icon: state.isPasswordVisible
                             ? const Icon(Icons.visibility_off)
                             : const Icon(Icons.visibility),
@@ -177,7 +186,7 @@ class AdminLoginPage extends ConsumerWidget {
                         onPressed: state.isLoading ? null : handleLogin,
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all<Color>(
-                            ColorPalette.accentBlack,
+                            ColorPalette.primary,
                           ),
                           shape:
                               WidgetStateProperty.all<RoundedRectangleBorder>(
