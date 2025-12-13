@@ -46,6 +46,8 @@ class Classwork {
   final String createdBy;
   final DateTime createdAt;
   final String? attachmentUrl;
+  final String? correctAnswer;
+  final bool allowResubmission;
 
   Classwork({
     required this.classworkId,
@@ -58,6 +60,8 @@ class Classwork {
     required this.createdBy,
     required this.createdAt,
     this.attachmentUrl,
+    this.correctAnswer,
+    this.allowResubmission = true,
   });
 
   factory Classwork.fromJson(String id, Map<String, dynamic> json) {
@@ -76,6 +80,8 @@ class Classwork {
           ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
           : DateTime.now(),
       attachmentUrl: json['attachmentUrl'] as String?,
+      correctAnswer: json['correctAnswer'] as String?,
+      allowResubmission: json['allowResubmission'] as bool? ?? true,
     );
   }
 
@@ -90,6 +96,7 @@ class Classwork {
         'createdBy': createdBy,
         'createdAt': createdAt.toIso8601String(),
         'attachmentUrl': attachmentUrl,
+        'correctAnswer': correctAnswer,
       };
 
   Map<String, dynamic> toFirebaseJson() => {
@@ -102,6 +109,7 @@ class Classwork {
         'createdBy': createdBy,
         'createdAt': createdAt.toIso8601String(),
         'attachmentUrl': attachmentUrl,
+        'correctAnswer': correctAnswer,
       };
 
   /// Create a copy with modified fields
@@ -116,6 +124,8 @@ class Classwork {
     String? createdBy,
     DateTime? createdAt,
     String? attachmentUrl,
+    String? correctAnswer,
+    bool? allowResubmission,
   }) {
     return Classwork(
       classworkId: classworkId ?? this.classworkId,
@@ -128,6 +138,8 @@ class Classwork {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       attachmentUrl: attachmentUrl ?? this.attachmentUrl,
+      correctAnswer: correctAnswer ?? this.correctAnswer,
+      allowResubmission: allowResubmission ?? this.allowResubmission,
     );
   }
 
