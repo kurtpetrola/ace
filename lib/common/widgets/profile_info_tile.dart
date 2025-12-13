@@ -1,4 +1,4 @@
-// lib/features/shared/widget/profile_info_tile.dart
+// lib/common/widgets/profile_info_tile.dart
 
 import 'package:flutter/material.dart';
 

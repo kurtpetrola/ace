@@ -1,4 +1,4 @@
-// lib/features/shared/widget/account_stat_card.dart
+// lib/common/widgets/account_stat_card.dart
 
 import 'package:flutter/material.dart';
 

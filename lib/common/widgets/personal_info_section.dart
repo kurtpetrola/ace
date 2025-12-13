@@ -1,14 +1,14 @@
-// lib/features/shared/widget/personal_info_section.dart
+// lib/common/widgets/personal_info_section.dart
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:ace/models/user.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/common/widgets/dialogs/alertdialog.dart';
+import 'package:ace/common/widgets/profile_info_tile.dart';
+import 'package:ace/common/widgets/account_stat_card.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
-import 'package:ace/features/shared/widget/profile_info_tile.dart';
-import 'package:ace/features/shared/widget/account_stat_card.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:hive/hive.dart';
+import 'package:ace/models/user.dart';
 
 class PersonalInfoSection extends StatefulWidget {
   final User user;

@@ -1,15 +1,14 @@
 // lib/features/teacher_dashboard/presentation/teacher_account_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ace/core/constants/app_colors.dart';
-import 'package:firebase_database/firebase_database.dart';
-
-import 'dart:convert';
-import 'package:ace/models/user.dart';
-import 'package:ace/features/shared/widget/personal_info_section.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/core/theme/theme_provider.dart';
+import 'package:ace/common/widgets/personal_info_section.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:ace/models/user.dart';
+import 'dart:convert';
 
 class TeacherAccountScreen extends ConsumerStatefulWidget {
   final String teacherId;

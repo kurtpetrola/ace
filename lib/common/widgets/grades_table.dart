@@ -1,4 +1,4 @@
-// lib/features/shared/widget/grades_table.dart
+// lib/common/widgets/grades_table.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
