@@ -4,6 +4,7 @@ import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/presentation/login/login_notifier.dart';
 import 'package:ace/features/auth/presentation/login/login_state.dart';
 
@@ -116,7 +117,7 @@ class TeacherLoginPage extends ConsumerWidget {
                   children: [
                     const SizedBox(height: 40),
                     Text(
-                      'Teacher Login',
+                      AceStrings.teacherLogin,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w900,
@@ -138,8 +139,8 @@ class TeacherLoginPage extends ConsumerWidget {
                       ),
                     _buildTextField(
                       context,
-                      label: 'Email Address',
-                      hint: 'Enter your Email',
+                      label: AceStrings.emailLabel,
+                      hint: AceStrings.emailHint,
                       icon: Icons.email,
                       initialValue: state.email,
                       onChanged: notifier.setEmail,
@@ -149,8 +150,8 @@ class TeacherLoginPage extends ConsumerWidget {
                     const SizedBox(height: 20),
                     _buildTextField(
                       context,
-                      label: 'Password',
-                      hint: 'Enter your Password',
+                      label: AceStrings.passwordLabel,
+                      hint: AceStrings.passwordHint,
                       icon: Icons.key,
                       initialValue: state.password,
                       onChanged: notifier.setPassword,
@@ -189,9 +190,9 @@ class TeacherLoginPage extends ConsumerWidget {
                                 color: ColorPalette.secondary,
                                 strokeWidth: 3,
                               )
-                            : const Text(
-                                "TEACHER LOGIN",
-                                style: TextStyle(
+                            : Text(
+                                AceStrings.teacherLogin.toUpperCase(),
+                                style: const TextStyle(
                                   color: ColorPalette.secondary,
                                   fontFamily: 'Inter',
                                   fontSize: 18,

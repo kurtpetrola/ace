@@ -96,7 +96,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  'Registration',
+                  AceStrings.registrationTitle,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontSize: 20,
@@ -109,8 +109,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 _buildTextField(
                   context,
                   initialValue: state.fullName,
-                  labelText: 'Full Name',
-                  hintText: 'Enter your Full Name',
+                  labelText: AceStrings.fullNameLabel,
+                  hintText: AceStrings.fullNameHint,
                   icon: Icons.person,
                   onChanged: notifier.setFullName,
                   errorText: state.fullNameError, // Pass error state
@@ -119,8 +119,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 _buildTextField(
                   context,
                   initialValue: state.studentId,
-                  labelText: 'Student Number',
-                  hintText: 'Enter your Student Number',
+                  labelText: AceStrings.studentIdLabel,
+                  hintText: AceStrings.studentIdHint,
                   icon: Icons.assignment_ind_rounded,
                   onChanged: notifier.setStudentId,
                   errorText: state.studentIdError, // Pass error state
@@ -129,8 +129,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 _buildTextField(
                   context,
                   initialValue: state.email,
-                  labelText: 'Email Address',
-                  hintText: 'Enter your Email Address',
+                  labelText: AceStrings.emailLabel,
+                  hintText: AceStrings.emailHint,
                   icon: Icons.email,
                   onChanged: notifier.setEmail,
                   errorText: state.emailError, // Pass error state
@@ -147,7 +147,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 // --- Dropdowns connect directly to the notifier and show errors ---
                 _buildDropdownField(
                   context,
-                  hint: 'Gender',
+                  hint: AceStrings.genderHint,
                   value: state.gender,
                   items: AceStrings.sex,
                   onChanged: notifier.setGender,
@@ -156,7 +156,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 10),
                 _buildDropdownField(
                   context,
-                  hint: 'Age',
+                  hint: AceStrings.ageHint,
                   value: state.age,
                   items: AceStrings.ages,
                   onChanged: notifier.setAge,
@@ -165,7 +165,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 10),
                 _buildDropdownField(
                   context,
-                  hint: 'Department',
+                  hint: AceStrings.deptHint,
                   value: state.department,
                   items: AceStrings.dept,
                   onChanged: notifier.setDepartment,
@@ -195,7 +195,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           ? const CircularProgressIndicator(
                               color: ColorPalette.secondary)
                           : const Text(
-                              "REGISTER",
+                              AceStrings.register,
                               style: TextStyle(
                                 color: ColorPalette.secondary,
                                 fontFamily: 'Lato',
@@ -286,7 +286,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         style: TextStyle(color: textColor),
         decoration: InputDecoration(
           errorText: errorText, // Display error text inline
-          labelText: 'Password',
+          labelText: AceStrings.passwordLabel,
           labelStyle: TextStyle(fontSize: 16, color: textColor),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: textColor),
@@ -304,7 +304,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             borderSide: BorderSide(color: Colors.red, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          hintText: 'Enter a strong password',
+          hintText: AceStrings.passwordStrongHint,
           hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
           prefixIcon: Icon(Icons.key, color: textColor),
           suffixIcon: IconButton(

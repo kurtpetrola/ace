@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/common/widgets/buttons/admin_button.dart';
 import 'package:ace/common/widgets/buttons/register_button.dart';
 import 'package:ace/common/widgets/buttons/student_button.dart';
@@ -40,7 +41,7 @@ class SelectionPage extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  'Academia Classroom Explorer',
+                  AceStrings.appName,
                   style: TextStyle(
                       color: textColor,
                       fontFamily: 'Lato',
@@ -71,7 +72,7 @@ class SelectionPage extends ConsumerWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
-                              "OR",
+                              AceStrings.or,
                               style: TextStyle(
                                   color: isDarkMode
                                       ? ColorPalette.lightGray

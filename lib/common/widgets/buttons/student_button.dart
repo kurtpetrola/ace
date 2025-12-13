@@ -1,7 +1,8 @@
-// student_button.dart
+// lib/common/widgets/buttons/student_button.dart
 
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/presentation/login/student_login_page.dart';
 
 class StudentButton extends StatelessWidget {
@@ -32,7 +33,7 @@ class StudentButton extends StatelessWidget {
         minimumSize: const Size(double.infinity, 50),
       ),
       child: Text(
-        "STUDENT",
+        AceStrings.studentBtn,
         style: TextStyle(
           color: isDarkMode ? ColorPalette.accentBlack : ColorPalette.secondary,
           fontFamily: 'Lato',

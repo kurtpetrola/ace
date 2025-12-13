@@ -4,6 +4,7 @@ import 'package:ace/features/auth/wrapper_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/presentation/login/login_notifier.dart';
 import 'package:ace/features/auth/presentation/login/login_state.dart';
 import 'package:ace/features/auth/presentation/registration/registration_page.dart';
@@ -124,7 +125,7 @@ class StudentLoginPage extends ConsumerWidget {
                   children: [
                     const SizedBox(height: 40),
                     Text(
-                      'Student Login',
+                      AceStrings.studentLogin,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w900,
@@ -150,8 +151,8 @@ class StudentLoginPage extends ConsumerWidget {
                     // Email Field
                     _buildTextField(
                       context,
-                      label: 'Email Address',
-                      hint: 'Enter your Email',
+                      label: AceStrings.emailLabel,
+                      hint: AceStrings.emailHint,
                       icon: Icons.email,
                       initialValue: state.email,
                       onChanged: notifier.setEmail,
@@ -164,8 +165,8 @@ class StudentLoginPage extends ConsumerWidget {
                     // Password Field
                     _buildTextField(
                       context,
-                      label: 'Password',
-                      hint: 'Enter your Password',
+                      label: AceStrings.passwordLabel,
+                      hint: AceStrings.passwordHint,
                       icon: Icons.key,
                       initialValue: state.password,
                       onChanged: notifier.setPassword,
@@ -209,9 +210,9 @@ class StudentLoginPage extends ConsumerWidget {
                                 color: ColorPalette.secondary,
                                 strokeWidth: 3,
                               )
-                            : const Text(
-                                "LOGIN",
-                                style: TextStyle(
+                            : Text(
+                                AceStrings.login, // Using AceStrings.login
+                                style: const TextStyle(
                                   color: ColorPalette.secondary,
                                   fontFamily: 'Inter',
                                   fontSize: 18,
@@ -227,7 +228,7 @@ class StudentLoginPage extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Don't have an account? ",
+                          AceStrings.dontHaveAccount,
                           style: TextStyle(
                             color: theme.colorScheme.onSurface,
                             fontSize: 12,
@@ -243,7 +244,7 @@ class StudentLoginPage extends ConsumerWidget {
                             );
                           },
                           child: const Text(
-                            'Sign up',
+                            AceStrings.signUp,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.blue,
