@@ -66,35 +66,29 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // backgroundColor: ColorPalette.accentBlack,
       body: Center(
-        child: Container(
-          height: 700,
-          width: 360,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(30),
-            ),
-            color: theme.cardTheme.color,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 5,
-                spreadRadius: 1,
+        child: SingleChildScrollView(
+          child: Container(
+            width: 360,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(30),
               ),
-            ],
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 5),
-                Icon(
-                  Icons.assignment_ind_rounded,
-                  color: theme.colorScheme.onSurface,
-                  size: 70,
+              color: theme.cardTheme.color,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  spreadRadius: 1,
                 ),
-                const SizedBox(height: 15),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 20),
                 Text(
                   AceStrings.registrationTitle,
                   style: TextStyle(

@@ -1,6 +1,7 @@
 // lib/features/auth/registration/registration_state.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ace/core/constants/app_strings.dart';
 import 'package:ace/features/auth/services/student_registration_service.dart';
 import 'package:ace/models/user.dart';
 
@@ -147,38 +148,37 @@ class RegistrationNotifier extends StateNotifier<RegistrationState> {
   // --- Utility Validation Methods ---
 
   String? _validateFullName(String name) {
-    if (name.isEmpty) return 'Full Name is required.';
-    if (name.length < 3) return 'Full Name must be at least 3 characters.';
+    if (name.isEmpty) return AceStrings.fullNameRequired;
+    if (name.length < 3) return AceStrings.fullNameMinLength;
     return null;
   }
 
   String? _validateStudentId(String id) {
-    if (id.isEmpty) return 'Student ID is required.';
-    if (id.length < 5)
-      return 'Student ID must be at least 5 digits/characters.';
+    if (id.isEmpty) return AceStrings.studentIdRequired;
+    if (id.length < 5) return AceStrings.studentIdMinLength;
     return null;
   }
 
   String? _validateEmail(String email) {
-    if (email.isEmpty) return 'Email is required.';
+    if (email.isEmpty) return AceStrings.emailRequired;
     // Simple regex check for email format
     final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    if (!emailRegex.hasMatch(email)) return 'Enter a valid email address.';
+    if (!emailRegex.hasMatch(email)) return AceStrings.emailInvalid;
     return null;
   }
 
   String? _validatePassword(String password) {
-    if (password.isEmpty) return 'Password is required.';
-    if (password.length < 6) return 'Password must be at least 6 characters.';
+    if (password.isEmpty) return AceStrings.passwordRequired;
+    if (password.length < 6) return AceStrings.passwordMinLength;
     // Example rule: require one uppercase letter
     if (!password.contains(RegExp(r'[A-Z]'))) {
-      return 'Password must contain at least one capital letter.';
+      return AceStrings.passwordUppercase;
     }
     return null;
   }
 
   String? _validateDropdown<T>(T? value, String fieldName) {
-    if (value == null) return '$fieldName is required.';
+    if (value == null) return '$fieldName ${AceStrings.fieldRequired}';
     return null;
   }
 
