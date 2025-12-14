@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 import 'package:ace/features/auth/widgets/selection_page.dart';
 import 'package:ace/features/student_dashboard/presentation/student_homescreen_page.dart';
@@ -37,6 +38,12 @@ class _WrapperScreenState extends State<WrapperScreen> {
     print(
         'WrapperScreen: Attempting to navigate for User ID: $userId, Type: $userType');
 
+    // SECURITY: Validate Firebase Session
+    final fbUser = FirebaseAuth.instance.currentUser;
+    if (fbUser == null) {
+      return _handleError('Security Check Failed: No active Firebase session.');
+    }
+
     // Guard clause: ensure we have a user ID
     if (userId == null || userId.isEmpty) {
       return _handleError('User ID not found in Hive. Forced logout.');
@@ -45,6 +52,29 @@ class _WrapperScreenState extends State<WrapperScreen> {
     // --- OFFLINE-FIRST ROUTING STRATEGY ---
     // 1. Check cached UserType first (Instant Route)
     if (userType != null) {
+      // SECURITY: Extra check for Admins to prevent privilege escalation via local storage modification
+      if (userType == "Admin") {
+        print("WrapperScreen: Verifying Admin privileges...");
+        try {
+          final adminCheck = await FirebaseDatabase.instance
+              .ref()
+              .child("Admins")
+              .orderByChild("email")
+              .equalTo(fbUser.email)
+              .get();
+
+          if (!adminCheck.exists) {
+            return _handleError(
+                'Security Check Failed: User claims Admin but not found in DB.');
+          }
+        } catch (e) {
+          // Fallback: If DB verification fails (e.g., offline), we proceed if the Firebase session is valid.
+          // This balances security (checking fbUser != null) with offline usability.
+          print(
+              "Warning: Could not verify Admin privileges online. Proceeding with cached role.");
+        }
+      }
+
       Widget destinationPage;
 
       if (userType == "Admin") {
