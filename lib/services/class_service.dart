@@ -202,17 +202,40 @@ class ClassService {
 
     final Map<String, dynamic> updates = {};
 
-    // Removals for Students
+    // A. Removals for Students (Unenroll)
     for (var student in students) {
       updates['Students/${student.userId}/classes/$classId'] = null;
     }
 
-    // Removals for Classwork (Global Node)
+    // B. Removals for Notifications
+    // Iterate through students and find notifications related to this class
+    await Future.forEach(students, (User student) async {
+      try {
+        final notifSnap = await _db
+            .child('Notifications/${student.userId}')
+            .orderByChild('classId')
+            .equalTo(classId)
+            .get();
+
+        if (notifSnap.exists && notifSnap.value != null) {
+          final notifMap = Map<String, dynamic>.from(notifSnap.value as Map);
+          for (var key in notifMap.keys) {
+            updates['Notifications/${student.userId}/$key'] = null;
+          }
+        }
+      } catch (e) {
+        print('Error fetching notifications for cleanup: $e');
+      }
+    });
+
+    // C. Removals for Classwork (Global Node) & Submissions
     for (var cwId in classworkIds) {
       updates['Classwork/$cwId'] = null;
+      // Also delete all submissions for this classwork
+      updates['submissions/$cwId'] = null;
     }
 
-    // Remove Class Node
+    // D. Remove Class Node
     updates['Classes/$classId'] = null;
 
     // Execute atomic update
