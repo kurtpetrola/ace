@@ -54,4 +54,21 @@ class AceStrings {
   static const String genderHint = 'Gender';
   static const String ageHint = 'Age';
   static const String deptHint = 'Department';
+
+  // Validation Messages
+  static const String fullNameRequired = 'Full Name is required.';
+  static const String fullNameMinLength =
+      'Full Name must be at least 3 characters.';
+  static const String studentIdRequired = 'Student ID is required.';
+  static const String studentIdMinLength =
+      'Student ID must be at least 5 digits/characters.';
+  static const String emailRequired = 'Email is required.';
+  static const String emailInvalid = 'Enter a valid email address.';
+  static const String passwordRequired = 'Password is required.';
+  static const String passwordMinLength =
+      'Password must be at least 6 characters.';
+  static const String passwordUppercase =
+      'Password must contain at least one capital letter.';
+  static const String fieldRequired =
+      'is required.'; // For composed messages like "$fieldName is required."
 }
