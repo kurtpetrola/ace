@@ -91,6 +91,39 @@ class _AdminClassManagementScreenState
     );
   }
 
+  Future<void> _deleteClass(Classroom cls) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Class?'),
+        content: Text(
+          'Are you sure you want to delete "${cls.className}"?\n\n'
+          '⚠️ This will UNENROLL all students and DELETE all classwork/assignments associated with this class. This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete Permanently'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _classService.deleteClass(cls.classId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Deleted ${cls.className}')),
+        );
+      }
+    }
+  }
+
   void _showEnrollmentDialog() {
     if (_currentStudentId == null) return;
 
@@ -142,6 +175,7 @@ class _AdminClassManagementScreenState
                           child: _AdminClassOverview(
                             stream: _classService.streamAllClasses(),
                             onRoster: _openRoster,
+                            onDelete: _deleteClass,
                           ),
                         ),
                       ),
@@ -171,6 +205,7 @@ class _AdminClassManagementScreenState
                           child: _AdminClassOverview(
                             stream: _classService.streamAllClasses(),
                             onRoster: _openRoster,
+                            onDelete: _deleteClass,
                           ),
                         ),
                       ),
@@ -328,10 +363,12 @@ class _StudentSearchBar extends StatelessWidget {
 class _AdminClassOverview extends StatelessWidget {
   final Stream<List<Classroom>> stream;
   final void Function(Classroom) onRoster;
+  final void Function(Classroom) onDelete;
 
   const _AdminClassOverview({
     required this.stream,
     required this.onRoster,
+    required this.onDelete,
   });
 
   @override
@@ -365,6 +402,11 @@ class _AdminClassOverview extends StatelessWidget {
                       icon: const Icon(Icons.people),
                       tooltip: 'Roster',
                       onPressed: () => onRoster(cls),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      tooltip: 'Delete Class',
+                      onPressed: () => onDelete(cls),
                     ),
                   ],
                 ),

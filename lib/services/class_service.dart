@@ -185,4 +185,37 @@ class ClassService {
 
     return roster;
   }
+
+  // DELETE CLASS (CASCADING)
+  Future<void> deleteClass(String classId) async {
+    // 1. Fetch Students to Unenroll
+    final students = await fetchStudentsInClass(classId);
+
+    // 2. Fetch Classwork to Delete
+    // Note: We need to manually fetch classwork IDs from Classes/classId/classwork first
+    final classworkSnap = await _db.child('Classes/$classId/classwork').get();
+    List<String> classworkIds = [];
+    if (classworkSnap.exists && classworkSnap.value != null) {
+      final map = Map<String, dynamic>.from(classworkSnap.value as Map);
+      classworkIds = map.keys.toList();
+    }
+
+    final Map<String, dynamic> updates = {};
+
+    // Removals for Students
+    for (var student in students) {
+      updates['Students/${student.userId}/classes/$classId'] = null;
+    }
+
+    // Removals for Classwork (Global Node)
+    for (var cwId in classworkIds) {
+      updates['Classwork/$cwId'] = null;
+    }
+
+    // Remove Class Node
+    updates['Classes/$classId'] = null;
+
+    // Execute atomic update
+    await _db.update(updates);
+  }
 }
