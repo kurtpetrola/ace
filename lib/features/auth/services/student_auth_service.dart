@@ -1,13 +1,12 @@
 // lib/features/auth/services/student_auth_service.dart
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
-import 'package:ace/models/user.dart';
-import 'dart:convert';
-import 'package:ace/services/hive_constants.dart';
-
 import 'package:ace/features/auth/services/auth_service_interface.dart';
+import 'package:ace/services/hive_constants.dart';
+import 'package:ace/models/user.dart';
+import 'package:hive/hive.dart';
+import 'dart:convert';
 
 class StudentAuthService implements AuthServiceInterface {
   final Box _loginbox = Hive.box("_loginbox");
@@ -79,6 +78,20 @@ class StudentAuthService implements AuthServiceInterface {
       throw Exception('Login failed: ${e.message}');
     } catch (e) {
       // Handle other errors (e.g. database failures)
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await fb_auth.FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on fb_auth.FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw Exception('No user found with this email.');
+      }
+      throw Exception(e.message ?? 'Failed to send reset email.');
+    } catch (e) {
       throw Exception('An error occurred: $e');
     }
   }
