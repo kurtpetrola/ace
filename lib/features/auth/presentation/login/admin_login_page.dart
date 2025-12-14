@@ -174,6 +174,36 @@ class AdminLoginPage extends ConsumerWidget {
                         onPressed: notifier.togglePasswordVisibility,
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 25.0),
+                        child: TextButton(
+                          onPressed: () async {
+                            bool success = await notifier.forgotPassword();
+                            if (success && context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Password reset link sent! Check your email.'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              color:
+                                  theme.colorScheme.primary, // Adaptive color
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
 
                     const SizedBox(height: 35),
 
