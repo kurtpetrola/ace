@@ -13,7 +13,6 @@ import 'package:ace/core/theme/theme_provider.dart';
 import 'package:ace/core/theme/theme_data.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/hive_constants.dart';
-import 'package:ace/services/secure_storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,18 +31,11 @@ void main() async {
   // Register Adapters
   Hive.registerAdapter(ClassroomAdapter());
 
-  // 2.5. Get Encryption Key
-  final encryptionKey = await SecureStorageService.getHiveKey();
-
-  // 3. Open Hive boxes (Securely)
-  final loginBox =
-      await SecureStorageService.openEncryptedBox("_loginbox", encryptionKey);
-  await SecureStorageService.openEncryptedBox(
-      HiveConstants.kClassBox, encryptionKey);
-  await SecureStorageService.openEncryptedBox(
-      HiveConstants.kGradesBox, encryptionKey);
-  await SecureStorageService.openEncryptedBox(
-      HiveConstants.kStudentStatsBox, encryptionKey);
+  // 3. Open Hive boxes
+  final loginBox = await Hive.openBox("_loginbox");
+  await Hive.openBox(HiveConstants.kClassBox);
+  await Hive.openBox(HiveConstants.kGradesBox);
+  await Hive.openBox(HiveConstants.kStudentStatsBox);
 
   final bool userLoggedIn = loginBox.get("isLoggedIn") ?? false;
 
