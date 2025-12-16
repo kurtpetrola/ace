@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:ace/core/constants/app_colors.dart';
 import 'package:ace/common/dialogs/class_creation_dialog.dart';
+import 'package:ace/common/widgets/common_search_bar.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_class_roster_dialog.dart';
@@ -155,10 +155,13 @@ class _AdminClassManagementScreenState
     return Column(
       children: [
         _Header(onCreate: _showCreateClassDialog),
-        _StudentSearchBar(
+        CommonSearchBar(
           controller: _studentIdCtrl,
           onSearch: _searchStudent,
-          status: _status,
+          hintText: 'Search Student ID',
+          statusText: _status,
+          isError:
+              _status != null && _status!.toLowerCase().contains('not found'),
         ),
         Expanded(
           child: Padding(
@@ -292,68 +295,6 @@ class _Header extends StatelessWidget {
           minimumSize: const Size(double.infinity, 48),
         ),
         onPressed: onCreate,
-      ),
-    );
-  }
-}
-
-// ---------------- STUDENT SEARCH ----------------
-class _StudentSearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final VoidCallback onSearch;
-  final String? status;
-
-  const _StudentSearchBar({
-    required this.controller,
-    required this.onSearch,
-    this.status,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final hasStatus = status != null;
-    final isError = hasStatus && status!.toLowerCase().contains('not found');
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: 'Search Student ID',
-              filled: true,
-              fillColor: Theme.of(context).cardTheme.color,
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.arrow_forward),
-                onPressed: onSearch,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: ColorPalette.primary, width: 2),
-              ),
-            ),
-            onSubmitted: (_) => onSearch(),
-          ),
-          if (hasStatus) ...[
-            const SizedBox(height: 6),
-            Text(
-              status!,
-              style: TextStyle(
-                fontStyle: FontStyle.italic,
-                color: isError ? Colors.red : Colors.green.shade700,
-              ),
-            ),
-          ],
-          const SizedBox(height: 8),
-        ],
       ),
     );
   }
