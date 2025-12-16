@@ -4,7 +4,7 @@ Academia Classroom Explorer is an application designed to help students view, mo
 
 ## ✨ Features
 
-### **Student Module**
+### 🎓 **Student Module**
 - **Dashboard**: Centralized view of all enrolled classes and recent activities.
 - **Classroom Interface**:
   - **Stream**: View announcements and class updates.
@@ -14,30 +14,42 @@ Academia Classroom Explorer is an application designed to help students view, mo
 - **Grade Monitoring**: Real-time view of grades (Prelim, Midterm, Final) and calculated averages.
 - **Join Classes**: Easy enrollment using unique class codes.
 
-### **Teacher Module**
+### 👨‍🏫 **Teacher Module**
 - **Classroom Management**: Create and manage classes, subject codes, and schedules.
 - **Assignment System**: Post assignments, quizzes, and materials for students.
 - **Grading Portal**:
-  - View student submissions.
-  - Assign grades and provide feedback.
+  - **View student submissions**.
+  - **Assign grades and provide feedback**.
 - **Roster Control**: Monitor class enrollment and student details.
 
-### **Admin Module**
-- **System Oversight**: centralized view of all classes and users.
+### 🛡️ **Admin Module**
+- **System Oversight**: Centralized view of all classes and users.
 - **User Management**:
   - Distinct role management (Admin, Teacher, Student).
   - Search and filter user database.
   - Approve or remove accounts.
 - **Grades Oversight**: Monitor academic performance across different classes.
 
-### **Offline Capabilities**
+### ⚡ **Offline Capabilities**
 - **Zero-Latency Loading**: Instant access to Classes, Grades, and Profile Stats using Hive caching.
 - **Offline Startup**: Bypasses network checks to launch immediately into the dashboard.
 - **Background Sync**: Automatically updates cached data when internet connection is restored.
 
-## 📥 Installation
+## 🏗️ Project Architecture
 
-You can download the latest **Android APK** file and install the application manually from the **[releases page](https://github.com/kurtpetrola/ace/releases)**.
+The project follows a **Clean Architecture** approach with **Feature-First** organization, ensuring scalability and maintainability.
+
+```
+lib/
+├── features/     # Logic for specific features (Auth, Student, Teacher, Admin)
+│   ├── auth/
+│   ├── student/
+│   └── ...
+├── core/         # Global utilities, constants, and shared widgets
+├── common/       # Reusable UI components (Buttons, inputs, dialogs)
+├── services/     # Data sources (Firebase, Hive)
+└── models/       # Data models and entities
+```
 
 ## 💻 Tech Stack
 
@@ -49,16 +61,6 @@ You can download the latest **Android APK** file and install the application man
 | **Backend** | **Firebase** | Handles Authentication (Email/Password), Cloud Firestore, and Realtime Database. |
 | **Local Storage** | **Hive** | **Offline-First**. Primary local database for caching classes, grades, and user sessions. |
 
-## 🛠 Future Enhancements
-
-The following features are planned for future updates to further enhance functionality:
-
-- [ ] **File Attachments**: Enable file uploads (PDFs, Images) for student submissions and teacher materials.
-- [ ] **Push Notifications**: Real-time alerts for new assignments, graded work, and announcements via Firebase Cloud Messaging.
-- [ ] **Integrated Chat**: In-app messaging system for student-teacher communication.
-- [ ] **Calendar Integration**: Dynamic schedule view based on enrolled classes and due dates.
-- [ ] **Exportable Reports**: Generate PDF/Excel reports of grades for administrators.
-
 ## 🔑 Demo Access
 
 The application now uses **Email & Password** for secure login.
@@ -69,6 +71,20 @@ The application now uses **Email & Password** for secure login.
 
 **Admin/Teacher Access:**
 - Available upon request for security reasons.
+
+## 📥 Installation
+
+You can download the latest **Android APK** file and install the application manually from the **[releases page](https://github.com/kurtpetrola/ace/releases)**.
+
+## 🛠 Future Enhancements
+
+The following features are planned for future updates to further enhance functionality:
+
+- [ ] **File Attachments**: Enable file uploads (PDFs, Images) for student submissions and teacher materials.
+- [ ] **Push Notifications**: Real-time alerts for new assignments, graded work, and announcements via Firebase Cloud Messaging.
+- [ ] **Integrated Chat**: In-app messaging system for student-teacher communication.
+- [ ] **Calendar Integration**: Dynamic schedule view based on enrolled classes and due dates.
+- [ ] **Exportable Reports**: Generate PDF/Excel reports of grades for administrators.
 
 ## 💡 Note
 
