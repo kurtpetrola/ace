@@ -51,7 +51,81 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
     }
   }
 
-  Widget _buildSectionHeader(String title, BuildContext context) {
+  Future<void> _addStudent() async {
+    final TextEditingController _idController = TextEditingController();
+    String? errorText;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Add Student'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                    'Enter the Student ID to enroll them in this class.'),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _idController,
+                  decoration: InputDecoration(
+                    labelText: 'Student ID',
+                    border: const OutlineInputBorder(),
+                    errorText: errorText,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final id = _idController.text.trim();
+                  if (id.isEmpty) return;
+
+                  // Check if already in list
+                  if (_students.any((s) => s.userId == id)) {
+                    setState(() {
+                      errorText = 'Student already enrolled';
+                    });
+                    return;
+                  }
+
+                  // Check if exists in DB
+                  final exists = await _classService.checkStudentExists(id);
+                  if (!exists) {
+                    setState(() {
+                      errorText = 'Student ID not found';
+                    });
+                    return;
+                  }
+
+                  // Enroll
+                  await _classService.enrollStudentInClass(
+                      id, widget.classroom.classId);
+                  Navigator.pop(context); // Close dialog
+                  _fetchRoster(); // Refresh list
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Student $id added successfully')),
+                    );
+                  }
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  Widget _buildSectionHeader(String title, BuildContext context,
+      {VoidCallback? onAdd}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
       child: Row(
@@ -69,6 +143,15 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
               child: Divider(
                   color:
                       Theme.of(context).colorScheme.primary.withOpacity(0.3))),
+          if (onAdd != null) ...[
+            const SizedBox(width: 8),
+            IconButton(
+              icon: Icon(Ionicons.person_add,
+                  color: Theme.of(context).colorScheme.primary),
+              onPressed: onAdd,
+              tooltip: 'Add Student',
+            ),
+          ]
         ],
       ),
     );
@@ -157,7 +240,7 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Students', context),
+          _buildSectionHeader('Students', context, onAdd: _addStudent),
           Text(
             '${_students.length} students',
             style: TextStyle(

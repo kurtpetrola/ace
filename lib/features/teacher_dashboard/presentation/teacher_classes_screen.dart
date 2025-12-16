@@ -1,12 +1,11 @@
 // lib/features/teacher_dashboard/presentation/teacher_classes_screen.dart
 
 import 'package:flutter/material.dart';
-
+import 'package:ionicons/ionicons.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
+import 'package:ace/common/dialogs/class_creation_dialog.dart';
 import 'package:ace/features/teacher_dashboard/presentation/teacher_classroom_page.dart';
-
-import 'package:ionicons/ionicons.dart';
 
 class TeacherClassesScreen extends StatefulWidget {
   final String teacherId;
@@ -23,6 +22,19 @@ class _TeacherClassesScreenState extends State<TeacherClassesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => ClassCreationDialog(
+              teacherId: widget.teacherId, // Auto-assign to this teacher
+              onClassCreated: _classService.createNewClass,
+            ),
+          );
+        },
+        label: const Text('Create Class'),
+        icon: const Icon(Ionicons.add),
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +107,7 @@ class _TeacherClassesScreenState extends State<TeacherClassesScreen> {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'Contact an admin to assign classes to you.',
+                          'Create a new class to get started.',
                           style: TextStyle(color: Colors.grey),
                         ),
                       ],
