@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ace/core/constants/app_colors.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:ace/common/widgets/common_search_bar.dart';
 import 'package:ace/models/user.dart';
 import 'package:ace/services/user_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/widgets/edit_user_dialog.dart';
@@ -150,21 +151,15 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                 ),
                 const SizedBox(height: 16),
                 // Search Bar
-                TextField(
+                CommonSearchBar(
                   controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search by Name, ID, or Dept...',
-                    prefixIcon: const Icon(Ionicons.search, color: Colors.grey),
-                    filled: true,
-                    fillColor: Theme.of(context).cardTheme.color == Colors.white
-                        ? Colors.grey.shade100
-                        : Theme.of(context).colorScheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+                  hintText: _selectedSegment.contains('students')
+                      ? 'Search Students...'
+                      : _selectedSegment.contains('teachers')
+                          ? 'Search Teachers...'
+                          : 'Search Admins...',
+                  onSearch: _filterUsers,
+                  onChanged: (_) => _filterUsers(),
                 ),
               ],
             ),
@@ -296,17 +291,25 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                                           Colors.grey.shade700),
                                       if (isStudent)
                                         _buildBadge(
-                                            user.department,
+                                            user.department.isNotEmpty
+                                                ? user.department
+                                                : 'No Dept',
                                             Colors.orange.shade50,
                                             Colors.orange),
                                       if (isTeacher)
                                         _buildBadge(
-                                            'Teacher',
-                                            Colors.orange.shade50,
-                                            Colors.orange),
+                                            user.department.isNotEmpty
+                                                ? user.department
+                                                : 'Teacher',
+                                            Colors.blue.shade50,
+                                            Colors.blue),
                                       if (!isStudent && !isTeacher)
-                                        _buildBadge('Admin',
-                                            Colors.blue.shade50, Colors.blue),
+                                        _buildBadge(
+                                            user.department.isNotEmpty
+                                                ? user.department
+                                                : 'Admin',
+                                            Colors.red.shade50,
+                                            Colors.red),
                                     ],
                                   ),
                                 ],

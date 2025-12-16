@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ace/common/widgets/grades_table.dart';
+import 'package:ace/common/widgets/common_search_bar.dart';
 import 'package:ace/services/grade_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/widgets/add_grade_form.dart';
 
@@ -104,11 +105,12 @@ class _AdminGradesManagementScreenState
             const SizedBox(height: 20),
 
             // --- SEARCH BAR (replicated from AdminClassManagement) ---
-            _StudentSearchBar(
+            CommonSearchBar(
               controller: _studentIdController,
               onSearch: _searchStudent,
-              status: _message,
-              isLoading: _isLoading,
+              statusText: _message,
+              // CommonSearchBar doesn't have isLoading prop yet, but blocking interaction logic is inside onSearch/Controller if needed
+              // or we can just let it be. The visual consistency is more important here.
             ),
 
             const SizedBox(height: 20),
@@ -147,70 +149,4 @@ class _AdminGradesManagementScreenState
   }
 }
 
-// ---------------- REUSABLE STUDENT SEARCH BAR ----------------
-class _StudentSearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final VoidCallback onSearch;
-  final String? status;
-  final bool isLoading;
-
-  const _StudentSearchBar({
-    required this.controller,
-    required this.onSearch,
-    this.status,
-    this.isLoading = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final hasStatus = status != null;
-    final isError = hasStatus && status!.toLowerCase().contains('not found');
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: 'Search Student ID',
-              filled: true,
-              fillColor: Theme.of(context).cardTheme.color == Colors.white
-                  ? Colors.grey.shade100
-                  : Theme.of(context).colorScheme.surface,
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.arrow_forward),
-                onPressed: isLoading ? null : onSearch,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                    color: Theme.of(context).dividerTheme.color ??
-                        Colors.grey.shade400),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    BorderSide(color: Theme.of(context).primaryColor, width: 2),
-              ),
-            ),
-            onSubmitted: (_) => onSearch(),
-          ),
-          if (hasStatus) ...[
-            const SizedBox(height: 6),
-            Text(
-              status!,
-              style: TextStyle(
-                fontStyle: FontStyle.italic,
-                color: isError ? Colors.red : Colors.green.shade700,
-              ),
-            ),
-          ],
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-}
+// ---------------- REUSABLE STUDENT SEARCH BAR REMOVED ----------------
