@@ -138,4 +138,18 @@ class UserService {
     final snapshot = await _db.child('Teachers/$teacherId').get();
     return snapshot.exists;
   }
+
+  // Fetch a single teacher by ID
+  Future<User?> getTeacher(String teacherId) async {
+    final snapshot = await _db.child('Teachers/$teacherId').get();
+    if (snapshot.exists && snapshot.value is Map) {
+      final Map<String, dynamic> data =
+          Map<String, dynamic>.from(snapshot.value as Map);
+      if (!data.containsKey('teacherid')) {
+        data['teacherid'] = teacherId;
+      }
+      return User.fromJson(data);
+    }
+    return null;
+  }
 }

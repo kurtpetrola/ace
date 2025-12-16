@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:ace/core/constants/app_colors.dart';
+import 'package:ace/common/dialogs/class_creation_dialog.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/services/class_service.dart';
 import 'package:ace/features/admin_dashboard/presentation/admin_class_roster_dialog.dart';
-import 'package:ace/features/admin_dashboard/presentation/class_creation_dialog.dart';
 
 class AdminClassManagementScreen extends StatefulWidget {
   const AdminClassManagementScreen({super.key});
