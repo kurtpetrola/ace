@@ -69,7 +69,11 @@ The application now uses **Email & Password** for secure login.
 - **Email:** `johndoe@ace.com`
 - **Password:** `StudentSecure99!`
 
-**Admin/Teacher Access:**
+**Teacher Access (Demo):**
+- **Email:** `mrsmith@ace.com`
+- **Password:** `TeacherSecure99!`
+
+**Admin Access:**
 - Available upon request for security reasons.
 
 ## 📥 Installation
