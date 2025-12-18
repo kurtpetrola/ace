@@ -37,7 +37,11 @@ Academia Classroom Explorer is an application designed to help students view, mo
 
 ## 🏗️ Project Architecture
 
-The project follows a **Clean Architecture** approach with **Feature-First** organization, ensuring scalability and maintainability.
+The project follows a **Hybrid Architecture** that strategically combines **Feature-First** and **Layer-First** organization to ensure both modularity and global consistency.
+
+-   **Feature-First (`lib/features/`)**: Business logic and UI are grouped by domain (e.g., Auth, Dashboards). Each feature is self-contained with its own presentation and logic layers.
+-   **Layer-First (`lib/services/`, `lib/models/`, etc.)**: Shared infrastructure, global data models, and cross-cutting utilities are organized by technical layer.
+
 
 ```
 lib/
