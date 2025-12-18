@@ -35,26 +35,6 @@ Academia Classroom Explorer is an application designed to help students view, mo
 - **Offline Startup**: Bypasses network checks to launch immediately into the dashboard.
 - **Background Sync**: Automatically updates cached data when internet connection is restored.
 
-## 🏗️ Project Architecture
-
-The project follows a **Hybrid Architecture** that strategically combines **Feature-First** and **Layer-First** organization to ensure both modularity and global consistency.
-
--   **Feature-First (`lib/features/`)**: Business logic and UI are grouped by domain (e.g., Auth, Dashboards). Each feature is self-contained with its own presentation and logic layers.
--   **Layer-First (`lib/services/`, `lib/models/`, etc.)**: Shared infrastructure, global data models, and cross-cutting utilities are organized by technical layer.
-
-
-```
-lib/
-├── features/     # Logic for specific features (Auth, Student, Teacher, Admin)
-│   ├── auth/
-│   ├── student/
-│   └── ...
-├── core/         # Global utilities, constants, and shared widgets
-├── common/       # Reusable UI components (Buttons, inputs, dialogs)
-├── services/     # Data sources (Firebase, Hive)
-└── models/       # Data models and entities
-```
-
 ## 💻 Tech Stack
 
 | Component | Technology | Description |
@@ -64,6 +44,27 @@ lib/
 | **State Management** | **Riverpod** | Robust, compile-safe state management solution for scalable architecture. |
 | **Backend** | **Firebase** | Handles Authentication (Email/Password), Cloud Firestore, and Realtime Database. |
 | **Local Storage** | **Hive** | **Offline-First**. Primary local database for caching classes, grades, and user sessions. |
+
+## 🏗️ Project Architecture
+
+The project follows a **Hybrid Architecture** that strategically combines **Feature-First** and **Layer-First** organization to ensure both modularity and global consistency.
+
+-   **Feature-First (`lib/features/`)**: Business logic and UI are grouped by domain (e.g., Auth, Dashboards). Each feature is self-contained with its own presentation and logic layers.
+-   **Layer-First (`lib/services/`, `lib/models/`, etc.)**: Shared infrastructure, global data models, and cross-cutting utilities are organized by technical layer.
+
+```
+lib/
+├── features/     # Modular domain logic & UI
+│   ├── admin_dashboard/
+│   ├── auth/
+│   ├── student_dashboard/
+│   └── teacher_dashboard/
+├── core/         # App-wide constants & theme
+├── common/       # Reusable widgets & dialogs
+├── services/     # Shared data sources (Firebase, Hive)
+├── models/       # Global data models & entities
+└── main.dart     # App entry point & initialization
+```
 
 ## 🔑 Demo Access
 
