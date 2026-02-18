@@ -7,9 +7,10 @@ import 'package:ace/services/hive_constants.dart';
 import 'package:ace/models/user.dart';
 import 'package:hive/hive.dart';
 import 'dart:convert';
+import 'dart:developer';
 
 class StudentAuthService implements AuthServiceInterface {
-  final Box _loginbox = Hive.box("_loginbox");
+  final Box _loginbox = Hive.box('_loginbox');
   static const String wrongCredentialsError = 'Wrong username or password';
 
   @override
@@ -30,43 +31,44 @@ class StudentAuthService implements AuthServiceInterface {
 
       final fbUser = userCredential.user;
       if (fbUser == null) {
-        throw Exception("Authentication successful but user is null.");
+        throw Exception('Authentication successful but user is null.');
       }
 
       // 2. Fetch student data to get the ID and Name for the session
       // We query by email since we no longer have the ID upfront.
       // Rules allow this read because auth != null now.
-      DatabaseReference dbReference =
-          FirebaseDatabase.instance.ref().child("Students");
+      final DatabaseReference dbReference =
+          FirebaseDatabase.instance.ref().child('Students');
 
       final snapshot =
-          await dbReference.orderByChild("email").equalTo(studentEmail).get();
+          await dbReference.orderByChild('email').equalTo(studentEmail).get();
 
       if (!snapshot.exists || snapshot.value == null) {
         // This is a critical edge case: Auth works, but no profile exists in DB.
         // Should probably logout to prevent ghost sessions.
         await fb_auth.FirebaseAuth.instance.signOut();
-        throw Exception("User profile not found in database.");
+        throw Exception('User profile not found in database.');
       }
 
       // 3. Extract Profile Data
       // The result is a Map where keys are IDs (e.g. STU-001)
-      Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
+      final Map<dynamic, dynamic> values =
+          snapshot.value as Map<dynamic, dynamic>;
       // We expect only one match since emails should be unique
-      var entry = values.entries.first;
-      String studentId = entry.key;
-      Map<String, dynamic> userDataMap =
+      final entry = values.entries.first;
+      final String studentId = entry.key;
+      final Map<String, dynamic> userDataMap =
           jsonDecode(jsonEncode(entry.value)); // Ensure strictly string keys
 
-      User user = User.fromJson(userDataMap);
+      final User user = User.fromJson(userDataMap);
       final String studentName = user.fullname;
 
       // 4. Successful login: Save state to Hive
-      await _loginbox.put("isLoggedIn", true);
+      await _loginbox.put('isLoggedIn', true);
       await _loginbox.put(
-          "UserType", "Student"); // <-- Ensures WrapperScreen works
-      await _loginbox.put("User", studentId);
-      await _loginbox.put("UserName", studentName);
+          'UserType', 'Student'); // <-- Ensures WrapperScreen works
+      await _loginbox.put('User', studentId);
+      await _loginbox.put('UserName', studentName);
       return;
     } on fb_auth.FirebaseAuthException catch (e) {
       // Handle Auth errors
@@ -136,7 +138,7 @@ class StudentAuthService implements AuthServiceInterface {
       yield freshData;
     } catch (e) {
       // If network fails, we rely on the cache yielded in step 1.
-      print('Error fetching user stats: $e');
+      log('Error fetching user stats: $e');
     }
   }
 
@@ -145,24 +147,24 @@ class StudentAuthService implements AuthServiceInterface {
     // Reference assuming studentId is the key in "Students/studentId"
     // Note: The original code used 'fullname' as the key, but it SHOULD be studentId.
     // However, looking at the previous file, it used _loginbox.get("User") which IS the ID.
-    DatabaseReference databaseReference =
-        FirebaseDatabase.instance.ref().child("Students/$studentId");
+    final DatabaseReference databaseReference =
+        FirebaseDatabase.instance.ref().child('Students/$studentId');
 
     // Fetch user profile
-    DataSnapshot snapshot = await databaseReference.get();
+    final DataSnapshot snapshot = await databaseReference.get();
     if (!snapshot.exists || snapshot.value == null) {
-      throw Exception("Student data not found for $studentId.");
+      throw Exception('Student data not found for $studentId.');
     }
 
-    Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
-    User myUserObj = User.fromJson(myObj);
+    final Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
+    final User myUserObj = User.fromJson(myObj);
 
     int enrolledClassesCount = 0;
     int pendingAssignments = 0;
 
     // Calculate Stats
     try {
-      DataSnapshot classesSnapshot =
+      final DataSnapshot classesSnapshot =
           await databaseReference.child('classes').get();
       if (classesSnapshot.exists && classesSnapshot.value is Map) {
         enrolledClassesCount = (classesSnapshot.value as Map).keys.length;
@@ -171,7 +173,8 @@ class StudentAuthService implements AuthServiceInterface {
         final classIds = (classesSnapshot.value as Map).keys.toList();
         for (var classId in classIds) {
           try {
-            DataSnapshot classworkRefsSnapshot = await FirebaseDatabase.instance
+            final DataSnapshot classworkRefsSnapshot = await FirebaseDatabase
+                .instance
                 .ref()
                 .child('Classes/$classId/classwork')
                 .get();
@@ -182,7 +185,7 @@ class StudentAuthService implements AuthServiceInterface {
                   (classworkRefsSnapshot.value as Map).keys.toList();
               for (var classworkId in classworkIds) {
                 // Check if student has submitted
-                DataSnapshot submissionSnapshot = await FirebaseDatabase
+                final DataSnapshot submissionSnapshot = await FirebaseDatabase
                     .instance
                     .ref()
                     .child('submissions/$classworkId/$studentId')

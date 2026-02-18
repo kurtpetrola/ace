@@ -172,7 +172,7 @@ class _ClassCreationDialogState extends State<ClassCreationDialog> {
                         labelText: 'Select Banner Image',
                         border: OutlineInputBorder(),
                       ),
-                      value: _selectedBannerPath,
+                      initialValue: _selectedBannerPath,
                       items: _mockBannerPaths.map((String path) {
                         return DropdownMenuItem<String>(
                           value: path,

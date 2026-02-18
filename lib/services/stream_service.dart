@@ -15,7 +15,7 @@ class StreamService {
     // Convert the Firebase stream of events into a stream of List<Post>
     return postsRef.onValue.map((event) {
       final postsMap = event.snapshot.value;
-      List<Post> posts = [];
+      final List<Post> posts = [];
 
       if (postsMap != null && postsMap is Map) {
         // Safely decode the dynamic map from Firebase

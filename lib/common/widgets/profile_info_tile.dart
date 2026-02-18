@@ -38,13 +38,13 @@ class _ProfileInfoTileState extends State<ProfileInfoTile> {
           borderRadius: BorderRadius.circular(20),
           border: Border(
             top: BorderSide(
-                color: scheme.outlineVariant.withOpacity(0.5), width: 1),
+                color: scheme.outlineVariant.withValues(alpha: 0.5), width: 1),
             left: BorderSide(
-                color: scheme.outlineVariant.withOpacity(0.5), width: 1),
+                color: scheme.outlineVariant.withValues(alpha: 0.5), width: 1),
             right: BorderSide(
-                color: scheme.outlineVariant.withOpacity(0.5), width: 1),
+                color: scheme.outlineVariant.withValues(alpha: 0.5), width: 1),
             bottom: BorderSide(
-              color: scheme.outlineVariant.withOpacity(0.5),
+              color: scheme.outlineVariant.withValues(alpha: 0.5),
               width: _isPressed ? 1 : 4, // 3D effect press
             ),
           ),
@@ -53,8 +53,8 @@ class _ProfileInfoTileState extends State<ProfileInfoTile> {
               : [
                   BoxShadow(
                     color: isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.grey.withOpacity(0.1),
+                        ? Colors.black.withValues(alpha: 0.3)
+                        : Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -64,7 +64,7 @@ class _ProfileInfoTileState extends State<ProfileInfoTile> {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
-            splashColor: scheme.primary.withOpacity(0.1),
+            splashColor: scheme.primary.withValues(alpha: 0.1),
             onTap: () {
               // Show full text in a tooltip or dialog if truncated
               if (widget.value.length > 20) {

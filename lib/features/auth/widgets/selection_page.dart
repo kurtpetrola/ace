@@ -11,7 +11,7 @@ import 'package:ace/common/widgets/buttons/teacher_button.dart';
 
 // Change StatelessWidget to ConsumerWidget
 class SelectionPage extends ConsumerWidget {
-  const SelectionPage({Key? key}) : super(key: key);
+  const SelectionPage({super.key});
 
   // The build method now receives WidgetRef ref
   @override
@@ -53,11 +53,11 @@ class SelectionPage extends ConsumerWidget {
                   width: 320,
                   child: Column(
                     children: [
-                      StudentButton(onTap: null),
+                      const StudentButton(onTap: null),
                       const SizedBox(height: 10),
-                      AdminButton(onTap: null),
+                      const AdminButton(onTap: null),
                       const SizedBox(height: 10),
-                      TeacherButton(onTap: null),
+                      const TeacherButton(onTap: null),
                       const SizedBox(height: 20),
                       // Visual separation for Register
                       Row(
@@ -90,7 +90,7 @@ class SelectionPage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      RegisterButton(onTap: null),
+                      const RegisterButton(onTap: null),
                     ],
                   ),
                 ),

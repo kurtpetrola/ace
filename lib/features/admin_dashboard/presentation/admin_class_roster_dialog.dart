@@ -6,6 +6,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/models/user.dart';
 import 'package:ace/services/class_service.dart';
+import 'dart:developer';
 
 class AdminClassRosterDialog extends StatefulWidget {
   final Classroom classroom;
@@ -53,7 +54,7 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
       _statusMessage =
           'Roster loaded. Total students: ${_rosterStudents.length}';
     } catch (e) {
-      print('Error fetching class roster: $e');
+      log('Error fetching class roster: $e');
       _statusMessage = 'Error loading roster: $e';
     } finally {
       setState(() {
@@ -102,7 +103,7 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
         _statusMessage = 'Successfully enrolled $studentId!';
       });
     } catch (e) {
-      print('Enrollment error: $e');
+      log('Enrollment error: $e');
       setState(() => _statusMessage = 'Failed to enroll student: $e');
     } finally {
       setState(() => _isLoading = false);
@@ -127,7 +128,7 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
         _statusMessage = 'Successfully unenrolled $fullname.';
       });
     } catch (e) {
-      print('Unenrollment error: $e');
+      log('Unenrollment error: $e');
       setState(() {
         _statusMessage = 'Failed to unenroll student: $e';
       });
@@ -143,7 +144,7 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.grey.shade800
-            : ColorPalette.accentBlack.withOpacity(0.1),
+            : ColorPalette.accentBlack.withValues(alpha: 0.1),
         child: Icon(Icons.person,
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
@@ -179,7 +180,7 @@ class _AdminClassRosterDialogState extends State<AdminClassRosterDialog> {
             // Teacher Info
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.red.withOpacity(0.1),
+                backgroundColor: Colors.red.withValues(alpha: 0.1),
                 child: const Icon(Icons.school, color: Colors.red),
               ),
               title: Text(widget.classroom.creator,

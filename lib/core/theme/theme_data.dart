@@ -137,8 +137,8 @@ class AppTheme {
         selectedItemColor: Colors.black,
         unselectedItemColor:
             Colors.black54, // Simplified opacity for cleaner code
-        selectedIconTheme: const IconThemeData(size: 30),
-        unselectedIconTheme: const IconThemeData(size: 26),
+        selectedIconTheme: IconThemeData(size: 30),
+        unselectedIconTheme: IconThemeData(size: 26),
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),

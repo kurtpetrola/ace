@@ -195,7 +195,7 @@ class _TeacherClassworkGradesScreenState
                   // For now, assume it's saved.
                 }
 
-                if (mounted) Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               }
             },
             child: const Text('Save Grade'),
@@ -249,8 +249,9 @@ class _TeacherClassworkGradesScreenState
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 8),
                         leading: CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).primaryColor.withOpacity(0.1),
+                          backgroundColor: Theme.of(context)
+                              .primaryColor
+                              .withValues(alpha: 0.1),
                           child: Text(
                             student.fullname.isNotEmpty
                                 ? student.fullname[0]
@@ -277,13 +278,13 @@ class _TeacherClassworkGradesScreenState
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: isGraded
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.grey.withOpacity(0.1),
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.grey.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                                 color: isGraded
                                     ? Colors.green
-                                    : Colors.grey.withOpacity(0.3)),
+                                    : Colors.grey.withValues(alpha: 0.3)),
                           ),
                           child: Text(
                             isGraded

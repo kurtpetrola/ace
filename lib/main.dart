@@ -32,12 +32,12 @@ void main() async {
   Hive.registerAdapter(ClassroomAdapter());
 
   // 3. Open Hive boxes
-  final loginBox = await Hive.openBox("_loginbox");
+  final loginBox = await Hive.openBox('_loginbox');
   await Hive.openBox(HiveConstants.kClassBox);
   await Hive.openBox(HiveConstants.kGradesBox);
   await Hive.openBox(HiveConstants.kStudentStatsBox);
 
-  final bool userLoggedIn = loginBox.get("isLoggedIn") ?? false;
+  final bool userLoggedIn = loginBox.get('isLoggedIn') ?? false;
 
   // 4. Wrap the app with ProviderScope
   runApp(

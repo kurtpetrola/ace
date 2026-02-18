@@ -1,6 +1,7 @@
 // lib/services/user_service.dart
 
 import 'dart:convert';
+import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/models/user.dart';
 
@@ -10,7 +11,7 @@ class UserService {
   // Fetch all students from the 'Students' node
   Future<List<User>> fetchAllStudents() async {
     final snapshot = await _db.child('Students').get();
-    List<User> students = [];
+    final List<User> students = [];
 
     if (snapshot.exists && snapshot.value is Map) {
       // Use jsonEncode/jsonDecode to safely convert the dynamic Map to Map<String, dynamic>
@@ -31,7 +32,7 @@ class UserService {
             students.add(User.fromJson(data));
           }
         } catch (e) {
-          print('Error parsing student $studentId: $e');
+          log('Error parsing student $studentId: $e');
         }
       });
     }
@@ -41,7 +42,7 @@ class UserService {
   // Fetch all admins from the 'Admins' node
   Future<List<User>> fetchAllAdmins() async {
     final snapshot = await _db.child('Admins').get();
-    List<User> admins = [];
+    final List<User> admins = [];
 
     if (snapshot.exists && snapshot.value is Map) {
       final Map<String, dynamic> adminsMap =
@@ -60,7 +61,7 @@ class UserService {
             admins.add(User.fromJson(data));
           }
         } catch (e) {
-          print('Error parsing admin $adminId: $e');
+          log('Error parsing admin $adminId: $e');
         }
       });
     }
@@ -70,7 +71,7 @@ class UserService {
   // Fetch all teachers from the 'Teachers' node
   Future<List<User>> fetchAllTeachers() async {
     final snapshot = await _db.child('Teachers').get();
-    List<User> teachers = [];
+    final List<User> teachers = [];
 
     if (snapshot.exists && snapshot.value is Map) {
       final Map<String, dynamic> teachersMap =
@@ -88,7 +89,7 @@ class UserService {
             teachers.add(User.fromJson(data));
           }
         } catch (e) {
-          print('Error parsing teacher $teacherId: $e');
+          log('Error parsing teacher $teacherId: $e');
         }
       });
     }
@@ -109,7 +110,7 @@ class UserService {
 
     // Convert to JSON, but remove the ID fields as they are part of the path key
     // The email is also generally fixed in Firebase Auth.
-    Map<String, dynamic> updateData = user.toJson();
+    final Map<String, dynamic> updateData = user.toJson();
     updateData
         .removeWhere((key, value) => key.endsWith('id') || key == 'email');
 
@@ -121,12 +122,12 @@ class UserService {
     // NOTE: This is a placeholder. Real password reset requires Firebase Auth
     // or an Admin SDK, which is not directly available in this Flutter client setup.
 
-    print('Attempting to reset password for email: $email');
+    log('Attempting to reset password for email: $email');
     await Future.delayed(const Duration(seconds: 1));
 
     // Simulate success based on a simple check
     if (email.contains('@')) {
-      print('Password reset initiated for $email');
+      log('Password reset initiated for $email');
       return Future.value();
     } else {
       throw Exception('Invalid email format. Password reset failed.');

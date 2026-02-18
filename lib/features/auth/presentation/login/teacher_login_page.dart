@@ -81,7 +81,7 @@ class TeacherLoginPage extends ConsumerWidget {
     final theme = Theme.of(context);
 
     void handleLogin() async {
-      bool success = await notifier.login();
+      final bool success = await notifier.login();
       if (success && context.mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -107,7 +107,7 @@ class TeacherLoginPage extends ConsumerWidget {
                   color: theme.cardTheme.color,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 5,
                       spreadRadius: 1,
                     ),
@@ -175,7 +175,8 @@ class TeacherLoginPage extends ConsumerWidget {
                           padding: const EdgeInsets.only(right: 25.0),
                           child: TextButton(
                             onPressed: () async {
-                              bool success = await notifier.forgotPassword();
+                              final bool success =
+                                  await notifier.forgotPassword();
                               if (success && context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -187,7 +188,7 @@ class TeacherLoginPage extends ConsumerWidget {
                               }
                             },
                             child: Text(
-                              "Forgot Password?",
+                              'Forgot Password?',
                               style: TextStyle(
                                 color:
                                     theme.colorScheme.primary, // Adaptive color

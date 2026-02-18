@@ -10,7 +10,7 @@ import 'package:ionicons/ionicons.dart';
 class StreamTab extends StatelessWidget {
   final Classroom classroom;
   final StreamService _streamService = StreamService();
-  final Box _loginbox = Hive.box("_loginbox");
+  final Box _loginbox = Hive.box('_loginbox');
 
   StreamTab({super.key, required this.classroom});
 
@@ -60,13 +60,13 @@ class StreamTab extends StatelessWidget {
           image: AssetImage(classroom.bannerImgPath),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.4),
+            Colors.black.withValues(alpha: 0.4),
             BlendMode.darken,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -94,7 +94,7 @@ class StreamTab extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.white24),
             ),
@@ -120,7 +120,7 @@ class StreamTab extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -136,7 +136,7 @@ class StreamTab extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: ColorPalette.primary.withOpacity(0.1),
+                  backgroundColor: ColorPalette.primary.withValues(alpha: 0.1),
                   child: const Icon(Ionicons.person,
                       color: ColorPalette.primary, size: 20),
                 ),
@@ -179,7 +179,7 @@ class StreamTab extends StatelessWidget {
                 Theme.of(context).dividerTheme.color ?? Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
+            color: Colors.grey.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -191,7 +191,7 @@ class StreamTab extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: ColorPalette.primary.withOpacity(0.1),
+                backgroundColor: ColorPalette.primary.withValues(alpha: 0.1),
                 child: Text(
                   post.authorName.isNotEmpty
                       ? post.authorName[0].toUpperCase()

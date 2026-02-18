@@ -71,7 +71,7 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: ColorPalette.primary.withOpacity(0.1),
+                        color: ColorPalette.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -120,7 +120,7 @@ class _SubmissionDialogState extends State<SubmissionDialog> {
                   decoration: InputDecoration(
                     hintText: 'Write your answer here...',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).hintColor.withOpacity(0.6),
+                      color: Theme.of(context).hintColor.withValues(alpha: 0.6),
                     ),
                     filled: true,
                     fillColor: isDarkMode

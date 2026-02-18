@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:ace/models/user.dart';
 import 'package:ace/features/auth/services/student_auth_service.dart';
+import 'dart:developer';
 
 class StudentAccountScreen extends ConsumerStatefulWidget {
   const StudentAccountScreen({super.key});
@@ -19,7 +20,7 @@ class StudentAccountScreen extends ConsumerStatefulWidget {
 }
 
 class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
-  final _loginbox = Hive.box("_loginbox");
+  final _loginbox = Hive.box('_loginbox');
   late String studentId;
   late Stream<Map<String, dynamic>> _userStatsStream;
   final StudentAuthService _authService = StudentAuthService();
@@ -27,7 +28,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
   @override
   void initState() {
     super.initState();
-    studentId = _loginbox.get("User") ?? "";
+    studentId = _loginbox.get('User') ?? '';
     _userStatsStream = _authService.streamUserStatsCached(studentId);
   }
 
@@ -66,7 +67,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
           }
 
           if (snapshot.hasError) {
-            print('[ERROR] UI Error: ${snapshot.error}');
+            log('[ERROR] UI Error: ${snapshot.error}');
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,7 +79,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Something went wrong",
+                    'Something went wrong',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 18,
                         ),
@@ -121,7 +122,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
               children: [
                 PersonalInfoSection(
                   user: user,
-                  role: "Student",
+                  role: 'Student',
                   avatarIcon: Icons.school_outlined,
                   isAdmin: false,
                   statValue1: enrolledClassesCount,
@@ -154,7 +155,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -190,7 +191,7 @@ class _StudentAccountScreenState extends ConsumerState<StudentAccountScreen> {
           Switch(
             value: isDarkMode,
             onChanged: (_) => themeNotifier.toggleTheme(),
-            activeColor: ColorPalette.primary,
+            activeThumbColor: ColorPalette.primary,
           ),
         ],
       ),

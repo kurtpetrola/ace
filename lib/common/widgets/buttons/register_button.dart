@@ -29,9 +29,9 @@ class RegisterButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 15),
         minimumSize: const Size(double.infinity, 50),
       ),
-      child: Text(
+      child: const Text(
         AceStrings.register,
-        style: const TextStyle(
+        style: TextStyle(
           color: ColorPalette.secondary,
           fontFamily: 'Lato',
           fontWeight: FontWeight.w700,

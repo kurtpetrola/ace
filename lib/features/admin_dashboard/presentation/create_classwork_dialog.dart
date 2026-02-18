@@ -175,7 +175,7 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: ColorPalette.primary.withOpacity(0.1),
+                        color: ColorPalette.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -303,8 +303,9 @@ class _CreateClassworkDialogState extends State<CreateClassworkDialog> {
                           decoration: _inputDecoration('100',
                               icon: Ionicons.medal_outline),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Required';
+                            }
                             if (int.tryParse(v) == null) return 'Invalid';
                             return null;
                           },

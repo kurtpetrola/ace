@@ -59,7 +59,7 @@ class GradeTable extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -79,7 +79,7 @@ class GradeTable extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: DataTable(
               headingRowColor: WidgetStateProperty.all(ColorPalette.primary
-                  .withOpacity(0.9)), // Use WidgetStateProperty
+                  .withValues(alpha: 0.9)), // Use WidgetStateProperty
               headingTextStyle: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class GradeTable extends StatelessWidget {
               dataRowColor: WidgetStateProperty.resolveWith<Color?>(
                 (Set<WidgetState> states) {
                   // Alternating row colors could be added here if passed index
-                  return ColorPalette.lighterRed.withOpacity(0.2);
+                  return ColorPalette.lighterRed.withValues(alpha: 0.2);
                 },
               ),
               columns: const [

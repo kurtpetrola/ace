@@ -8,12 +8,12 @@ import 'package:ace/features/student_dashboard/presentation/student_grades_scree
 import 'package:ace/features/student_dashboard/presentation/widgets/notification_badge.dart';
 import 'package:ace/features/student_dashboard/presentation/student_notifications_screen.dart';
 import 'package:ace/services/fcm_service.dart';
+import 'dart:developer';
 
 class StudentHomescreenPage extends StatefulWidget {
   // 1. Add required studentId to the StatefulWidget
   final String studentId;
-  const StudentHomescreenPage({Key? key, required this.studentId})
-      : super(key: key);
+  const StudentHomescreenPage({super.key, required this.studentId});
 
   @override
   State<StudentHomescreenPage> createState() => _StudentHomeScreenPageState();
@@ -31,9 +31,9 @@ class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
     super.initState();
     // 2. Initialize the pages list, passing the studentId to GradesView
     pages = [
-      StudentClassroomScreen(),
+      const StudentClassroomScreen(),
       GradesView(studentId: widget.studentId), // Pass the ID here
-      StudentAccountScreen(),
+      const StudentAccountScreen(),
     ];
 
     // 3. Initialize FCM for push notifications
@@ -44,7 +44,7 @@ class _StudentHomeScreenPageState extends State<StudentHomescreenPage> {
     try {
       await FCMService().initialize(widget.studentId);
     } catch (e) {
-      print('Error initializing FCM: $e');
+      log('Error initializing FCM: $e');
     }
   }
 

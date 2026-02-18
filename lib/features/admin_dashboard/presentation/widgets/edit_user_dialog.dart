@@ -162,7 +162,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _selectedGender,
+                            initialValue: _selectedGender,
                             items: _genders
                                 .map((g) => DropdownMenuItem(
                                       value: g,

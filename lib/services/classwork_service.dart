@@ -1,6 +1,7 @@
 // lib/services/classwork_service.dart
 
 import 'dart:convert';
+import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/models/classwork.dart';
 import 'package:ace/services/class_service.dart';
@@ -42,7 +43,7 @@ class ClassworkService {
 
       return classworkId;
     } catch (e) {
-      print('Error creating classwork: $e');
+      log('Error creating classwork: $e');
       return null;
     }
   }
@@ -68,18 +69,20 @@ class ClassworkService {
       final allClassworkSnapshot = await _db.child('Classwork').get();
       if (!allClassworkSnapshot.exists ||
           allClassworkSnapshot.value == null ||
-          allClassworkSnapshot.value is String) return [];
+          allClassworkSnapshot.value is String) {
+        return [];
+      }
 
       final Map<String, dynamic> allClassworkMap =
           jsonDecode(jsonEncode(allClassworkSnapshot.value));
 
-      List<Classwork> classworkList = [];
+      final List<Classwork> classworkList = [];
       for (String id in classworkIds) {
         if (allClassworkMap.containsKey(id)) {
           try {
             classworkList.add(Classwork.fromJson(id, allClassworkMap[id]));
           } catch (e) {
-            print('Error parsing classwork $id: $e');
+            log('Error parsing classwork $id: $e');
           }
         }
       }
@@ -87,7 +90,7 @@ class ClassworkService {
       classworkList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return classworkList;
     } catch (e) {
-      print('Error fetching classwork for class $classId: $e');
+      log('Error fetching classwork for class $classId: $e');
       return [];
     }
   }
@@ -100,7 +103,7 @@ class ClassworkService {
       final Map<String, dynamic> data = jsonDecode(jsonEncode(snapshot.value));
       return Classwork.fromJson(classworkId, data);
     } catch (e) {
-      print('Error fetching classwork by ID $classworkId: $e');
+      log('Error fetching classwork by ID $classworkId: $e');
       return null;
     }
   }
@@ -118,7 +121,7 @@ class ClassworkService {
       final Map<String, dynamic> enrolledClassesMap =
           jsonDecode(jsonEncode(studentClassesSnapshot.value));
 
-      List<Classwork> allClasswork = [];
+      final List<Classwork> allClasswork = [];
       for (String classId in enrolledClassesMap.keys) {
         final classwork = await fetchClassworkForClass(classId);
         allClasswork.addAll(classwork);
@@ -133,7 +136,7 @@ class ClassworkService {
 
       return allClasswork;
     } catch (e) {
-      print('Error fetching classwork for student $studentId: $e');
+      log('Error fetching classwork for student $studentId: $e');
       return [];
     }
   }
@@ -146,7 +149,7 @@ class ClassworkService {
       await _db.child('Classwork/${classwork.classworkId}').update(data);
       return true;
     } catch (e) {
-      print('Error updating classwork ${classwork.classworkId}: $e');
+      log('Error updating classwork ${classwork.classworkId}: $e');
       return false;
     }
   }
@@ -161,7 +164,7 @@ class ClassworkService {
       await _db.update(updates);
       return true;
     } catch (e) {
-      print('Error deleting classwork $classworkId: $e');
+      log('Error deleting classwork $classworkId: $e');
       return false;
     }
   }

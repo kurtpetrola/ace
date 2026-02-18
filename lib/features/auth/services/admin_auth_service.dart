@@ -8,7 +8,7 @@ import 'package:hive/hive.dart';
 import 'dart:convert';
 
 class AdminAuthService implements AuthServiceInterface {
-  final Box _loginbox = Hive.box("_loginbox");
+  final Box _loginbox = Hive.box('_loginbox');
   static const String wrongCredentialsError = 'Wrong username or password';
 
   @override
@@ -28,16 +28,16 @@ class AdminAuthService implements AuthServiceInterface {
 
       final fbUser = userCredential.user;
       if (fbUser == null) {
-        throw Exception("Authentication successful but user is null.");
+        throw Exception('Authentication successful but user is null.');
       }
 
       // 2. Fetch admin data
       // Query by email.
-      DatabaseReference dbReference =
-          FirebaseDatabase.instance.ref().child("Admins");
+      final DatabaseReference dbReference =
+          FirebaseDatabase.instance.ref().child('Admins');
 
       final snapshot =
-          await dbReference.orderByChild("email").equalTo(adminEmail).get();
+          await dbReference.orderByChild('email').equalTo(adminEmail).get();
 
       if (!snapshot.exists || snapshot.value == null) {
         await fb_auth.FirebaseAuth.instance.signOut();
@@ -45,19 +45,21 @@ class AdminAuthService implements AuthServiceInterface {
       }
 
       // 3. Extract Profile Data
-      Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
-      var entry = values.entries.first;
-      String adminId = entry.key;
-      Map<String, dynamic> userDataMap = jsonDecode(jsonEncode(entry.value));
+      final Map<dynamic, dynamic> values =
+          snapshot.value as Map<dynamic, dynamic>;
+      final entry = values.entries.first;
+      final String adminId = entry.key;
+      final Map<String, dynamic> userDataMap =
+          jsonDecode(jsonEncode(entry.value));
 
-      User user = User.fromJson(userDataMap);
+      final User user = User.fromJson(userDataMap);
       final String adminName = user.fullname;
 
       // 4. Successful login: Save state to Hive
-      await _loginbox.put("isLoggedIn", true);
-      await _loginbox.put("UserType", "Admin");
-      await _loginbox.put("User", adminId);
-      await _loginbox.put("UserName", adminName);
+      await _loginbox.put('isLoggedIn', true);
+      await _loginbox.put('UserType', 'Admin');
+      await _loginbox.put('User', adminId);
+      await _loginbox.put('UserName', adminName);
       return;
     } on fb_auth.FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' ||

@@ -30,8 +30,8 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
   final SubmissionService _submissionService = SubmissionService();
 
   List<Classwork> _allClasswork = [];
-  Map<String, int> _submissionCounts = {}; // classworkId -> count
-  Map<String, Stream<int>> _submissionStreams = {};
+  final Map<String, int> _submissionCounts = {}; // classworkId -> count
+  final Map<String, Stream<int>> _submissionStreams = {};
 
   bool _isLoading = false;
 
@@ -95,7 +95,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
       if (newClasswork == null) return;
 
       if (classwork != null) {
-        bool success = await _service.updateClasswork(newClasswork);
+        final bool success = await _service.updateClasswork(newClasswork);
         _fetchClasswork();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +108,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
           );
         }
       } else {
-        String? id = await _service.createClasswork(
+        final String? id = await _service.createClasswork(
             newClasswork, widget.classroom.className);
         _fetchClasswork();
         if (mounted) {
@@ -145,7 +145,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
     );
     if (confirmed != true) return;
 
-    bool success = await _service.deleteClasswork(
+    final bool success = await _service.deleteClasswork(
         cw.classworkId, widget.classroom.classId);
     _fetchClasswork();
     if (mounted) {
@@ -250,7 +250,8 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
       onSelected: (val) {
         if (val) setState(() => _currentFilter = label);
       },
-      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+      selectedColor:
+          Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
       labelStyle: TextStyle(
         color: isSelected
             ? Theme.of(context).colorScheme.primary
@@ -272,7 +273,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -281,7 +282,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
             child: Icon(
               Ionicons.folder_open_outline,
               size: 80,
-              color: Theme.of(context).iconTheme.color?.withOpacity(0.3),
+              color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.3),
             ),
           ),
           const SizedBox(height: 24),
@@ -313,7 +314,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -344,7 +345,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: color.withOpacity(0.1),
+                                color: color.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(_iconForType(cw.type),
@@ -403,9 +404,12 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
                                     )),
                               ],
                               onSelected: (v) {
-                                if (v == 'edit')
+                                if (v == 'edit') {
                                   _showCreateDialog(classwork: cw);
-                                if (v == 'delete') _deleteClasswork(cw);
+                                }
+                                if (v == 'delete') {
+                                  _deleteClasswork(cw);
+                                }
                               },
                             ),
                           ],
@@ -474,7 +478,7 @@ class _TeacherClassworkTabState extends State<TeacherClassworkTab>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .primary
-                                        .withOpacity(0.08),
+                                        .withValues(alpha: 0.08),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Row(

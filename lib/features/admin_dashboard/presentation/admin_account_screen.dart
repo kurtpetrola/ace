@@ -10,6 +10,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/models/user.dart';
 import 'package:hive/hive.dart';
 import 'dart:convert';
+import 'dart:developer';
 
 class AdminAccount extends ConsumerStatefulWidget {
   const AdminAccount({super.key});
@@ -20,8 +21,8 @@ class AdminAccount extends ConsumerStatefulWidget {
 
 class _AdminAccountState extends ConsumerState<AdminAccount> {
   DateTime backPressedTime = DateTime.now();
-  final _loginbox = Hive.box("_loginbox");
-  late var adminId = _loginbox.get("User"); // ID used as key for Firebase
+  final _loginbox = Hive.box('_loginbox');
+  late var adminId = _loginbox.get('User'); // ID used as key for Firebase
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +70,14 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Something went wrong",
+                    'Something went wrong',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 18,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Please try again.",
+                    'Please try again.',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 24),
@@ -109,7 +110,7 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
               children: [
                 PersonalInfoSection(
                   user: user,
-                  role: "Administrator",
+                  role: 'Administrator',
                   avatarIcon: Icons.admin_panel_settings_outlined,
                   isAdmin: true,
                   statValue1: totalClasses,
@@ -131,33 +132,33 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
 
   // Fetch admin user data along with statistics
   Future<Map<String, dynamic>> _getAdminUserWithStats() async {
-    DatabaseReference databaseReference =
-        FirebaseDatabase.instance.ref().child("Admins/$adminId");
+    final DatabaseReference databaseReference =
+        FirebaseDatabase.instance.ref().child('Admins/$adminId');
 
     try {
-      print('[DEBUG] Fetching admin data for: $adminId');
+      log('[DEBUG] Fetching admin data for: $adminId');
 
       // Fetch admin user data
-      DataSnapshot snapshot = await databaseReference.get();
+      final DataSnapshot snapshot = await databaseReference.get();
       if (!snapshot.exists || snapshot.value == null) {
-        print('[ERROR] Admin data not found for $adminId');
-        throw Exception("Admin data not found for $adminId.");
+        log('[ERROR] Admin data not found for $adminId');
+        throw Exception('Admin data not found for $adminId.');
       }
 
-      print('[DEBUG] Admin data fetched successfully');
-      Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
-      User myUserObj = User.fromJson(myObj);
+      log('[DEBUG] Admin data fetched successfully');
+      final Map<String, dynamic> myObj = jsonDecode(jsonEncode(snapshot.value));
+      final User myUserObj = User.fromJson(myObj);
 
       // Initialize statistics
       int totalClasses = 0;
       int totalStudents = 0;
-      Set<String> uniqueStudents = {};
+      final Set<String> uniqueStudents = {};
 
       try {
-        print('[DEBUG] Querying all classes in the system');
+        log('[DEBUG] Querying all classes in the system');
 
         // Query all classes (admin oversees all classes)
-        DataSnapshot allClassesSnapshot =
+        final DataSnapshot allClassesSnapshot =
             await FirebaseDatabase.instance.ref().child('Classes').get();
 
         if (allClassesSnapshot.exists && allClassesSnapshot.value != null) {
@@ -170,8 +171,7 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
               final classData = Map<String, dynamic>.from(entry.value as Map);
 
               totalClasses++;
-              print(
-                  '[DEBUG] Found class: $classId (${classData['className'] ?? 'Unknown'})');
+              log('[DEBUG] Found class: $classId (${classData['className'] ?? 'Unknown'})');
 
               // Get students in this class
               try {
@@ -180,33 +180,30 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
                   final students = classData['students'] as Map;
                   final studentIds = students.keys.cast<String>().toList();
                   uniqueStudents.addAll(studentIds);
-                  print(
-                      '[DEBUG] Class $classId has ${studentIds.length} students');
+                  log('[DEBUG] Class $classId has ${studentIds.length} students');
                 }
               } catch (e) {
-                print(
-                    '[WARNING] Error extracting students for class $classId: $e');
+                log('[WARNING] Error extracting students for class $classId: $e');
               }
             }
           }
         }
 
         totalStudents = uniqueStudents.length;
-        print(
-            '[DEBUG] Admin oversees $totalClasses classes with $totalStudents unique students');
+        log('[DEBUG] Admin oversees $totalClasses classes with $totalStudents unique students');
       } catch (e) {
-        print('[WARNING] Error fetching admin statistics: $e');
+        log('[WARNING] Error fetching admin statistics: $e');
         // Keep default values of 0
       }
 
-      print('[DEBUG] Successfully prepared admin data with stats');
+      log('[DEBUG] Successfully prepared admin data with stats');
       return {
         'user': myUserObj,
         'totalClasses': totalClasses,
         'totalStudents': totalStudents,
       };
     } catch (error) {
-      print('[ERROR] Fatal error in _getAdminUserWithStats: $error');
+      log('[ERROR] Fatal error in _getAdminUserWithStats: $error');
       rethrow;
     }
   }
@@ -224,7 +221,7 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -260,7 +257,7 @@ class _AdminAccountState extends ConsumerState<AdminAccount> {
           Switch(
             value: isDarkMode,
             onChanged: (_) => themeNotifier.toggleTheme(),
-            activeColor: ColorPalette.primary,
+            activeThumbColor: ColorPalette.primary,
           ),
         ],
       ),
