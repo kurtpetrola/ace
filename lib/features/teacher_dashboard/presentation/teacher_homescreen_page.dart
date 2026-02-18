@@ -19,14 +19,14 @@ class TeacherHomeScreenPage extends StatefulWidget {
 }
 
 class _TeacherHomeScreenPageState extends State<TeacherHomeScreenPage> {
-  final _loginbox = Hive.box("_loginbox");
+  final _loginBox = Hive.box('_loginbox');
   final ClassService _classService = ClassService();
 
   void _logout() {
-    _loginbox.put("isLoggedIn", false);
-    _loginbox.delete("User");
-    _loginbox.delete("UserType");
-    _loginbox.delete("UserName");
+    _loginBox.put('isLoggedIn', false);
+    _loginBox.delete('User');
+    _loginBox.delete('UserType');
+    _loginBox.delete('UserName');
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const SelectionPage()),
       (Route<dynamic> route) => false,
@@ -39,7 +39,7 @@ class _TeacherHomeScreenPageState extends State<TeacherHomeScreenPage> {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text(
-          "Teacher Dashboard",
+          'Teacher Dashboard',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: ColorPalette.accentBlack,
@@ -80,7 +80,7 @@ class _TeacherHomeScreenPageState extends State<TeacherHomeScreenPage> {
                 const SizedBox(height: 10),
                 Text(
                   'Manage your coursework and view submissions',
-                  style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
                 ),
               ],
             ),

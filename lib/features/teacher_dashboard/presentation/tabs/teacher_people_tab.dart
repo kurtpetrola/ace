@@ -35,14 +35,14 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
     try {
       final roster =
           await _classService.fetchStudentsInClass(widget.classroom.classId);
-      if (mounted) {
+      if (context.mounted) {
         setState(() {
           _students = roster;
           _isLoading = false;
         });
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         setState(() {
           _errorMessage = 'Failed to load roster. Check connectivity.';
           _isLoading = false;
@@ -52,7 +52,7 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
   }
 
   Future<void> _addStudent() async {
-    final TextEditingController _idController = TextEditingController();
+    final TextEditingController idController = TextEditingController();
     String? errorText;
 
     await showDialog(
@@ -68,7 +68,7 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
                     'Enter the Student ID to enroll them in this class.'),
                 const SizedBox(height: 10),
                 TextField(
-                  controller: _idController,
+                  controller: idController,
                   decoration: InputDecoration(
                     labelText: 'Student ID',
                     border: const OutlineInputBorder(),
@@ -84,7 +84,7 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final id = _idController.text.trim();
+                  final id = idController.text.trim();
                   if (id.isEmpty) return;
 
                   // Check if already in list
@@ -107,9 +107,11 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
                   // Enroll
                   await _classService.enrollStudentInClass(
                       id, widget.classroom.classId);
+
+                  if (!context.mounted) return;
                   Navigator.pop(context); // Close dialog
                   _fetchRoster(); // Refresh list
-                  if (mounted) {
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Student $id added successfully')),
                     );
@@ -141,8 +143,10 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
           const SizedBox(width: 16),
           Expanded(
               child: Divider(
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.3))),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.3))),
           if (onAdd != null) ...[
             const SizedBox(width: 8),
             IconButton(
@@ -167,14 +171,14 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
         border: Border.all(
           color: Theme.of(context).dividerTheme.color ??
-              Colors.grey.withOpacity(0.3),
+              Colors.grey.withValues(alpha: 0.3),
         ),
       ),
       child: ListTile(

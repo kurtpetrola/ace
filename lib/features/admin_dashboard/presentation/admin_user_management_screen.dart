@@ -100,7 +100,7 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                   const BorderRadius.vertical(bottom: Radius.circular(20)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -134,15 +134,15 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(MaterialState.selected)) {
-                        return ColorPalette.secondary.withOpacity(0.2);
+                        WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return ColorPalette.secondary.withValues(alpha: 0.2);
                       }
                       return Colors.transparent;
                     }),
                     foregroundColor:
-                        MaterialStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(MaterialState.selected)) {
+                        WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.selected)) {
                         return ColorPalette.accentBlack;
                       }
                       return Colors.grey;
@@ -194,14 +194,16 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.search_off,
-                            size: 64, color: Colors.grey.withOpacity(0.5)),
+                            size: 64,
+                            color: Colors.grey.withValues(alpha: 0.5)),
                         const SizedBox(height: 16),
                         Text(
                           _searchController.text.isNotEmpty
                               ? 'No users found matching "${_searchController.text}"'
                               : 'No users found.',
                           style: TextStyle(
-                              color: ColorPalette.secondary.withOpacity(0.8),
+                              color:
+                                  ColorPalette.secondary.withValues(alpha: 0.8),
                               fontSize: 16),
                         ),
                       ],
@@ -224,7 +226,7 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -243,10 +245,11 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                               height: 50,
                               decoration: BoxDecoration(
                                 color: isStudent
-                                    ? ColorPalette.primary.withOpacity(0.1)
+                                    ? ColorPalette.primary
+                                        .withValues(alpha: 0.1)
                                     : (isTeacher
-                                        ? Colors.orange.withOpacity(0.1)
-                                        : Colors.blue.withOpacity(0.1)),
+                                        ? Colors.orange.withValues(alpha: 0.1)
+                                        : Colors.blue.withValues(alpha: 0.1)),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(

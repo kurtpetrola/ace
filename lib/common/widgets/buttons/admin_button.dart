@@ -20,7 +20,7 @@ class AdminButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) => AdminLoginPage(),
+          builder: (BuildContext context) => const AdminLoginPage(),
         ));
       },
       style: ElevatedButton.styleFrom(

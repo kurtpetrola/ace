@@ -1,6 +1,7 @@
 // lib/services/class_service.dart
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ace/models/classroom.dart';
 import 'package:ace/models/user.dart';
@@ -224,7 +225,7 @@ class ClassService {
           }
         }
       } catch (e) {
-        print('Error fetching notifications for cleanup: $e');
+        log('Error fetching notifications for cleanup: $e');
       }
     });
 

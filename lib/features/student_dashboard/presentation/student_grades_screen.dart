@@ -170,7 +170,7 @@ class GradesView extends ConsumerWidget {
       BuildContext context, Map<String, dynamic> grades) {
     if (grades.isEmpty) {
       return Center(
-          child: Text("No term grades found.",
+          child: Text('No term grades found.',
               style: Theme.of(context).textTheme.bodyLarge));
     }
 
@@ -181,7 +181,7 @@ class GradesView extends ConsumerWidget {
         color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 5,
             spreadRadius: 1,
           ),

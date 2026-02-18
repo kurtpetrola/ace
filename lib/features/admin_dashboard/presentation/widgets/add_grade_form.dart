@@ -54,10 +54,11 @@ class _AddGradeFormState extends State<AddGradeForm> {
           gradeValue: _scoreController.text,
         );
 
+        if (!mounted) return;
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Grade saved successfully!"),
+            content: Text('Grade saved successfully!'),
             backgroundColor: ColorPalette.secondary,
           ),
         );
@@ -70,10 +71,11 @@ class _AddGradeFormState extends State<AddGradeForm> {
           _subjectCode = null;
         });
       } catch (e) {
+        if (!mounted) return;
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Failed to save grade: ${e.toString()}"),
+            content: Text('Failed to save grade: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -112,7 +114,7 @@ class _AddGradeFormState extends State<AddGradeForm> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: ColorPalette.primary.withOpacity(0.1),
+                      color: ColorPalette.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.add_task,
@@ -167,7 +169,7 @@ class _AddGradeFormState extends State<AddGradeForm> {
               DropdownButtonFormField<String>(
                 decoration: _inputDecoration(
                     context, 'Grade Type', 'Select Period', Icons.grade),
-                value: _selectedGradeType,
+                initialValue: _selectedGradeType,
                 hint: Text('Choose Period',
                     style: TextStyle(color: theme.hintColor)),
                 items: gradeTypes.map((type) {
@@ -257,11 +259,12 @@ class _AddGradeFormState extends State<AddGradeForm> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      prefixIcon: Icon(icon, color: ColorPalette.primary.withOpacity(0.7)),
+      prefixIcon:
+          Icon(icon, color: ColorPalette.primary.withValues(alpha: 0.7)),
       labelStyle: TextStyle(
-          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+          color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
           fontWeight: FontWeight.w500),
-      hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.6)),
+      hintStyle: TextStyle(color: theme.hintColor.withValues(alpha: 0.6)),
       filled: true,
       // Use a slightly different color for input background based on theme
       fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,

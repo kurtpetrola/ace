@@ -140,7 +140,7 @@ class _TeacherCreateClassworkDialogState
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: ColorPalette.primary.withOpacity(0.1),
+                        color: ColorPalette.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -255,8 +255,9 @@ class _TeacherCreateClassworkDialogState
                           decoration: _inputDecoration('100',
                               icon: Ionicons.medal_outline),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Required';
+                            }
                             if (int.tryParse(v) == null) return 'Invalid';
                             return null;
                           },
@@ -289,7 +290,7 @@ class _TeacherCreateClassworkDialogState
                         value: _allowResubmission,
                         onChanged: (val) =>
                             setState(() => _allowResubmission = val),
-                        activeColor: ColorPalette.primary,
+                        activeThumbColor: ColorPalette.primary,
                       ),
                       const SizedBox(height: 24),
                       _buildLabel('Due Date (Optional)'),

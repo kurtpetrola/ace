@@ -20,7 +20,7 @@ class StudentButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) => StudentLoginPage(),
+          builder: (BuildContext context) => const StudentLoginPage(),
         ));
       },
       style: ElevatedButton.styleFrom(

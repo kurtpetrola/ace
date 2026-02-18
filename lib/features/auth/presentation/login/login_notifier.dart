@@ -62,7 +62,7 @@ class LoginNotifier extends _$LoginNotifier {
     if (state.email.isEmpty) {
       emailError = 'Email cannot be empty.';
       isValid = false;
-    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
         .hasMatch(state.email)) {
       emailError = 'Please enter a valid email address.';
       isValid = false;
@@ -113,7 +113,7 @@ class LoginNotifier extends _$LoginNotifier {
       String message = 'An unexpected error occurred: ${e.toString()}';
 
       // Existing error handling logic
-      String errorStr = e.toString();
+      final String errorStr = e.toString();
       // Logic Fix: Check the generic error string against the current UserType context
       // All services use "Wrong username or password" so checking the string alone is ambiguous.
       if (errorStr.contains('Wrong username or password')) {
@@ -135,7 +135,7 @@ class LoginNotifier extends _$LoginNotifier {
       state = state.copyWith(errorMessage: 'Please enter your email first.');
       return false;
     }
-    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(state.email)) {
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(state.email)) {
       state =
           state.copyWith(errorMessage: 'Please enter a valid email address.');
       return false;

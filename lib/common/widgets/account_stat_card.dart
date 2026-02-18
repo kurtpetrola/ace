@@ -69,13 +69,13 @@ class _AccountStatCardState extends State<AccountStatCard>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                effectiveColor.withOpacity(0.1),
-                effectiveColor.withOpacity(0.05),
+                effectiveColor.withValues(alpha: 0.1),
+                effectiveColor.withValues(alpha: 0.05),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: effectiveColor.withOpacity(0.2),
+              color: effectiveColor.withValues(alpha: 0.2),
               width: 1.5,
             ),
           ),
@@ -92,13 +92,13 @@ class _AccountStatCardState extends State<AccountStatCard>
                     end: Alignment.bottomRight,
                     colors: [
                       effectiveColor,
-                      effectiveColor.withOpacity(0.7),
+                      effectiveColor.withValues(alpha: 0.7),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: effectiveColor.withOpacity(0.3),
+                      color: effectiveColor.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),

@@ -7,7 +7,7 @@ import 'package:ace/models/user.dart';
 class StudentRegistrationService {
   final DatabaseReference _dbReference = FirebaseDatabase.instance
       .ref()
-      .child("Students"); // Removed trailing slash
+      .child('Students'); // Removed trailing slash
 
   /// Registers a new student using Firebase Auth and saves their profile data.
   ///
@@ -82,7 +82,7 @@ class StudentRegistrationService {
         rethrow;
       }
       // Handle database or other errors
-      throw Exception('An unexpected error occurred: ${e}');
+      throw Exception('An unexpected error occurred: $e');
     }
   }
 }

@@ -25,7 +25,7 @@ class PersonalInfoSection extends StatefulWidget {
   const PersonalInfoSection({
     super.key,
     required this.user,
-    this.role = "Student",
+    this.role = 'Student',
     this.avatarIcon = Icons.person_outline_rounded,
     this.isAdmin = false,
     this.statValue1,
@@ -45,7 +45,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final _loginbox = Hive.box("_loginbox");
+    final loginbox = Hive.box('_loginbox');
 
     final infoList = [
       {
@@ -75,7 +75,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                  color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
@@ -122,14 +122,14 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                                 gradient: LinearGradient(
                                   colors: [
                                     Colors.white,
-                                    Colors.white.withOpacity(0.5),
+                                    Colors.white.withValues(alpha: 0.5),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
+                                    color: Colors.black.withValues(alpha: 0.2),
                                     blurRadius: 16,
                                     offset: const Offset(0, 8),
                                   ),
@@ -171,10 +171,10 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: Colors.white.withValues(alpha: 0.3),
                                   width: 1,
                                 ),
                               ),
@@ -208,7 +208,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                               'You can always come back any time.',
                             );
                             if (action == DialogsAction.yes) {
-                              _loginbox.put("isLoggedIn", false);
+                              loginbox.put('isLoggedIn', false);
                               if (context.mounted) {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
@@ -282,10 +282,10 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                       LayoutBuilder(
                         builder: (context, constraints) {
                           // Adaptive grid layout
-                          int crossAxisCount =
+                          final int crossAxisCount =
                               constraints.maxWidth > 600 ? 3 : 2;
-                          double spacing = 12;
-                          double itemWidth = (constraints.maxWidth -
+                          const double spacing = 12;
+                          final double itemWidth = (constraints.maxWidth -
                                   (spacing * (crossAxisCount - 1))) /
                               crossAxisCount;
 
@@ -293,7 +293,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                             spacing: spacing,
                             runSpacing: spacing,
                             children: infoList.map((item) {
-                              bool fullWidth = item['fullWidth'] == true;
+                              final bool fullWidth = item['fullWidth'] == true;
 
                               return SizedBox(
                                 width: fullWidth

@@ -71,7 +71,7 @@ class _TeacherAccountScreenState extends ConsumerState<TeacherAccountScreen> {
               children: [
                 PersonalInfoSection(
                   user: user,
-                  role: "Teacher",
+                  role: 'Teacher',
                   avatarIcon: Icons.school,
                   isAdmin: false,
                   statValue1: classesCount,
@@ -97,17 +97,18 @@ class _TeacherAccountScreenState extends ConsumerState<TeacherAccountScreen> {
     // OR it's the UID. Our recent change made the key 'TCH-001' etc.
     // So we query `Teachers/$teacherId`.
 
-    DatabaseReference dbRef =
-        FirebaseDatabase.instance.ref().child("Teachers/${widget.teacherId}");
+    final DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref().child('Teachers/${widget.teacherId}');
 
     try {
-      DataSnapshot snapshot = await dbRef.get();
+      final DataSnapshot snapshot = await dbRef.get();
       if (!snapshot.exists || snapshot.value == null) {
-        throw Exception("Teacher data not found for ${widget.teacherId}");
+        throw Exception('Teacher data not found for ${widget.teacherId}');
       }
 
-      Map<String, dynamic> userMap = jsonDecode(jsonEncode(snapshot.value));
-      User user = User.fromJson(userMap);
+      final Map<String, dynamic> userMap =
+          jsonDecode(jsonEncode(snapshot.value));
+      final User user = User.fromJson(userMap);
 
       // Get classes count
       // Option 1: Query 'Classes' node filtering by teacherId (expensive if many classes)
@@ -146,7 +147,7 @@ class _TeacherAccountScreenState extends ConsumerState<TeacherAccountScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -182,7 +183,7 @@ class _TeacherAccountScreenState extends ConsumerState<TeacherAccountScreen> {
           Switch(
             value: isDarkMode,
             onChanged: (_) => themeNotifier.toggleTheme(),
-            activeColor: ColorPalette.primary,
+            activeThumbColor: ColorPalette.primary,
           ),
         ],
       ),

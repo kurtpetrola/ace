@@ -33,27 +33,27 @@ class User {
     // Determine the ID key dynamically. We prioritize the valid custom IDs (studentid, adminid)
     // over the internal 'uid' (Firebase Auth ID) which is mainly for security linkage.
     // Determine the ID key dynamically, falling back to a generic 'uid' if 'studentid'/'adminid' aren't present.
-    final String retrievedId = (json["studentid"] ??
-            json["adminid"] ??
-            json["teacherid"] ??
-            json["uid"] ??
+    final String retrievedId = (json['studentid'] ??
+            json['adminid'] ??
+            json['teacherid'] ??
+            json['uid'] ??
             '')
         .toString();
 
     // Safely parse the age, defaulting to 0 if null or not parsable as int.
-    final int parsedAge = int.tryParse(json["age"]?.toString() ?? '0') ?? 0;
+    final int parsedAge = int.tryParse(json['age']?.toString() ?? '0') ?? 0;
 
     return User(
       // We use the dynamically retrieved ID
       userId: retrievedId,
 
       // All fields are safely cast using '?? '' to prevent runtime null exceptions
-      fullname: json["fullname"] as String? ?? '',
-      email: json["email"] as String? ?? '',
+      fullname: json['fullname'] as String? ?? '',
+      email: json['email'] as String? ?? '',
       age: parsedAge,
-      department: json["department"] as String? ?? '',
-      gender: json["gender"] as String? ?? '',
-      role: json["role"] as String? ?? 'student',
+      department: json['department'] as String? ?? '',
+      gender: json['gender'] as String? ?? '',
+      role: json['role'] as String? ?? 'student',
     );
   }
 
@@ -64,13 +64,13 @@ class User {
         if (role == 'student') 'studentid': userId,
         if (role == 'teacher') 'teacherid': userId,
 
-        "fullname": fullname,
-        "email": email,
-        "age": age
+        'fullname': fullname,
+        'email': email,
+        'age': age
             .toString(), // Store age as a string in the DB if the original model required it, but int is preferred.
-        "department": department,
-        "gender": gender,
-        "role": role,
+        'department': department,
+        'gender': gender,
+        'role': role,
         // ⚠️ SECURITY NOTE: The 'password' field has been REMOVED from the model
         // because it is handled securely by Firebase Auth.
       };

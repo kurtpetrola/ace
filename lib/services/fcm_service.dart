@@ -12,7 +12,7 @@ class FCMService {
   Future<void> initialize(String userId) async {
     try {
       // Request permission for iOS
-      NotificationSettings settings = await _fcm.requestPermission(
+      final NotificationSettings settings = await _fcm.requestPermission(
         alert: true,
         badge: true,
         sound: true,
@@ -25,7 +25,7 @@ class FCMService {
         }
 
         // Get FCM token
-        String? token = await _fcm.getToken();
+        final String? token = await _fcm.getToken();
         if (token != null) {
           await _saveFCMToken(userId, token);
           if (kDebugMode) {

@@ -1,6 +1,7 @@
 // lib/services/theme_service.dart
 
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'package:hive/hive.dart';
 
 /// Service to persist and retrieve theme preferences
@@ -23,7 +24,7 @@ class ThemeService {
           return ThemeMode.light;
       }
     } catch (e) {
-      print('Error loading theme: $e');
+      log('Error loading theme: $e');
       return ThemeMode.light; // Default to light theme
     }
   }
@@ -35,7 +36,7 @@ class ThemeService {
       final themeModeString = mode == ThemeMode.dark ? 'dark' : 'light';
       await box.put(_themeModeKey, themeModeString);
     } catch (e) {
-      print('Error saving theme: $e');
+      log('Error saving theme: $e');
     }
   }
 
@@ -45,7 +46,7 @@ class ThemeService {
       final box = await Hive.openBox(_themeBoxName);
       await box.delete(_themeModeKey);
     } catch (e) {
-      print('Error clearing theme preference: $e');
+      log('Error clearing theme preference: $e');
     }
   }
 }

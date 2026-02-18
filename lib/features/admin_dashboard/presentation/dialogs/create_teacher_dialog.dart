@@ -193,7 +193,7 @@ class _CreateTeacherDialogState extends State<CreateTeacherDialog> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _selectedGender,
+                        initialValue: _selectedGender,
                         items: _genders
                             .map((g) =>
                                 DropdownMenuItem(value: g, child: Text(g)))

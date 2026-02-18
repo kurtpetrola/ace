@@ -56,7 +56,7 @@ class _StudentNotificationsScreenState
           orElse: () => throw Exception('Classroom not found'),
         );
 
-        // Navigate
+        if (!mounted) return;
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => StudentClassroomPage(
@@ -67,9 +67,11 @@ class _StudentNotificationsScreenState
           ),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open classroom: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not open classroom: $e')),
+          );
+        }
       }
     }
   }
@@ -96,7 +98,7 @@ class _StudentNotificationsScreenState
                 color: Theme.of(context).iconTheme.color),
             onPressed: () async {
               await _notificationService.markAllAsRead(widget.studentId);
-              if (mounted) {
+              if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                       content: Text('All notifications marked as read')),
@@ -222,12 +224,12 @@ class _StudentNotificationsScreenState
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: isUnread
-              ? ColorPalette.primary.withOpacity(0.05)
+              ? ColorPalette.primary.withValues(alpha: 0.05)
               : Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isUnread
-                ? ColorPalette.primary.withOpacity(0.3)
+                ? ColorPalette.primary.withValues(alpha: 0.3)
                 : Theme.of(context).dividerTheme.color ?? Colors.grey.shade200,
           ),
         ),
@@ -242,7 +244,7 @@ class _StudentNotificationsScreenState
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: ColorPalette.primary.withOpacity(0.1),
+                    color: ColorPalette.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(

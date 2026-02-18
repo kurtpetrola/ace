@@ -67,7 +67,7 @@ class _PeopleTabState extends State<PeopleTab> {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(child: Divider(color: color.withOpacity(0.3))),
+          Expanded(child: Divider(color: color.withValues(alpha: 0.3))),
         ],
       ),
     );
@@ -83,16 +83,16 @@ class _PeopleTabState extends State<PeopleTab> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
+            color: Colors.grey.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
         border: Border.all(
           color: isTeacher
-              ? ColorPalette.primary.withOpacity(0.1)
+              ? ColorPalette.primary.withValues(alpha: 0.1)
               : Theme.of(context).dividerTheme.color ??
-                  Colors.grey.withOpacity(0.3),
+                  Colors.grey.withValues(alpha: 0.3),
         ),
       ),
       child: ListTile(
@@ -100,7 +100,7 @@ class _PeopleTabState extends State<PeopleTab> {
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: isTeacher
-              ? ColorPalette.primary.withOpacity(0.1)
+              ? ColorPalette.primary.withValues(alpha: 0.1)
               : Theme.of(context).scaffoldBackgroundColor,
           child: Text(
             initials.toUpperCase(),
@@ -147,19 +147,19 @@ class _PeopleTabState extends State<PeopleTab> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: ColorPalette.primary.withOpacity(0.08),
+            color: ColorPalette.primary.withValues(alpha: 0.08),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: ColorPalette.primary.withOpacity(0.1)),
+        border: Border.all(color: ColorPalette.primary.withValues(alpha: 0.1)),
       ),
       child: ListTile(
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         leading: CircleAvatar(
           radius: 26,
-          backgroundColor: ColorPalette.primary.withOpacity(0.1),
+          backgroundColor: ColorPalette.primary.withValues(alpha: 0.1),
           child: Text(
             name.isNotEmpty ? name[0].toUpperCase() : 'T',
             style: const TextStyle(

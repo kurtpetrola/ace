@@ -8,7 +8,7 @@ import 'package:ace/features/admin_dashboard/presentation/admin_grades_managemen
 import 'package:ace/features/admin_dashboard/presentation/admin_account_screen.dart';
 
 class AdminHomeScreenPage extends StatefulWidget {
-  const AdminHomeScreenPage({Key? key}) : super(key: key);
+  const AdminHomeScreenPage({super.key});
 
   @override
   State<AdminHomeScreenPage> createState() => _AdminHomeScreenPageState();

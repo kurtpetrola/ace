@@ -1,6 +1,7 @@
 // lib/services/notification_service.dart
 
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:developer';
 import 'package:ace/models/notification.dart';
 import 'package:ace/models/classwork.dart';
 
@@ -40,7 +41,7 @@ class NotificationService {
 
       await _db.update(updates);
     } catch (e) {
-      print('Error creating notifications: $e');
+      log('Error creating notifications: $e');
     }
   }
 
@@ -53,7 +54,7 @@ class NotificationService {
         .onValue
         .map((event) {
       final notificationsMap = event.snapshot.value;
-      List<AppNotification> notifications = [];
+      final List<AppNotification> notifications = [];
 
       if (notificationsMap != null && notificationsMap is Map) {
         final Map<String, dynamic> rawData =
@@ -96,7 +97,7 @@ class NotificationService {
 
       return unreadCount;
     } catch (e) {
-      print('Error getting unread count: $e');
+      log('Error getting unread count: $e');
       return 0;
     }
   }
@@ -131,7 +132,7 @@ class NotificationService {
           .child('Notifications/$studentId/$notificationId/isRead')
           .set(true);
     } catch (e) {
-      print('Error marking notification as read: $e');
+      log('Error marking notification as read: $e');
     }
   }
 
@@ -158,7 +159,7 @@ class NotificationService {
         await _db.update(updates);
       }
     } catch (e) {
-      print('Error marking all notifications as read: $e');
+      log('Error marking all notifications as read: $e');
     }
   }
 
@@ -168,7 +169,7 @@ class NotificationService {
     try {
       await _db.child('Notifications/$studentId/$notificationId').remove();
     } catch (e) {
-      print('Error deleting notification: $e');
+      log('Error deleting notification: $e');
     }
   }
 
@@ -195,7 +196,7 @@ class NotificationService {
         await _db.update(updates);
       }
     } catch (e) {
-      print('Error clearing read notifications: $e');
+      log('Error clearing read notifications: $e');
     }
   }
 }

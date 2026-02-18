@@ -32,8 +32,8 @@ class _TeacherClassworkManagementScreenState
   final SubmissionService _submissionService = SubmissionService();
 
   List<Classwork> _allClasswork = [];
-  Map<String, int> _submissionCounts = {}; // classworkId -> count
-  Map<String, Stream<int>> _submissionStreams = {};
+  final Map<String, int> _submissionCounts = {}; // classworkId -> count
+  final Map<String, Stream<int>> _submissionStreams = {};
 
   bool _isLoading = false;
   late TabController _tabController;
@@ -56,6 +56,7 @@ class _TeacherClassworkManagementScreenState
         _setupSubmissionListener(cw.classworkId);
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to load classwork'),
@@ -92,7 +93,8 @@ class _TeacherClassworkManagementScreenState
       if (newClasswork == null) return;
 
       if (classwork != null) {
-        bool success = await _service.updateClasswork(newClasswork);
+        final bool success = await _service.updateClasswork(newClasswork);
+        if (!mounted) return;
         _fetchClasswork();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -103,8 +105,9 @@ class _TeacherClassworkManagementScreenState
           ),
         );
       } else {
-        String? id = await _service.createClasswork(
+        final String? id = await _service.createClasswork(
             newClasswork, widget.classroom.className);
+        if (!mounted) return;
         _fetchClasswork();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -138,8 +141,9 @@ class _TeacherClassworkManagementScreenState
     );
     if (confirmed != true) return;
 
-    bool success = await _service.deleteClasswork(
+    final bool success = await _service.deleteClasswork(
         cw.classworkId, widget.classroom.classId);
+    if (!mounted) return;
     _fetchClasswork();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -232,7 +236,7 @@ class _TeacherClassworkManagementScreenState
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -244,7 +248,7 @@ class _TeacherClassworkManagementScreenState
                             color: Theme.of(context)
                                 .iconTheme
                                 .color
-                                ?.withOpacity(0.3),
+                                ?.withValues(alpha: 0.3),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -298,7 +302,7 @@ class _TeacherClassworkManagementScreenState
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -330,7 +334,8 @@ class _TeacherClassworkManagementScreenState
                                             Container(
                                               padding: const EdgeInsets.all(10),
                                               decoration: BoxDecoration(
-                                                color: color.withOpacity(0.1),
+                                                color: color.withValues(
+                                                    alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(12),
                                               ),
@@ -400,11 +405,13 @@ class _TeacherClassworkManagementScreenState
                                                     )),
                                               ],
                                               onSelected: (v) {
-                                                if (v == 'edit')
+                                                if (v == 'edit') {
                                                   _showCreateDialog(
                                                       classwork: cw);
-                                                if (v == 'delete')
+                                                }
+                                                if (v == 'delete') {
                                                   _deleteClasswork(cw);
+                                                }
                                               },
                                             ),
                                           ],
@@ -483,7 +490,8 @@ class _TeacherClassworkManagementScreenState
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .primary
-                                                        .withOpacity(0.08),
+                                                        .withValues(
+                                                            alpha: 0.08),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             20),

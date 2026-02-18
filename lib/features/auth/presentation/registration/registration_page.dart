@@ -9,7 +9,7 @@ import 'package:ace/features/auth/presentation/registration/registration_state.d
 
 // Converted to ConsumerStatefulWidget for lifecycle management (initState)
 class RegisterPage extends ConsumerStatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   ConsumerState<RegisterPage> createState() => _RegisterPageState();
@@ -79,7 +79,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               color: theme.cardTheme.color,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 5,
                   spreadRadius: 1,
                 ),
@@ -338,7 +338,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        value: value,
+        initialValue: value,
         isExpanded: true,
         iconSize: 32,
         icon: const Icon(Icons.arrow_drop_down, color: ColorPalette.secondary),
