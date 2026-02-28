@@ -1,5 +1,6 @@
 // lib/features/admin_dashboard/presentation/admin_grades_management_screen.dart
 
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ace/common/widgets/grades_table.dart';
@@ -75,7 +76,7 @@ class _AdminGradesManagementScreenState
         _studentGrades = null;
         _currentStudentId = null;
       });
-      if (kDebugMode) print(e);
+      if (kDebugMode) log(e.toString());
     } finally {
       setState(() {
         _isLoading = false;

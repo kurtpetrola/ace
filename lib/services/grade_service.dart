@@ -2,6 +2,7 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:ace/services/hive_constants.dart';
@@ -27,7 +28,7 @@ class GradeService {
       return snapshot.exists;
     } catch (e) {
       if (kDebugMode) {
-        print('Error checking student existence for $studentId: $e');
+        log('Error checking student existence for $studentId: $e');
       }
       return false;
     }
@@ -49,7 +50,7 @@ class GradeService {
       return null; // Student found (via existence check), but no grades yet
     } catch (e) {
       if (kDebugMode) {
-        print('Error fetching grades for $studentId: $e');
+        log('Error fetching grades for $studentId: $e');
       }
       return null;
     }
@@ -108,11 +109,11 @@ class GradeService {
       await subjectRef.set(currentGrades);
 
       if (kDebugMode) {
-        print('Grades updated for $sId in $subjectCode: $currentGrades');
+        log('Grades updated for $sId in $subjectCode: $currentGrades');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error updating grade: $e');
+        log('Error updating grade: $e');
       }
       rethrow;
     }

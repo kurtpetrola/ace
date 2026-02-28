@@ -5,6 +5,7 @@ import 'package:ace/models/classroom.dart';
 import 'package:ace/models/user.dart';
 import 'package:ace/services/class_service.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TeacherPeopleTab extends StatefulWidget {
   final Classroom classroom;
@@ -204,8 +205,21 @@ class _TeacherPeopleTabState extends State<TeacherPeopleTab> {
           ),
         ),
         trailing: IconButton(
-          onPressed: () {
-            // TODO: Implement remove student or email student
+          onPressed: () async {
+            final Uri emailLaunchUri = Uri(
+              scheme: 'mailto',
+              path: user.email,
+              query: 'subject=Regarding Class ${widget.classroom.className}',
+            );
+            if (await canLaunchUrl(emailLaunchUri)) {
+              await launchUrl(emailLaunchUri);
+            } else {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Could not open email client')),
+                );
+              }
+            }
           },
           icon: Icon(Ionicons.mail_outline,
               color: Theme.of(context).colorScheme.primary),

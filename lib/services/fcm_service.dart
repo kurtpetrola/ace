@@ -1,5 +1,6 @@
 // lib/services/fcm_service.dart
 
+import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +22,7 @@ class FCMService {
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         if (kDebugMode) {
-          print('User granted notification permission');
+          log('User granted notification permission');
         }
 
         // Get FCM token
@@ -29,7 +30,7 @@ class FCMService {
         if (token != null) {
           await _saveFCMToken(userId, token);
           if (kDebugMode) {
-            print('FCM Token: $token');
+            log('FCM Token: $token');
           }
         }
 
@@ -45,12 +46,12 @@ class FCMService {
         FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
       } else {
         if (kDebugMode) {
-          print('User declined notification permission');
+          log('User declined notification permission');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error initializing FCM: $e');
+        log('Error initializing FCM: $e');
       }
     }
   }
@@ -65,7 +66,7 @@ class FCMService {
       });
     } catch (e) {
       if (kDebugMode) {
-        print('Error saving FCM token: $e');
+        log('Error saving FCM token: $e');
       }
     }
   }
@@ -73,7 +74,7 @@ class FCMService {
   /// Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
     if (kDebugMode) {
-      print('Foreground message: ${message.notification?.title}');
+      log('Foreground message: ${message.notification?.title}');
     }
     // You can show a local notification here or update UI
   }
@@ -81,7 +82,7 @@ class FCMService {
   /// Handle background messages (when app is opened from notification)
   void _handleBackgroundMessage(RemoteMessage message) {
     if (kDebugMode) {
-      print('Background message opened: ${message.notification?.title}');
+      log('Background message opened: ${message.notification?.title}');
     }
     // Navigate to appropriate screen based on message data
   }
@@ -92,7 +93,7 @@ class FCMService {
       return await _fcm.getToken();
     } catch (e) {
       if (kDebugMode) {
-        print('Error getting FCM token: $e');
+        log('Error getting FCM token: $e');
       }
       return null;
     }
@@ -105,7 +106,7 @@ class FCMService {
       await _db.child('fcmTokens/$userId').remove();
     } catch (e) {
       if (kDebugMode) {
-        print('Error deleting FCM token: $e');
+        log('Error deleting FCM token: $e');
       }
     }
   }
@@ -116,6 +117,6 @@ class FCMService {
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
-    print('Background message received: ${message.notification?.title}');
+    log('Background message received: ${message.notification?.title}');
   }
 }
