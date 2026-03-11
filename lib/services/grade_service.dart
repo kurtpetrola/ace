@@ -36,7 +36,7 @@ class GradeService {
   // ------------------------------------------------------------------
 
   /// Fetches a single student's grades by their student ID.
-  /// Returns a Map<String, dynamic> where keys are subject codes (e.g., 'ITE 115').
+  /// Returns a `Map<String, dynamic>` where keys are subject codes (e.g., 'ITE 115').
   Future<Map<String, dynamic>?> fetchStudentGrades(
       String studentIdInput) async {
     final studentId = studentIdInput.trim();

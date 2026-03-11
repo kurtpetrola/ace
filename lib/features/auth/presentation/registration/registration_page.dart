@@ -212,7 +212,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   // --- Widget Builders (Updated for consistent padding and error display) ---
 
   Widget _buildTextField(
-    context, {
+    BuildContext context, {
     required String initialValue,
     required String labelText,
     required String hintText,
@@ -262,7 +262,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildPasswordTextField(
-    context, {
+    BuildContext context, {
     required RegistrationState state,
     required void Function(String) onChanged,
     required VoidCallback onToggleVisibility,
@@ -314,7 +314,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildDropdownField(
-    context, {
+    BuildContext context, {
     required String hint,
     required String? value,
     required List<String> items,
