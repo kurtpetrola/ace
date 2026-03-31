@@ -1,7 +1,7 @@
 name: ace
 description: "An app that lets students easily view, monitor, and manage their grades and educational information."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
