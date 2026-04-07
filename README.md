@@ -66,9 +66,13 @@ lib/
 └── main.dart     # App entry point & initialization
 ```
 
+## Installation
+
+You can download the latest **Android APK** file and install the application manually from the **[releases page](https://github.com/kurtpetrola/ace/releases)**.
+
 ## Demo Access
 
-The application now uses **Email & Password** for secure login.
+Use the following accounts to quickly explore the application's different user roles without needing to register:
 
 **Student Access (Demo):**
 - **Email:** `johndoe@ace.com`
@@ -79,11 +83,7 @@ The application now uses **Email & Password** for secure login.
 - **Password:** `TeacherSecure99!`
 
 **Admin Access:**
-- Available upon request for security reasons.
-
-## Installation
-
-You can download the latest **Android APK** file and install the application manually from the **[releases page](https://github.com/kurtpetrola/ace/releases)**.
+- Available upon request.
 
 ## Future Enhancements
 
@@ -95,6 +95,6 @@ The following features are planned for future updates to further enhance functio
 - [ ] **Calendar Integration**: Dynamic schedule view based on enrolled classes and due dates.
 - [ ] **Exportable Reports**: Generate PDF/Excel reports of grades for administrators.
 
-## Note
+## License
 
-This project builds upon the foundation of [Academia Classroom Explorer](https://github.com/kurtpetrola/Academia-Classroom-Explorer), representing the **complete implementation** of all core modules, system integration, and final feature delivery.
+This project is licensed under the **MIT License** - see the **[LICENSE](https://github.com/kurtpetrola/ace/blob/main/LICENSE)** file for details.
