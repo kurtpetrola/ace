@@ -74,16 +74,16 @@ You can download the latest **Android APK** file and install the application man
 
 Use the following accounts to quickly explore the application's different user roles without needing to register:
 
-**Student Access (Demo):**
-- **Email:** `johndoe@ace.com`
-- **Password:** `StudentSecure99!`
+- **Student Access (Demo):**
+  - **Email:** `johndoe@ace.com`
+  - **Password:** `StudentSecure99!`
 
-**Teacher Access (Demo):**
-- **Email:** `mrsmith@ace.com`
-- **Password:** `TeacherSecure99!`
+- **Teacher Access (Demo):**
+  - **Email:** `mrsmith@ace.com`
+  - **Password:** `TeacherSecure99!`
 
-**Admin Access:**
-- Available upon request.
+- **Admin Access:**
+  - Available upon request.
 
 ## Future Enhancements
 
