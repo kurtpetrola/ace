@@ -1,10 +1,10 @@
-# 📚 Academia Classroom Explorer
+# Academia Classroom Explorer
 
 Academia Classroom Explorer is an application designed to help students view, monitor, and manage their grades and educational information in a convenient, orderly, and efficient manner.
 
-## ✨ Features
+## Features
 
-### 🎓 **Student Module**
+### **Student Module**
 - **Dashboard**: Centralized view of all enrolled classes and recent activities.
 - **Classroom Interface**:
   - **Stream**: View announcements and class updates.
@@ -14,7 +14,7 @@ Academia Classroom Explorer is an application designed to help students view, mo
 - **Grade Monitoring**: Real-time view of grades (Prelim, Midterm, Final) and calculated averages.
 - **Join Classes**: Easy enrollment using unique class codes.
 
-### 👨‍🏫 **Teacher Module**
+### **Teacher Module**
 - **Classroom Management**: Create and manage classes, subject codes, and schedules.
 - **Assignment System**: Post assignments, quizzes, and materials for students.
 - **Grading Portal**:
@@ -22,7 +22,7 @@ Academia Classroom Explorer is an application designed to help students view, mo
   - **Assign grades and provide feedback**.
 - **Roster Control**: Monitor class enrollment and student details.
 
-### 🛡️ **Admin Module**
+### **Admin Module**
 - **System Oversight**: Centralized view of all classes and users.
 - **User Management**:
   - Distinct role management (Admin, Teacher, Student).
@@ -30,12 +30,12 @@ Academia Classroom Explorer is an application designed to help students view, mo
   - Approve or remove accounts.
 - **Grades Oversight**: Monitor academic performance across different classes.
 
-### ⚡ **Offline Capabilities**
+### **Offline Capabilities**
 - **Zero-Latency Loading**: Instant access to Classes, Grades, and Profile Stats using Hive caching.
 - **Offline Startup**: Bypasses network checks to launch immediately into the dashboard.
 - **Background Sync**: Automatically updates cached data when internet connection is restored.
 
-## 💻 Tech Stack
+## Tech Stack
 
 | Component | Technology | Description |
 | :--- | :--- | :--- |
@@ -45,7 +45,7 @@ Academia Classroom Explorer is an application designed to help students view, mo
 | **Backend** | **Firebase** | Handles Authentication (Email/Password), Cloud Firestore, and Realtime Database. |
 | **Local Storage** | **Hive** | **Offline-First**. Primary local database for caching classes, grades, and user sessions. |
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 The project follows a **Hybrid Architecture** that strategically combines **Feature-First** and **Layer-First** organization to ensure both modularity and global consistency.
 
@@ -66,7 +66,7 @@ lib/
 └── main.dart     # App entry point & initialization
 ```
 
-## 🔑 Demo Access
+## Demo Access
 
 The application now uses **Email & Password** for secure login.
 
@@ -81,11 +81,11 @@ The application now uses **Email & Password** for secure login.
 **Admin Access:**
 - Available upon request for security reasons.
 
-## 📥 Installation
+## Installation
 
 You can download the latest **Android APK** file and install the application manually from the **[releases page](https://github.com/kurtpetrola/ace/releases)**.
 
-## 🛠 Future Enhancements
+## Future Enhancements
 
 The following features are planned for future updates to further enhance functionality:
 
@@ -95,6 +95,6 @@ The following features are planned for future updates to further enhance functio
 - [ ] **Calendar Integration**: Dynamic schedule view based on enrolled classes and due dates.
 - [ ] **Exportable Reports**: Generate PDF/Excel reports of grades for administrators.
 
-## 💡 Note
+## Note
 
 This project builds upon the foundation of [Academia Classroom Explorer](https://github.com/kurtpetrola/Academia-Classroom-Explorer), representing the **complete implementation** of all core modules, system integration, and final feature delivery.
